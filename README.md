@@ -5,7 +5,7 @@ Windows
 ------------------
 
 ### Emacs ダウンロード
-Windows 用のバイナリファイルを[こちら](https://ftp.gnu.org/gnu/emacs/windows/)から emacs-23.4-bin-i386.zip をダウンロードして解凍してください。解凍したものを、例えば ~/emacs に配置します。
+[こちら](https://ftp.gnu.org/gnu/emacs/windows/)から Windows 用のバイナリファイル emacs-23.4-bin-i386.zip をダウンロードして解凍してください。解凍したものを、例えば ~/emacs に配置します。
 
 ### Cygwin ダウンロード
 Cygwin で Unix コマンドをインストールして Emacs の Eshell で使用します。[こちらのサイト](https://www.cygwin.com/)からパッケージマネージャをダウンロードして、必要なコマンドをインストールしてください。
