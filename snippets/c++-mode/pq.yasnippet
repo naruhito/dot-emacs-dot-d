@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: pq
+#     - greater: 0,1,2,... (cf. sort)
+#     - priority_queue<int,vector<int>,less<int> > queue と
+#       priority_queue<int> queue (省略形) は同じ意味
+#     - push(), top(), pop(), empty()
+# --
+priority_queue<${1:int}${2:,vector<$1>,greater<$1> }> $0

@@ -1,0 +1,17 @@
+# -*- mode: snippet -*-
+# name: string
+#     - str.substr(index,length); //indexからlength文字を切り出す
+#     - for(int i=0,size=str.size(); i<size; ++i)
+#     - sstr.str("") でsstrの中身を初期化可能
+# --
+int conv(string num) { // int n = conv(string("123"))
+    stringstream sstr;
+    sstr << num << flush;
+    int n; sstr>>n;
+    return n;
+}
+string conv(int n) { // string num = conv(123)
+    stringstream sstr;
+    sstr << n << flush;
+    return sstr.str();
+}

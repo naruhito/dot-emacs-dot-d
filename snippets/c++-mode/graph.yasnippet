@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: graph
+#     - G[from].push_back(Edge(to,cost));
+# --
+typedef pair<${1:int},$1> Edge;
+#define to first
+#define cost second
+vector<Edge> G[${2:MAXN}];
+$0

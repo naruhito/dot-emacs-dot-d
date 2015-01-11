@@ -1,0 +1,11 @@
+;;; kmacro.el --- enhanced keyboard macros
+(defvar kmacro-save-file "~/.emacs.d/var/kmacros")
+(if (file-exists-p kmacro-save-file)
+    (load kmacro-save-file))
+(defun kmacro-save (symbol)
+  (interactive "SName for the last kbd macro: ")
+  (name-last-kbd-macro symbol)
+  (with-current-buffer (find-file-noselect kmacro-save-file)
+    (goto-char (point-max))
+    (insert-kbd-macro symbol)
+    (basic-save-buffer)))

@@ -1,0 +1,14 @@
+;;; set-env-vars.el --- Set environment variables
+(if (not (getenv "USERNAME"))
+    (setenv "USERNAME" "naruhito"))
+
+(if (not (getenv "USER_FULLNAME"))
+    (setenv "USER_FULLNAME" "Naruhito Nakaharai"))
+
+(if (not (getenv "HOSTNAME"))
+    (setenv "HOSTNAME" "localhost"))
+
+(if (not (getenv "EMACS_PLATFORM"))
+    (setenv "EMACS_PLATFORM" ""))
+
+(provide 'set-env-vars)

@@ -1,0 +1,22 @@
+[user]
+	name = naruhito
+	email = naruhito78@gmail.com
+[alias]
+	br = branch
+	st = status
+	ci = commit
+	co = checkout
+	di = diff
+	lg = log -5
+	unstage = reset HEAD
+	last = log -1 -p HEAD
+	amend = commit --amend
+	discard = checkout
+[color]
+	ui = auto
+	diff = auto
+	status = auto
+	branch = auto
+[core]
+	pager = cat
+	editor = emacsclient

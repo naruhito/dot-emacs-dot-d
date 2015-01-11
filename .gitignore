@@ -1,0 +1,10 @@
+*.elc
+/var
+/etc/set-env-vars.el
+/etc/additional-web-services.el
+/skk/jisyo
+/skk/jisyo.bak
+/skk/record
+/tramp
+/server
+/snippets/eshell-mode/mysql.yasnippet

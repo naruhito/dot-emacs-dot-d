@@ -1,0 +1,18 @@
+# -*- mode: snippet -*-
+# name: tsort
+# DAG: Directed acyclic graph
+# --
+bool visited[${1:MAXN}];
+
+void visit(int v, vector<int>& order) {
+    visited[v] = true;
+    REP(i,G[v].size()) if(!visited[G[v][i].to]) visit(G[v][i].to, order);
+    order.push_back(v);
+}
+
+void tsort(vector<int>& order) {
+    fill(visited, visited+$1, false);
+    visit(0,order);
+    reverse(order.begin(), order.end());
+}
+$0

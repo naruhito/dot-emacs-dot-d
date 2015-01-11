@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: sort
+#     - #include <algorithm>    // sort
+#     - #include <functional>   // greater (100,99,98,...)
+#     - vector<pii> vec;
+#     - vec.push_back(pii(100,99));
+# --
+sort( arr, arr+size, greater<int>() ); //100,99,98,..
+sort( vec.begin(), vec.end(), greater<int>() ); //100,99,98,...
+sort( vec.begin(), vec.end(), greater<pii>() ); //(100,100),(100,99),(99,*),...
+$0

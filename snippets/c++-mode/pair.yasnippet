@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: pair
+#     - pair同士の比較では、firstが同じならsecondが比較される。
+# --
+typedef pair<${1:double},$1> p${2:dd};
+#define A first // for vector<p$2>
+#define B second
+// #define A top().first // for priority_queue<p$2>
+// #define B top().second
+$0
