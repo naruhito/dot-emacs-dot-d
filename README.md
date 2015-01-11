@@ -34,13 +34,13 @@ UNIX 系 OS
 ------------------
 
 ### Emacs ダウンロード
-パッケージ管理ツール (yum 等) でインストールできる Emacs のバージョンが 23 系でない場合やシステムインストールの権限がない場合は、ソースコードをコンパイルしてホームディレクトリ以下にインストールします。[GNU Emacs](http://www.gnu.org/software/emacs/) の Obtaining/Downloading GNU Emacs セクションの nearby GNU mirror リンクをクリックして emacs-23.4.tar.gz をダウンロードしてください。
+パッケージ管理ツール (yum 等) でインストールできる Emacs のバージョンが 23 系でない場合やシステムインストールの権限がない場合は、ソースコードからビルドしてホームディレクトリ以下にインストールします。[GNU Emacs](http://www.gnu.org/software/emacs/) の Obtaining/Downloading GNU Emacs セクションの nearby GNU mirror リンクをクリックして emacs-23.4.tar.gz をダウンロードしてください。
 
 ### 解凍
 
 	$ tar zxvf emacs-23.4.tar.gz
 
-### コンパイル
+### ビルド
 
 	$ cd emacs-23.4/
 	$ ./configure --prefix=$HOME/local --without-x
