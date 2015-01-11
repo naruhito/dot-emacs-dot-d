@@ -64,6 +64,7 @@
 (gdefkey "C-c r" 'query-replace-regexp)
 (gdefkey "C-x C-c" 'server-edit)
 (gdefkey "C-x r i" 'string-insert-rectangle)
+(gdefkey "C-x C-l" 'set-buffer-file-coding-system)
 (gdefkey "<f11>" 'point-undo)
 (gdefkey "<f12>" 'point-redo)
 (setq yas/trigger-key "I")
