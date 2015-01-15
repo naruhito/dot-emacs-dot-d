@@ -198,6 +198,10 @@
   (backward-word))
 (ad-activate 'upcase-word)
 
+;; ファイル名やバッファ名の補完で大文字小文字を区別しない
+(setq read-buffer-completion-ignore-case t)
+(setq read-file-name-completion-ignore-case t)
+
 ;; 対応する括弧を強調表示
 (show-paren-mode t)
 
