@@ -93,7 +93,6 @@
         (("C-n" . "Next Change") . goto-last-change)
         (("C-o" . "Open File/Buffer") . anything)
         (("C-p" . "Previous Change") . goto-last-change-reverse)
-        (("C-q" . "Quit") . save-buffers-kill-emacs)
         (("C-r" . "Regexp Builder") . re-builder)
         (("C-s" . "Save the Last Keyboard Macro") . kmacro-save)
         (("C-t" . "Describe Mode") . describe-mode)
@@ -103,6 +102,7 @@
         (("C-x" . "Revert Buffer with utf-8-unix") . revert-buffer-with-coding-system-utf-8-unix)
         (("C-y" . "Yank Buffer to Gist") . gist-buffer)
         (("C-z" . "Suspend Frame") . suspend-frame)
+        (("q" . "Quit") . save-buffers-kill-emacs)
         (("c" . "Customize Face") . list-faces-display)
         (("f" . "Face at Point") . describe-face-at-point)
         (("i" . "Check Spell Region") . ispell)
@@ -126,6 +126,18 @@
 (key-chord-define-global "iw" 'ispell-word)
 
 ;; 言語を日本語に設定
+(add-hook 'set-language-environment-hook
+          '(lambda ()
+             (cond ((eq system-type 'windows-nt)
+                    ;; プロセス出力の decoding と入力の encoding
+                    (setq default-process-coding-system '(utf-8 . japanese-shift-jis-unix))
+                    ;; ファイル名の encode/decode で使用する符号化方式
+                    (setq default-file-name-coding-system 'japanese-shift-jis)
+                    )
+                   (t                   ;Windows以外の環境はすべて utf-8 で統一
+                    (setq default-process-coding-system '(utf-8 . utf-8))
+                    (setq default-file-name-coding-system 'utf-8)
+                    ))))
 (set-language-environment "Japanese")
 
 ;; kill-wordと異なり削除したwordをキルリングに保存しない
