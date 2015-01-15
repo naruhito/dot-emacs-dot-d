@@ -1,5 +1,7 @@
 ;;; gist.el --- Emacs integration for gist.github.com
 (require 'utilities "~/.emacs.d/utilities")
+(if (< (string-to-number emacs-version) 23.2)
+    (add-to-load-path "~/.emacs.d/elisp/eieio"))
 (add-to-load-path "~/.emacs.d/elisp/gist")
 (add-to-load-path "~/.emacs.d/elisp/gh")
 (add-to-load-path "~/.emacs.d/elisp/pcache")
