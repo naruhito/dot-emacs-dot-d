@@ -244,7 +244,7 @@
 
   ;; マシンスペックに応じて設定。処理を軽くする。
   (cond
-   ((equal (getenv "EMACS_PLATFORM") "home-win7")
+   ((equal (getenv "EMACS_PLATFORM") "win7-home")
     (setq gc-cons-threshold (* gc-cons-threshold 10))
     )
    )
@@ -299,7 +299,7 @@
                   (right-fringe . 0)
                   ) default-frame-alist))
   (cond
-   ((equal (getenv "EMACS_PLATFORM") "home-win7")
+   ((equal (getenv "EMACS_PLATFORM") "win7-home")
     (setq default-frame-alist
           (append '((top . 25)
                     (left . 48)
@@ -307,16 +307,13 @@
                     (width . 180)
                     ) default-frame-alist))
     )
-   ((equal (getenv "EMACS_PLATFORM") "merc-win7")
+   (t                                   ;default
     (setq default-frame-alist
-          (append '((top . 25)
-                    (left . 25)
-                    (height . 51)
-                    (width . 185)
+          (append '((top . 0)
+                    (left . 0)
+                    (height . 35)
+                    (width . 120)
                     ) default-frame-alist))
-    )
-   (t
-    (error "Unknown EMACS_PLATFORM: %s" (getenv "EMACS_PLATFORM"))
     ))
   )
 
