@@ -17,8 +17,12 @@
         '("\\.tex$" . yatex-mode)
         '("\\.t$" . perl-mode)
         '("\\.php$" . web-mode)
-        '("\\.ctp$" . web-mode))
-       auto-mode-alist))
+        '("\\.ctp$" . web-mode)
+        '("\\.erb$" . web-mode)
+        '("\\.yml$" . conf-mode)
+        '("\\.scss$" . less-css-mode)
+        '("file$" . ruby-mode)
+        ) auto-mode-alist))
 
 ;; キーバインディングの設定
 (defmacro defkey (keymap key command)
