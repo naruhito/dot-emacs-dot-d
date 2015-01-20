@@ -284,11 +284,7 @@
  ((eq system-type 'windows-nt)
 
   ;; マシンスペックに応じて設定。処理を軽くする。
-  (cond
-   ((equal (getenv "EMACS_PLATFORM") "win7-home")
-    (setq gc-cons-threshold (* gc-cons-threshold 10))
-    )
-   )
+  (setq gc-cons-threshold (* gc-cons-threshold 10))
 
   ;; メニューバーを非表示に設定
   (menu-bar-mode -1)
@@ -339,23 +335,9 @@
         (append '((left-fringe . 0)
                   (right-fringe . 0)
                   ) default-frame-alist))
-  (cond
-   ((equal (getenv "EMACS_PLATFORM") "win7-home")
-    (setq default-frame-alist
-          (append '((top . 25)
-                    (left . 48)
-                    (height . 50)
-                    (width . 180)
-                    ) default-frame-alist))
-    )
-   (t                                   ;default
-    (setq default-frame-alist
-          (append '((top . 0)
-                    (left . 0)
-                    (height . 35)
-                    (width . 120)
-                    ) default-frame-alist))
-    ))
+
+  (setq default-frame-alist
+        (append gui-frame-settings default-frame-alist))
   )
 
  ;;;;;;;;;;;;;;;;;;;; MAC OS X / Cocoa Emacs ;;;;;;;;;;;;;;;;;;;;
@@ -403,7 +385,7 @@
           ("-cdac$" . 0.9)))
 
   ;; フレームサイズ等の設定
-  (setq initial-frame-alist '((width . 140) (height . 40) (left . 78) (top . 33)))
+  (setq initial-frame-alist gui-frame-settings)
   )
 
  ;;;;;;;;;;;;;;;;;;; MAC OS X / Terminal ;;;;;;;;;;;;;;;;;;;;

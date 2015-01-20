@@ -8,7 +8,8 @@
 (if (not (getenv "HOSTNAME"))
     (setenv "HOSTNAME" "localhost"))
 
-(if (not (getenv "EMACS_PLATFORM"))
-    (setenv "EMACS_PLATFORM" ""))
+(defvar gui-frame-settings
+  '((top . 0) (left . 0)
+    (height . 35) (width . 120)))
 
 (provide 'set-env-vars)
