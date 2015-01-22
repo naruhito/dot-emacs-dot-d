@@ -22,6 +22,7 @@
         '("\\.yml$" . conf-mode)
         '("\\.scss$" . less-css-mode)
         '("file$" . ruby-mode)
+        '("\\.json$" . js-mode)
         ) auto-mode-alist))
 
 ;; キーバインディングの設定
