@@ -70,6 +70,7 @@
 (load "init-less-css-mode")
 (load "init-ruby-mode")
 (load "init-web-mode")
+(load "init-js-mode")
 (load "init-emacs")
 
 ;;; init.el ends here.
