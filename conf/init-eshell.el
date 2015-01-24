@@ -49,9 +49,12 @@
 (setq eshell-prompt-function
       (lambda ()
         (concat "[" (getenv "USERNAME") "@" (getenv "HOSTNAME")  " "
-                (eshell/pwd)
+                (eshell/pwd) " "
+                (propertize (format "<%s>" (car default-process-coding-system))
+                            'face `(:foreground "yellow"))
                 (if (= (user-uid) 0) "]\n# " "]\n$ "))))
 (setq eshell-prompt-regexp "^[^#$]*[$#] ")
+(setq eshell-highlight-prompt nil)
 
 ;; 変数を評価するための関数
 (defun eshell/e (arg)
@@ -65,10 +68,15 @@
 
 ;; Windows 向けの shift_jis でしか出力しないコマンドのためのデコーディング切替関数
 (defun eshell/toggle-process-output-coding-system ()
-  (setcar default-process-coding-system
-          (if (eq (car default-process-coding-system) 'utf-8)
-              'japanese-shift-jis-dos
-            'utf-8)))
+  (cond
+   ((eq (car default-process-coding-system) 'utf-8)
+    (setq eshell-highlight-prompt t)
+    (setcar default-process-coding-system 'japanese-shift-jis-dos)
+    )
+   (t
+    (setq eshell-highlight-prompt nil)
+    (setcar default-process-coding-system 'utf-8)
+    )))
 
 ;; Mac OS Xのopenコマンド
 (if (not (eq system-type 'darwin))
