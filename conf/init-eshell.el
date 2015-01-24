@@ -53,39 +53,22 @@
                 (if (= (user-uid) 0) "]\n# " "]\n$ "))))
 (setq eshell-prompt-regexp "^[^#$]*[$#] ")
 
-;; Eshellエイリアス定義
-(require 'em-alias)
-(eshell/alias "la" "ls -a $*")
-(eshell/alias "ll" "ls -l $*")
-(eshell/alias "q" "exit")
-(eshell/alias "g" "git $*")
-(eshell/alias "s" "screen $*")
-(eshell/alias "v" "vagrant $*")
-(eshell/alias "p" "perl $*")
-(eshell/alias "cd" "cd $*; ls")
-(eshell/alias "ff" "find-file $1 > /dev/null")
-(cond
- ((eq system-type 'windows-nt)
-  (eshell/alias "find" "c:/cygwin/bin/find.exe $*")
-  (eshell/alias "tree" "c:/cygwin/bin/tree.exe $*")
-  (eshell/alias "grep" "c:/cygwin/bin/grep.exe $*")
-  (eshell/alias "egrep" "c:/cygwin/bin/egrep.exe $*")
-  (eshell/alias "whois" "c:/cygwin/bin/whois.exe $*")
-  (eshell/alias "openssl" "c:/cygwin/bin/openssl.exe $*")
-  (eshell/alias "ll" "c:/cygwin/bin/ls.exe -l $*")        ;"eshell/ls"はパーミッションの表示がおかしい
-  (eshell/alias "diff" "c:/cygwin/bin/diff.exe -us $*")
-  (eshell/alias "convert" "c:/cygwin/bin/convert.exe $*")
-  )
- ((eq system-type 'darwin)
-  (eshell/alias "diff" "/usr/bin/diff -us $*")
-  )
- ((eq system-type 'gnu/linux)
-  (eshell/alias "diff" "/usr/bin/diff -us $*")
-  ))
-
 ;; 変数を評価するための関数
 (defun eshell/e (arg)
   (eval (read (format "%s" arg))))
+
+;; Cygwin コマンドを優先して使用するようにエイリアスを作成する関数
+(defun eshell/use-cygwin (command)
+  (if (eq system-type 'windows-nt)
+      (eshell/alias command (concat "c:/cygwin/bin/" command ".exe $*"))
+    (message "%s" "use-cygwin is not supported.")))
+
+;; Windows 向けの shift_jis でしか出力しないコマンドのためのデコーディング切替関数
+(defun eshell/toggle-process-output-coding-system ()
+  (setcar default-process-coding-system
+          (if (eq (car default-process-coding-system) 'utf-8)
+              'japanese-shift-jis-dos
+            'utf-8)))
 
 ;; Mac OS Xのopenコマンド
 (if (not (eq system-type 'darwin))
@@ -103,3 +86,27 @@
        (t
         (error "Unknown system type: %s" system-type)
         )) ()))
+
+;; Eshellエイリアス定義
+(require 'em-alias)
+(eshell/alias "la" "ls -a $*")
+(eshell/alias "ll" "ls -l $*")
+(eshell/alias "q" "exit")
+(eshell/alias "g" "git $*")
+(eshell/alias "s" "screen $*")
+(eshell/alias "v" "vagrant $*")
+(eshell/alias "cd" "cd $*; ls")
+(eshell/alias "ff" "find-file $1 > /dev/null")
+(cond
+ ((eq system-type 'windows-nt)
+  (mapcar 'eshell/use-cygwin
+          (list "find" "tree" "grep" "egrep" "whois" "openssl" "diff" "convert"))
+  (eshell/alias "c" "toggle-process-output-coding-system")
+  (eshell/alias "ll" "c:/cygwin/bin/ls.exe -l $*")  ;"eshell/ls"はパーミッションの表示がおかしい
+  )
+ ((eq system-type 'darwin)
+  (eshell/alias "diff" "/usr/bin/diff -us $*")
+  )
+ ((eq system-type 'gnu/linux)
+  (eshell/alias "diff" "/usr/bin/diff -us $*")
+  ))
