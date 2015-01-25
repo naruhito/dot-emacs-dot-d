@@ -1,0 +1,11 @@
+;;; web-bookmarks.el --- Register your favorite web services
+(defvar search-engines   
+  '(("sampleA" . "http://www.example.com/%s/")
+    ("sampleB" . "http://www.example.com/search?q=%s")
+    ))
+
+(defvar bookmarks
+  '(("localhost" . "http://127.0.0.1:3000/")
+    ))
+
+(provide 'web-bookmarks)

@@ -1,9 +1,0 @@
-;;; additional-web-services.el --- Set your local specific web services.
-(defvar additional-search-engines
-  '(("site1" . "http://site1.example.com/%s/")
-    ("site2" . "http://site2.example.com/search?q=%s")))
-
-(defvar additional-bookmarks
-  '(("site3" . "http://site3.example.com/")))
-
-(provide 'additional-web-services)

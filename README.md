@@ -23,7 +23,7 @@ Cygwin で Unix コマンドをインストールして Emacs の Eshell で使�
 ### 設定ファイルのコピー
 コピーして必要な事項を書き換えてください。
 
-- ~/.emacs.d/etc/additional-web-services.el.copy
+- ~/.emacs.d/etc/web-bookmarks.el.copy
 - ~/.emacs.d/etc/set-env-vars.el.copy
 
 ### Emacs 実行
@@ -57,7 +57,7 @@ UNIX 系 OS
 ### 設定ファイルのコピー
 コピーして必要な事項を書き換えてください。
 
-- ~/.emacs.d/etc/additional-web-services.el.copy
+- ~/.emacs.d/etc/web-bookmarks.el.copy
 - ~/.emacs.d/etc/set-env-vars.el.copy
 
 ### Emacs 実行
