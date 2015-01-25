@@ -6,9 +6,9 @@
 
 ;; Author: Masahiko Sato <masahiko@kuis.kyoto-u.ac.jp>
 ;; Maintainer: SKK Development Team <skk@ring.gr.jp>
-;; Version: $Id: skk-comp.el,v 1.92 2011/06/03 22:44:55 skk-cvs Exp $
+;; Version: $Id: skk-comp.el,v 1.94 2013/07/15 00:23:42 skk-cvs Exp $
 ;; Keywords: japanese, mule, input method
-;; Last Modified: $Date: 2011/06/03 22:44:55 $
+;; Last Modified: $Date: 2013/07/15 00:23:42 $
 
 ;; This file is part of Daredevil SKK.
 
@@ -47,7 +47,7 @@
 
 ;;;###autoload
 (defun skk-comp-start-henkan (arg)
-  "▽モードで読みの補完を行なった後、変換する。
+  "▽モードで読みを補完した後、変換する。
 それ以外のモードではオリジナルのキーマップに割り付けられたコマンドをエミュレー
 トする。"
   (interactive "*P")
@@ -173,6 +173,7 @@
 			 (concat orig-key skk-comp-prefix)
 		       orig-key))))))))))
 
+;;;###autoload
 (defun skk-comp-get-candidate (&optional first)
   (when first
     (setq skk-comp-first t
@@ -247,6 +248,7 @@
 	(add-to-list 'skk-comp-prefix-regexp-alist (cons prefix regexp))
 	regexp)))
 
+;;;###autoload
 (defun skk-comp-collect-kana (tree)
   ;; skk-rule-tree の部分木に属する "かな" を集める
   (let ((data (skk-get-kana tree))
@@ -262,6 +264,7 @@
 			    (mapcar #'skk-comp-collect-kana
 				    branches)))))
 
+;;;###autoload
 (defun skk-comp-arrange-kana-list (kana-list prefix)
   ;; skk-comp-collect-kana から得た "かな" のリストを元に
   ;; プレフィックスに対応した調整をする
@@ -327,6 +330,7 @@
 	    (setq c-word nil))))
       c-word)))
 
+;;;###autoload
 (defun skk-comp-re-search-current-buffer (key prefix &optional abbrev)
   ;; 問題のあるケースがあるかもしれないので
   ;; skk-comp-search-current-buffer との一本化はとりあえず保留
@@ -397,7 +401,7 @@
 
 ;;;###autoload
 (defun skk-try-completion (arg)
-  "▽モードで見出し語の補完を行う。
+  "▽モードで見出し語を補完する。
 それ以外のモードでは、オリジナルのキー割り付けのコマンドをエミュレートする。"
   (interactive "P")
   (skk-with-point-move
@@ -426,7 +430,7 @@
 (defun skk-comp-by-history ()
   ;; skk-comp-prefix を考慮
   "入力が空の時に履歴から補完する。
-対象は現在の Emacs のセッションにおいて行なった送り無し変換のうち、
+対象は現在の Emacs のセッションにおいて行った送り無し変換のうち、
 `skk-kakutei-history-limit' で指定される最近のものである。"
   (when (and (string= skk-comp-key "")
 	     (or (not skk-comp-use-prefix)
@@ -452,7 +456,7 @@
 ;;;###autoload
 (defun skk-search-smart-find (&optional path not-abbrev-only
 					without-char-maybe)
-  "`smart-find'を利用した変換を行なう。
+  "`smart-find'を利用した変換を行う。
 SKK abbrev モードにて、英文字 + `skk-completion-search-char' (~)で
 未完スペルを指定して変換すると、補完候補が変換候補として出現する。
 デフォルトでは SKK abbrev モードのみで有効な機能だが、
@@ -464,6 +468,7 @@ NOT-ABBREV-ONLY を指定する事で常に有効となる。"
 			   'without-midasi
 			   without-char-maybe)))
 
+;;;###autoload
 (defun skk-smart-find (key &optional path)
   ;; smart-find は provide されていない
   (unless (fboundp 'smart-find-file)

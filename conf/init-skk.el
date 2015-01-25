@@ -1,4 +1,4 @@
-;;;; skk.el --- Daredevil SKK (Simple Kana to Kanji conversion program) *詳しくは skk/doc/skk-14.4.pdf または info を参照
+;;;; skk.el --- Daredevil SKK (Simple Kana to Kanji conversion program) *詳しくは skk/doc/skk-15.2.pdf を参照
 (require 'utilities "~/.emacs.d/utilities")
 (add-to-load-path "~/.emacs.d/elisp/skk")
 (require 'skk-autoloads)
@@ -47,7 +47,7 @@
 ;; カタカナ語の変換結果も辞書に登録する
 (setq skk-search-katakana t)
 
-;; ファイルを開いた時、skk-latin-modeを有効にする
+;; ファイルを開いた時および Eshell起動時に skk-latin-modeを有効にする
 (require 'skk-vars)
 (require 'skk-macs)
 (require 'skk)
@@ -59,6 +59,3 @@
   (skk-mode)
   (skk-kakutei)
   (skk-latin-mode-on))
-
-;; Infoディレクトリを追加
-(add-to-list 'Info-default-directory-list "~/.emacs.d/skk/info")

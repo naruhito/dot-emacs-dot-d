@@ -5,9 +5,9 @@
 
 ;; Author: Enami Tsugutomo <enami@ba2.so-net.or.jp>
 ;; Maintainer: SKK Development Team <skk@ring.gr.jp>
-;; Version: $Id: skk-isearch.el,v 1.71 2011/12/13 00:16:06 skk-cvs Exp $
+;; Version: $Id: skk-isearch.el,v 1.80 2013/11/02 05:29:53 skk-cvs Exp $
 ;; Keywords: japanese, mule, input method
-;; Last Modified: $Date: 2011/12/13 00:16:06 $
+;; Last Modified: $Date: 2013/11/02 05:29:53 $
 
 ;; This file is part of Daredevil SKK.
 
@@ -237,7 +237,7 @@ kakutei'ed and erase the buffer contents."
 					    isearch-mode-map))))))
   (set skk-isearch-overriding-local-map skk-isearch-mode-map)
   ;; Input Method として SKK を使っている場合の対策
-  (when (eval-when-compile skk-running-gnu-emacs)
+  (when (eval-when-compile (featurep 'emacs))
     (when (and current-input-method
 	       (string-match "^japanese-skk" current-input-method))
       (let* ((method current-input-method)
@@ -246,7 +246,7 @@ kakutei'ed and erase the buffer contents."
 		     'skk-auto-fill-inactivate)))
 	(with-current-buffer (get-buffer-create skk-isearch-working-buffer)
 	  (unless current-input-method
-	    (setq inactivate-current-input-method-function func)
+	    (skk-set-deactivate-im-func func)
 	    (setq current-input-method method))))))
   ;; skk-isearch の状態を表す内部変数の設定
   (setq skk-isearch-switch t)
@@ -289,10 +289,10 @@ kakutei'ed and erase the buffer contents."
       (jisx0208-latin
        (skk-jisx0208-latin-mode-on))))
   ;; Input Method として SKK を使っている場合の対策
-  (when (eval-when-compile skk-running-gnu-emacs)
+  (when (eval-when-compile (featurep 'emacs))
     (when (string-match "^japanese-skk" (format "%s" default-input-method))
       (with-current-buffer (get-buffer-create skk-isearch-working-buffer)
-	(inactivate-input-method))))
+	(skk-deactivate-input-method))))
   ;; skk-isearch の状態を表す内部変数の設定
   (setq skk-isearch-switch nil)
   (unless skk-isearch-in-editing
@@ -366,7 +366,8 @@ Optional argument PREFIX is appended if given."
 
   (unless (eval-when-compile (featurep 'xemacs))
     ;; XEmacs にはないコマンド
-    (define-key map [?\C-x t] 'isearch-other-control-char)
+    (if (fboundp 'isearch-other-control-char)			;2013-10-08 Remove functions
+	(define-key map [?\C-x t] 'isearch-other-control-char)) ; GNU Emacs 24.4 から廃止
 
     (define-key map [?\C-0] 'skk-isearch-start-henkan)
     (define-key map [?\C-1] 'skk-isearch-start-henkan)
@@ -428,7 +429,10 @@ Optional argument PREFIX is appended if given."
 		;; setup last-command-event and this-command because
 		;; some command refers them.
 		(let* ((keys (read-key-sequence nil))
-		       (this-command (key-binding keys)))
+		       (this-command (key-binding keys))
+		       ;; 直後の command-execute() にて、skk-insert() 経由で
+		       ;; skk-dcomp-multiple-show() が実行されるとエラーとなってしまう
+		       skk-dcomp-multiple-activate)
 		  (setq last-command-event (aref keys (1- (length keys))))
 		  (command-execute this-command))
 	      ((quit error)
@@ -554,21 +558,33 @@ If the current mode is different from previous, remove it first."
 		  (setq skk-isearch-incomplete-message
 			(skk-isearch-buffer-string))
 		  (skk-isearch-incomplete-message))))))
-    ;;
+
+    ;; isearch-cmds ... Stack of search status sets.
+    ;;   '(["test" "test" 198 198 t 194 nil nil nil 192 t nil]
+    ;;     ["tes" "tes" 197 197 t 194 nil nil nil 192 t nil]
+    ;;     ["te" "te" 196 196 t 194 nil nil nil 192 t nil]
+    ;;     ["t" "t" 195 195 t 194 nil nil nil 192 t nil]
+    ;;     ["" "" 192 t t nil nil nil nil 192 t nil])
+    ;;   or
+    ;;   '([cl-struct-isearch--state "test" "[aa] test" 196 196 t ..]
+    ;;     [cl-struct-isearch--state "tes" "[aa] tes" 195 195 t ..]
+    ;;     [cl-struct-isearch--state "te" "[aa] te" 102 102 t ..]
+    ;;     [cl-struct-isearch--state "t" "[aa] t" 92 92 t ..]
+    ;;     [cl-struct-isearch--state "" "[か] " 78 t t ..]
     (let* ((cmd (nth 1 isearch-cmds))
-	   (oldmsg (if (vectorp cmd)
-		       ;; Emacs 21.3.50 開発版で `isearch-cmds' の各要
-		       ;; 素の形式が list から vector に変更になってし
-		       ;; まったので workaround をおく。以下同様。
-		       (aref cmd 1)
-		     (cadr cmd)))
+	   (oldmsg (cond ((null cmd)
+			  "")
+			 ((stringp (aref cmd 0))
+			  (aref cmd 1))	  ; GNU Emacs 24.2 まで
+			 (t
+			  (aref cmd 2)))) ; GNU Emacs 24.3 から
 	   (prompt (skk-isearch-mode-string))
 	   newmsg)
       (unless (or (null cmd)
 		  (string-match (concat "^" (regexp-quote prompt))
 				oldmsg))
-	;; `skk-isearch-delete-char'が呼ばれる前に `skk-isearch-working-buffer'
-	;; 内のモードが切り替えられていた場合、 isearch-cmds  の第 2 要素につい
+	;; `skk-isearch-delete-char' が呼ばれる前に `skk-isearch-working-buffer'
+	;; 内のモードが切り替えられていた場合、 isearch-cmds の第 2 要素につい
 	;; て、 messege の内容を update しないと [DEL] したときのモードの表示が
 	;; おかしくなる。
 	(do ((alist skk-isearch-mode-string-alist (cdr alist))
@@ -578,9 +594,10 @@ If the current mode is different from previous, remove it first."
 			(substring oldmsg (match-end 0)))))
 	    ((or msg (null alist))
 	     (setq newmsg (concat prompt (or msg oldmsg)))
-	     (if (vectorp cmd)
-		 (aset cmd 1 newmsg)
-	       (setcdr cmd (cons newmsg (cddr cmd))))))))
+	     (if (stringp (aref cmd 0))
+		 (aset cmd 1 newmsg)	;GNU Emacs 24.2 まで
+	       (aset cmd 2 newmsg))	;GNU Emacs 24.3 から
+	     ))))
     (isearch-delete-char)))
 
 (defun skk-isearch-kakutei (isearch-function)
@@ -686,6 +703,7 @@ If the current mode is different from previous, remove it first."
 	    (skk-start-henkan 1 digit))))
       (skk-isearch-mode-message)
       (skk-isearch-wrapper-1))
+
      (t
       (cond
        ((eval-when-compile (featurep 'xemacs))
@@ -695,9 +713,12 @@ If the current mode is different from previous, remove it first."
 	;; XXX なぜ 2 回 unread する...?
 	(skk-unread-event event)
 	(skk-unread-event event))
+
        (t
 	(skk-unread-event event)
-	(isearch-other-control-char)))))))
+	(if (fboundp 'isearch-other-control-char) ; 2013-10-08 Remove functions.
+	    (isearch-other-control-char)))	  ; GNU Emacs 24.4 から廃止
+	)))))
 
 
 ;;
@@ -791,7 +812,7 @@ If the current mode is different from previous, remove it first."
 	       (let ((skk-isearch-initial-mode-when-skk-mode-disabled
 		      'latin))
 		 (skk-isearch-mode-setup))
-	       (inactivate-input-method)))
+	       (skk-deactivate-input-method)))
 	    (t
 	     ad-do-it)))))
 
@@ -813,7 +834,8 @@ If the current mode is different from previous, remove it first."
     (add-hook 'before-init-hook skk-isearch-really-early-advice))))
 
 (put 'digit-argument 'isearch-command t)
-(put 'isearch-other-control-char 'isearch-command t)
+(if (fboundp 'isearch-other-control-char)		  ; 2013-10-08 Remove functions
+    (put 'isearch-other-control-char 'isearch-command t)) ; GNU Emacs 24.4 から廃止
 (put 'skk-isearch-delete-char 'isearch-command t)
 (put 'skk-isearch-exit 'isearch-command t)
 (put 'skk-isearch-keyboard-quit 'isearch-command t)

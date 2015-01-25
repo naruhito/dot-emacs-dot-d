@@ -1,12 +1,12 @@
-;;; skk-version.el --- version information for SKK
+;;; skk-version.el --- version information for SKK -*- coding:iso-2022-jp -*-
 
 ;; Copyright (C) 2000, 2001, 2003 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Maintainer: SKK Development Team <skk@ring.gr.jp>
-;; Version: $Id: skk-version.el,v 1.60 2012/01/01 02:23:55 skk-cvs Exp $
+;; Version: $Id: skk-version.el,v 1.79 2014/11/23 19:45:33 skk-cvs Exp $
 ;; Keywords: japanese, mule, input method
-;; Last Modified: $Date: 2012/01/01 02:23:55 $
+;; Last Modified: $Date: 2014/11/23 19:45:33 $
 
 ;; This file is part of Daredevil SKK.
 
@@ -32,8 +32,9 @@
   (require 'skk-macs))
 
 (put 'skk-version 'product-name "Daredevil SKK")
-(put 'skk-version 'version-string "14.4")
-(put 'skk-version 'codename "Nakatsu")
+(put 'skk-version 'version-string "15.2")
+(put 'skk-version 'codename "Oshamambe") ; See also `READMEs/CODENAME.ja'
+(put 'skk-version 'codename-ja "長万部")
 
 ;;;###autoload
 (defun skk-version (&optional without-codename)
@@ -50,7 +51,10 @@ the codename."
       (format "%s/%s (%s)"
 	      (get 'skk-version 'product-name)
 	      (get 'skk-version 'version-string)
-	      (get 'skk-version 'codename)))))
+	      (if skk-version-codename-ja
+		  (get 'skk-version 'codename-ja)
+		(get 'skk-version 'codename))
+	      ))))
 
 (provide 'skk-version)
 

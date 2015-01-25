@@ -7,9 +7,9 @@
 
 ;; Author: Masahiko Sato <masahiko@kuis.kyoto-u.ac.jp>
 ;; Maintainer: SKK Development Team <skk@ring.gr.jp>
-;; Version: $Id: skk-tut.el,v 1.88 2011/12/18 04:58:10 skk-cvs Exp $
+;; Version: $Id: skk-tut.el,v 1.94 2014/09/18 14:01:52 skk-cvs Exp $
 ;; Keywords: japanese, mule, input method
-;; Last Modified: $Date: 2011/12/18 04:58:10 $
+;; Last Modified: $Date: 2014/09/18 14:01:52 $
 
 ;; This file is part of Daredevil SKK.
 
@@ -300,15 +300,16 @@
     (skk-kcode-charset . (if (featurep 'jisx0213)
 			     (quote japanese-jisx0208)
 			   skk-kcode-charset))
-    (skk-kcode-method . (if skk-running-gnu-emacs
-				'code-or-char-list
-			      'code-or-menu))
+    (skk-kcode-method . (if (featurep 'emacs)
+			    'code-or-char-list
+			  'code-or-menu))
     (skk-dcomp-activate . nil)
     (skk-dcomp-multiple-activate . nil)
     (skk-read-from-minibuffer-function . nil)
     (skk-verbose . nil)
     (debug-on-error . nil)
     (skk-show-mode-show . nil)
+    (skk-show-mode-enable . nil)
 
     ;; not user variables but to be localized.
     (skk-insert-new-word-function . nil)
@@ -395,18 +396,18 @@
   ;; skktut-japanese-tut が non-nil だったら JAPANESE を nil であれば ENGLISH
   ;; をエコーエリアに表示する。
   ;; ARG は message 関数の第２引数以降の引数として渡される。
-  (append (list 'message (list 'if 'skktut-japanese-tut japanese english))
+  (append `(message (if skktut-japanese-tut ,japanese ,english))
 	  arg))
 
 (defmacro skktut-error (japanese english &rest arg)
   ;; skktut-japanese-tut が non-nil だったら JAPANESE を nil であれば ENGLISH
   ;; をエコーエリアに表示し、エラーを発生させる。
   ;; ARG は error 関数の第２引数以降の引数として渡される。
-  (append (list 'error (list 'if 'skktut-japanese-tut japanese english))
+  (append `(error (if skktut-japanese-tut ,japanese ,english))
 	  arg))
 
 (defmacro skktut-yes-or-no-p (japanese english)
-  (list 'yes-or-no-p (list 'if 'skktut-japanese-tut japanese english)))
+ `(yes-or-no-p (if skktut-japanese-tut ,japanese ,english)))
 
 ;; advices.
 (defadvice skk-create-file (around skktut-ad disable))
@@ -428,14 +429,14 @@
 
 (defadvice skk-kakutei (before skktut-ad disable)
   "SKK チュートリアル用アドバイス付。"
-  (when (and (interactive-p)
+  (when (and (skk-called-interactively-p 'interactive)
 	     (= skktut-question-count 1))
     (skktut-error "このキーはまだ使えません"
 		  "Cannot use this key yet")))
 
 (defadvice skk-mode (before skktut-ad disable)
   "SKK チュートリアル用アドバイス付。"
-  (when (and (interactive-p)
+  (when (and (skk-called-interactively-p 'interactive)
 	     (= skktut-question-count 1))
     (skktut-error "このキーはまだ使えません"
 		  "Cannot use this key yet")))
@@ -546,7 +547,7 @@ You can select English version by \\[universal-argument] \\[skk-tutorial]."
   (interactive "P")
   (when (or now
 	    (skktut-yes-or-no-p
-	     "本当にチュートリアルをやめますか? "
+	     "本当にチュートリアルをやめますか？ "
 	     "Really quit tutorial? "))
     (let ((inhibit-quit t))
       (delete-other-windows)
@@ -891,19 +892,22 @@ tutorial /チュートリアル/
 	    (insert
 	     (let ((next " `\\[skktut-next-question]'")
 		   (quit " `\\[skk-tutorial-quit]'")
-		   (skip " `\\[skktut-skip-question]'"))
+		   (skip " `\\[skktut-skip-question]'")
+		   (sow  " `\\[scroll-other-window]'"))
 	       (substitute-command-keys
 		(if skktut-japanese-tut
 		    (concat
-		     "* 答ができたら" next "; 途中でやめるには" quit
+		     "* 答ができたら" next "\n"
+		     "* 途中でやめるには" quit "\n"
 		     (if (/= skktut-question-count skktut-question-numbers)
-			 (concat "; スキップするには" skip))
-		     " *")
+			 (concat "* スキップするには" skip "\n"))
+		     "* 【問】をスクロールするには" sow)
 		  (concat
-		   "* For next question" next "; to quit " quit
+		   "* For next question" next "\n"
+		   "* to quit " quit "\n"
 		   (if (/= skktut-question-count skktut-question-numbers)
-		       (concat "; to skip this question" skip))
-		   " *")))))
+		       (concat "* to skip this question" skip "\n"))
+		   "* to scroll question window" sow)))))
 	    (when skk-tut-use-face
 	      (put-text-property p (point) 'face skk-tut-key-bind-face))
 	    (add-text-properties p (point) plist)

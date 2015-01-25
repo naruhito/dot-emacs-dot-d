@@ -36,7 +36,7 @@
 (defun skk-add-background-color (string color)
   "STRING のうち背景色が指定されていない文字に限って COLOR の背景色を
 適用する。"
-  (when (eval-when-compile skk-running-gnu-emacs)
+  (when (eval-when-compile (featurep 'emacs))
     (when (and string
 	       color
 	       (color-defined-p color))
@@ -49,42 +49,30 @@
 	  (while (and (< end len)
 		      (eq orig-face (get-text-property end 'face string)))
 	    (incf end))
-	  (cond
-	   ((not orig-face)
-	    (put-text-property start end 'face
-			       `(:background ,color)
-			       string))
-	   ((and (facep orig-face) (not (face-background orig-face)))
-	    (cond
-	     ((eval-when-compile (= emacs-major-version 21))
-	      ;; Emacs 21 で :inherit がうまく継承されない？
-	      ;; workaround
-	      (let (attrs)
-		(dolist (pair face-attribute-name-alist)
-		  (let* ((attr (car pair))
-			 (val (face-attribute orig-face attr (selected-frame))))
-		    (unless (eq val 'unspecified)
-		      (setq attrs (cons attr (cons val attrs))))))
-		(put-text-property start end 'face
-				   (append attrs `(:background ,color))
-				   string)))
-	     (t
-	      (put-text-property start end 'face
-				 `(:inherit ,orig-face :background ,color)
-				 string))))
-	   ((and (listp orig-face)
-		 (not (plist-get (get-text-property start 'face string)
-				 :background))
-		 (not (and (plist-get (get-text-property start 'face start)
-				      :inherit)
-			   (face-background
-			    (plist-get (get-text-property start 'face start)
-				       :inherit)))))
-	    (put-text-property start end 'face
-			       (cons
-				`(:background ,color)
-				orig-face)
-			       string)))
+	  (cond ((not orig-face)
+		 (put-text-property start end 'face
+				    `(:background ,color)
+				    string))
+		;;
+		((and (facep orig-face)
+		      (not (face-background orig-face)))
+		 (put-text-property start end 'face
+				    `(:inherit ,orig-face :background ,color)
+				    string))
+		;;
+		((and (listp orig-face)
+		      (not (plist-get (get-text-property start 'face string)
+				      :background))
+		      (not (and (plist-get (get-text-property start 'face start)
+					   :inherit)
+				(face-background
+				 (plist-get (get-text-property start 'face start)
+					    :inherit)))))
+		 (put-text-property start end 'face
+				    (cons `(:background ,color)
+					  orig-face)
+				    string)))
+
 	  (setq start (max (1+ start) end)
 		end (1+ start)))))
     string))
@@ -134,7 +122,9 @@
 	  (setq str (propertize str 'face face)))
 	(when skk-inline-show-background-color
 	  (setq str (skk-add-background-color str
-					      skk-inline-show-background-color)))
+					      (if (zerop (mod i 2))
+						  skk-inline-show-background-color
+						skk-inline-show-background-color-odd))))
 	(save-excursion
 	  (scroll-left (max 0
 			    (- (+ beg-col margin max-width margin 1)
