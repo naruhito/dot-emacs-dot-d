@@ -396,9 +396,9 @@ over overlays with lower priority.  *Don't* use a negative number."
     (((class grayscale)
       (background dark))  (:background "LightGray"))
     (((class color)
-      (background light)) (:foreground "White" :background "DarkBlue"))
+      (background light)) (:foreground "Black" :background "DarkOrange1"))
     (((class color)
-      (background dark))  (:foreground "White" :background "DarkBlue")))
+      (background dark))  (:foreground "Black" :background "DarkOrange1")))
   "Face used to highlight current line if bookmark is persistent."
   :group 'bm)
 
@@ -431,9 +431,9 @@ over overlays with lower priority.  *Don't* use a negative number."
     (((class grayscale)
       (background dark))  (:background "LightGray"))
     (((class color)
-      (background light)) (:foreground "White" :background "DarkBlue"))
+      (background light)) (:foreground "Black" :background "DarkOrange1"))
     (((class color)
-      (background dark))  (:foreground "White" :background "DarkBlue")))
+      (background dark))  (:foreground "Black" :background "DarkOrange1")))
   "Face used to highlight bookmarks in the fringe if bookmark is persistent."
   :group 'bm)
 
