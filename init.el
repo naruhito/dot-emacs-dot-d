@@ -1,4 +1,4 @@
-;;;; init.el --- My Emacs Settings
+;;;; init.el --- Initialize Emacs
 
 ;; Author: naruhito <naruhito78@gmail.com>
 ;; URL: https://github.com/naruhito/
@@ -30,7 +30,7 @@
 ;; Define utility functions.
 (require 'utilities "~/.emacs.d/utilities")
 
-;; Add the paths of "elisp/" and "conf/" to load-path.
+;; Add "elisp/" and "conf/" to load-path.
 (add-to-load-path "~/.emacs.d/elisp"
                   "~/.emacs.d/conf")
 
@@ -47,7 +47,6 @@
 (load "init-one-key")
 (load "init-key-chord")
 (load "init-anything")
-(load "init-save-load-path")
 (load "init-browse-kill-ring")
 (load "init-word-count")
 (load "init-yatex")
