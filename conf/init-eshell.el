@@ -49,12 +49,9 @@
 (setq eshell-prompt-function
       (lambda ()
         (concat "[" (getenv "USERNAME") "@" (getenv "HOSTNAME")  " "
-                (eshell/pwd) " "
-                (propertize (format "<%s>" (car default-process-coding-system))
-                            'face `(:foreground "yellow"))
+                (eshell/pwd) " " (format "<%s>" (car default-process-coding-system))
                 (if (= (user-uid) 0) "]\n# " "]\n$ "))))
 (setq eshell-prompt-regexp "^[^#$]*[$#] ")
-(setq eshell-highlight-prompt nil)
 
 ;; 変数を評価するための関数
 (defun eshell/e (arg)
@@ -70,13 +67,12 @@
 (defun eshell/toggle-process-output-coding-system ()
   (cond
    ((eq (car default-process-coding-system) 'utf-8)
-    (setq eshell-highlight-prompt t)
     (setcar default-process-coding-system 'japanese-shift-jis-dos)
     )
    (t
-    (setq eshell-highlight-prompt nil)
     (setcar default-process-coding-system 'utf-8)
     )))
+(add-hook 'eshell-mode-hook '(lambda () (setcar default-process-coding-system 'utf-8))) ;default
 
 ;; Mac OS Xのopenコマンド
 (if (not (eq system-type 'darwin))
