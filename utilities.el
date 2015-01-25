@@ -1,4 +1,4 @@
-;;; utilities.el --- Define utility functions.
+;;; utilities.el --- Define utility functions
 
 ;; Add paths to load-path.
 (defun add-to-load-path (&rest paths)

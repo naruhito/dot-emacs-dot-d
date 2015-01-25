@@ -1,4 +1,4 @@
 # -*- mode: snippet -*-
 # name: find
 # --
-find ${1:.} -name ${2:.?[0-9]\*} -exec $0ls {} \;
+find . -name "\*$0.?[0-9]" -exec ls {} \;
