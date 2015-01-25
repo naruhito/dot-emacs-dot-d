@@ -1,13 +1,7 @@
 ;;; set-env-vars.el --- Set environment variables
-(if (not (getenv "USERNAME"))
-    (setenv "USERNAME" "naruhito"))
-
-(if (not (getenv "USER_FULLNAME"))
-    (setenv "USER_FULLNAME" "Naruhito Nakaharai"))
-
-(if (not (getenv "HOSTNAME"))
-    (setenv "HOSTNAME" "localhost"))
-
+(defvar username nil)
+(defvar hostname nil)
+(defvar mail-address "naruhito78@gmail.com")
 (defvar gui-frame-settings
   '((top . 0) (left . 0)
     (height . 35) (width . 120)))

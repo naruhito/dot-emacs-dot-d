@@ -48,8 +48,9 @@
 ;; promptに表示する文字列の変更
 (setq eshell-prompt-function
       (lambda ()
-        (concat "[" (getenv "USERNAME") "@" (getenv "HOSTNAME")  " "
-                (eshell/pwd) " " (format "<%s>" (car default-process-coding-system))
+        (concat "[" (or username (getenv "USERNAME") (getenv "USER"))
+                "@" (or hostname (getenv "HOSTNAME") (getenv "USERDOMAIN"))
+                " " (eshell/pwd) " " (format "<%s>" (car default-process-coding-system))
                 (if (= (user-uid) 0) "]\n# " "]\n$ "))))
 (setq eshell-prompt-regexp "^[^#$]*[$#] ")
 
