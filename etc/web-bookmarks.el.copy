@@ -1,5 +1,5 @@
 ;;; web-bookmarks.el --- Register your favorite web services
-(defvar search-engines   
+(defvar search-engines
   '(("sampleA" . "http://www.example.com/%s/")
     ("sampleB" . "http://www.example.com/search?q=%s")
     ))
