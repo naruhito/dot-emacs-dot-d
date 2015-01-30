@@ -1,4 +1,6 @@
 ;;; init-emacs.el --- Emacs Settings
+
+(require 'set-env-vars "~/.emacs.d/etc/set-env-vars")
 (require 'auto-complete)
 (require 'recentf)
 (require 'cc-vars)
@@ -9,6 +11,7 @@
 (require 'yasnippet-config)
 (require 'view)
 (require 'ruby-mode)
+(require 'markdown-mode)
 
 ;; 拡張子とメジャーモードの関連づけ
 (setq auto-mode-alist
@@ -23,6 +26,7 @@
         '("\\.scss$" . less-css-mode)
         '("file$" . ruby-mode)
         '("\\.json$" . js-mode)
+        '("\\.md$" . markdown-mode)
         ) auto-mode-alist))
 
 ;; キーバインディングの設定
@@ -272,7 +276,7 @@
                (shrink-window dy))
               ;; otherwise
               (t
-               (let ((last-command-char (aref action 0))
+               (let ((last-command-event (aref action 0))
                      (command (key-binding action)))
                  (when command
                    (call-interactively command)))
