@@ -5,9 +5,9 @@
 (defun create-new-junk-file ()
   (interactive)
   (let* ((file (format-time-string open-junk-file-format (current-time)))
-         (dir (file-name-directory file)))
+         (dir (file-name-directory file))
+         (filename (concat file "txt")))
     (make-directory dir t)
-    (defvar filename (concat file "txt"))
     (find-file-noselect filename)
     (insert (substring filename -21))))
 
