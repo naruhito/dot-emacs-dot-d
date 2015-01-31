@@ -47,13 +47,14 @@
 ;; カタカナ語の変換結果も辞書に登録する
 (setq skk-search-katakana t)
 
-;; ファイルを開いた時および Eshell起動時に skk-latin-modeを有効にする
+;; ファイルを開いた時および各種モード起動時に skk-latin-modeを有効にする
 (require 'skk-vars)
 (require 'skk-macs)
 (require 'skk)
 (add-hook 'find-file-hooks 'skk-mode-on-with-latin)
 (add-hook 'after-revert-hook 'skk-mode-on-with-latin)
 (add-hook 'eshell-mode-hook 'skk-mode-on-with-latin)
+(add-hook 'markdown-mode-hook 'skk-mode-on-with-latin)
 (defun skk-mode-on-with-latin ()
   (interactive)
   (skk-mode)
