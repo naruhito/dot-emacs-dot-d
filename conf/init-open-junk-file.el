@@ -7,7 +7,7 @@
   (let* ((file (format-time-string open-junk-file-format (current-time)))
          (dir (file-name-directory file)))
     (make-directory dir t)
-    (setq filename (concat file "txt"))
+    (defvar filename (concat file "txt"))
     (find-file-noselect filename)
     (insert (substring filename -21))))
 
