@@ -7,6 +7,6 @@
 
 ;; インデント設定
 (defun web-mode-hook ()
-  (setq web-mode-code-indent-offset 4))
+  (setq web-mode-code-indent-offset 2))
 
 (add-hook 'web-mode-hook  'web-mode-hook)
