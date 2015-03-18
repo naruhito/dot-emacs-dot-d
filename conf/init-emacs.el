@@ -223,6 +223,9 @@
 (global-hl-line-mode)
 (setq hl-line-face 'underline)
 
+;; 長い行を折り返すときのバックスラッシュを半角スペースに変更
+(set-display-table-slot standard-display-table 'wrap 0)
+
 ;; 起動時に"*GNU Emacs*"バッファを作成しない
 (setq inhibit-startup-message t)
 
