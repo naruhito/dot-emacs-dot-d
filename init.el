@@ -3,7 +3,7 @@
 ;; Author: naruhito <naruhito78@gmail.com>
 ;; URL: https://github.com/naruhito/
 
-;; Compatibility: GNU Emacs 23
+;; Compatibility: GNU Emacs 23-24
 
 ;;; License
 

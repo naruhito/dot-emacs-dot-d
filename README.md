@@ -5,7 +5,7 @@ Windows
 ------------------
 
 ### Emacs ダウンロード
-[こちら](https://ftp.gnu.org/gnu/emacs/windows/)から Windows 用のバイナリファイル emacs-23.4-bin-i386.zip をダウンロードして解凍してください。解凍したものを、例えば ~/emacs に配置します。
+対応しているバージョンは 23 および 24 です。[こちら](https://ftp.gnu.org/gnu/emacs/windows/)から Windows 用のバイナリファイル emacs-24.3-bin-i386.zip (v24 の場合) をダウンロードして解凍してください。解凍したものを、例えば ~/emacs に配置します。
 
 ### Cygwin ダウンロード
 Cygwin で Unix コマンドをインストールして Emacs の Eshell で使用します。[こちらのサイト](https://www.cygwin.com/)からパッケージマネージャをダウンロードして、必要なコマンドをインストールしてください。
@@ -34,20 +34,21 @@ UNIX 系 OS
 ------------------
 
 ### Emacs ダウンロード
-パッケージ管理ツール (yum 等) でインストールできる Emacs のバージョンが 23 系でない場合やシステムインストールの権限がない場合は、ソースコードからビルドしてホームディレクトリ以下にインストールします。[GNU Emacs](http://www.gnu.org/software/emacs/) の Obtaining/Downloading GNU Emacs セクションの nearby GNU mirror リンクをクリックして emacs-23.4.tar.gz をダウンロードしてください。
+対応しているバージョンは 23 および 24 です。パッケージ管理ツール (yum 等) でインストールできる Emacs のバージョンが 22 以下の場合やシステムインストールの権限がない場合などは、ソースコードからビルドしてホームディレクトリ以下にインストールします。[GNU Emacs](http://www.gnu.org/software/emacs/) の Obtaining/Downloading GNU Emacs セクションの nearby GNU mirror リンクをクリックして emacs-24.3.tar.gz (v24 の場合) をダウンロードしてください。
 
 ### 解凍
 
-	$ tar zxvf emacs-23.4.tar.gz
+	$ tar zxvf emacs-24.3.tar.gz
 
 ### ビルド
+事前にビルドのために必要なパッケージ (ncurses-devel、gcc-c++ など) をインストールしてください。
 
-	$ cd emacs-23.4/
+	$ cd emacs-24.3/
 	$ ./configure --prefix=$HOME/local --without-x
 	$ make
 
 ### インストール
-ホームディレクトリ以下にインストールする場合は sudo は不要です。
+ホームディレクトリ以下にインストールする configure 引数を指定したため sudo は不要です。
 
 	$ make install
 
