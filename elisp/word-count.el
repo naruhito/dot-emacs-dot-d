@@ -60,7 +60,8 @@
 
 (or (fboundp 'add-local-hook)
     (defun add-local-hook (hook function &optional append)
-      (make-local-hook hook)
+      (if (> 24 emacs-major-version)
+          (make-local-hook hook))
       (add-hook hook function append t))
     )
 
