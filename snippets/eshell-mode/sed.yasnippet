@@ -1,4 +1,4 @@
 # -*- mode: snippet -*-
 # name: sed
 # --
-perl ${1:-i.bak }-pe 's/$0pa(tte)rn/\$1/g'
+find ${1:.} -type f -exec sed -i -e 's/$0\t/  /g' {} \;
