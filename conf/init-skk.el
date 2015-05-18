@@ -53,7 +53,6 @@
 (require 'skk)
 (add-hook 'find-file-hooks 'skk-mode-on-with-latin)
 (add-hook 'after-revert-hook 'skk-mode-on-with-latin)
-(add-hook 'eshell-mode-hook 'skk-mode-on-with-latin)
 (add-hook 'markdown-mode-hook 'skk-mode-on-with-latin)
 (defun skk-mode-on-with-latin ()
   (interactive)
