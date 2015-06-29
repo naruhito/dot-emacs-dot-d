@@ -52,6 +52,8 @@
 (defkey view-mode-map "N" 'View-search-last-regexp-backward)
 (defkey view-mode-map "G" 'View-goto-line-last)
 (defkey view-mode-map "0" 'move-beginning-of-line)
+(defkey view-mode-map "$" 'move-end-of-line)
+(defkey view-mode-map "i" 'view-mode)
 (defkey view-mode-map "q" '(lambda () (interactive)
                              (kill-buffer (current-buffer))))
 (defkey view-mode-map "SPC" 'bm-toggle)
