@@ -24,7 +24,6 @@
         '("\\.erb$" . web-mode)
         '("\\.html$" . web-mode)
         '("\\.yml$" . conf-mode)
-        '("\\.scss$" . less-css-mode)
         '("file$" . ruby-mode)
         '("\\.json$" . js-mode)
         '("\\.md$" . markdown-mode)

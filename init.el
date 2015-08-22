@@ -66,7 +66,7 @@
 (load "init-ediff")
 (load "init-viewer")
 (load "init-calendar")
-(load "init-less-css-mode")
+(load "init-scss-mode")
 (load "init-ruby-mode")
 (load "init-web-mode")
 (load "init-js-mode")
