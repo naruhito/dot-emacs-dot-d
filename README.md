@@ -30,7 +30,26 @@ Cygwin で Unix コマンドをインストールして Emacs の Eshell で使�
 ~/emacs/bin/runemacs.exe を実行すると設定ファイルが読み込まれて Emacs が起動します。
 
 
-UNIX 系 OS
+Mac OS X (GUI)
+------------------
+
+### Emacs ダウンロード
+対応しているバージョンは 23 および 24 です。[こちら](http://emacsformacosx.com/)からバイナリファイル Emacs-24.5-1-universal.dmg (v24 の場合) をダウンロードして Applications フォルダに保存してください。
+
+### .emacs.d の配置
+本レポジトリを ~/.emacs.d に配置してください。
+
+### 設定ファイルのコピー
+コピーして必要な事項を書き換えてください。
+
+- ~/.emacs.d/etc/web-bookmarks.el.copy
+- ~/.emacs.d/etc/set-env-vars.el.copy
+
+### Emacs 実行
+Emacs.app を実行すると設定ファイルが読み込まれて Emacs が起動します。
+
+
+ターミナル
 ------------------
 
 ### Emacs ダウンロード

@@ -355,16 +355,26 @@
         (append gui-frame-settings default-frame-alist))
   )
 
- ;;;;;;;;;;;;;;;;;;;; MAC OS X / Cocoa Emacs ;;;;;;;;;;;;;;;;;;;;
+ ;;;;;;;;;;;;;;;;;;;; MAC OS X / GNU Emacs ;;;;;;;;;;;;;;;;;;;;
  ((and (eq system-type 'darwin)
        (eq window-system 'ns))
 
-  ;; 画面横に出るスクロールバーを消す
+  ;; マシンスペックに応じて設定。処理を軽くする。
+  (setq gc-cons-threshold (* gc-cons-threshold 10))
+
+  ;; ツールバーを非表示に設定
+  (tool-bar-mode -1)
+
+  ;; スクロールバーを非表示に設定
   (scroll-bar-mode -1)
+
+  ;; 編集中ファイルのフルパスをタイトルバーに表示する
+  (setq frame-title-format
+        (format "%%f  Emacs@%s" (system-name)))
 
   ;; 透明度の設定
   (add-to-list 'default-frame-alist
-               '(alpha . 75))
+               '(alpha . 80))
 
   ;; 選択時の色 (文字: Black, 背景: PaleGreen)
   (set-face-foreground 'region "Black")
@@ -377,27 +387,22 @@
 
   ;; デフォルトのフォント設定など (フォントセット)
   (set-face-attribute 'default nil
-                      :family "monaco"
-                      :height 140)
+                      :family "Monaco"
+                      :height 130)
 
-  ;; フォントセットのうち、日本語のフォントだけ変更
-  (set-fontset-font (frame-parameter nil 'font)
+  ;; 日本語をヒラギノ角ゴ ProN にする
+  (set-fontset-font "fontset-default"
                     'japanese-jisx0208
-                    '("Hiragino Maru Gothic Pro" . "iso10646-1"))
+                    '("Hiragino Maru Gothic ProN"))
 
-  (set-fontset-font (frame-parameter nil 'font)
+  ;; 半角カナをヒラギノ角ゴ ProN にする
+  (set-fontset-font "fontset-default"
                     'katakana-jisx0201
-                    '("Hiragino Maru Gothic Pro" . "iso10646-1"))
+                    '("Hiragino Maru Gothic ProN"))
 
-  ;; 特定のフォントについて、文字幅を調整
-  (setq face-font-rescale-alist
-        '(("^-apple-hiragino.*" . 1.0)
-          (".*osaka-bold.*" . 1.0)
-          (".*osaka-medium.*" . 1.0)
-          (".*courier-bold-.*-mac-roman" . 0.8)
-          (".*monaco cy-bold-.*-mac-cyrillic" . 0.8)
-          (".*monaco-bold-.*-mac-roman" . 0.8)
-          ("-cdac$" . 0.9)))
+  ;; 日本語のフォント幅を調整して英数字二つ分と合わせる
+  (add-to-list 'face-font-rescale-alist
+               '(".*Hiragino Maru Gothic ProN.*" . 1.3))
 
   ;; フレームサイズ等の設定
   (setq initial-frame-alist gui-frame-settings)
