@@ -32,7 +32,7 @@
 (defvar default-search-engine "google ja")
 
 (defvar ws/search-engines
-  '(("twitter" . "http://search.twitter.com/search?q=%s")
+  '(("twitter" . "https://twitter.com/search?q=%s")
     ("real" . "http://realtime.search.yahoo.co.jp/search?p=%s")
     ("google scholar" . "http://scholar.google.com/scholar?hl=en&q=%s")
     ("google maps" . "http://maps.google.co.jp/maps?hl=ja&q=%s")
