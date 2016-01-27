@@ -14,12 +14,12 @@
 (defun iac/ac-setup ()
   (auto-complete-mode)
   (setq ac-sources
-        '(ac-source-words-in-all-buffer
+        (append
+         (list
+          ac-source-words-in-all-buffer
           ac-source-symbols
-          )))
+          )
+         ac-sources)))
 
 ;; ヒストリの保存場所を変更
 (setq ac-comphist-file "~/.emacs.d/var/ac-comphist.dat")
-
-;; 三文字目まで一致したら候補を表示する
-(setq ac-auto-start 3)
