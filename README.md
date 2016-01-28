@@ -121,12 +121,13 @@ Mac OS X
 [sbt-launcher.jar](http://www.scala-sbt.org/0.13/docs/Manual-Installation.html) ダウンロードして `~/bin/sbt-launcher.jar` に保存してください。
 
 	$ vi ~/bin/sbt
-	
 	#!/bin/bash
 	SBT_OPTS="-Xms512M -Xmx1536M -Xss1M -XX:+CMSClassUnloadingEnabled -XX:MaxMetaspaceSize=256M" # Java 1.8
-	# SBT_OPTS="-Xms512M -Xmx1536M -Xss1M -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=256M" # Java 1.7
+	#SBT_OPTS="-Xms512M -Xmx1536M -Xss1M -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=256M" # Java 1.7
 	java $SBT_OPTS -jar `dirname $0`/sbt-launch.jar "$@"
-	
+
+`~/bin/` を `PATH` に設定しておき、パーミッション設定を行ってください。
+
 	$ chmod u+x ~/bin/sbt
 
 ### ensime-sbt グローバルプラグインの設定
