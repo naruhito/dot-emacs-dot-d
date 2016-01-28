@@ -118,7 +118,7 @@ Mac OS X
 
 その他 Unix 系 OS
 
-[sbt-launcher.jar](http://www.scala-sbt.org/0.13/docs/Manual-Installation.html) ダウンロードして `~/bin/sbt` に保存してください。
+[sbt-launcher.jar](http://www.scala-sbt.org/0.13/docs/Manual-Installation.html) ダウンロードして `~/bin/sbt-launcher.jar` に保存してください。
 
 	$ vi ~/bin/sbt
 	
