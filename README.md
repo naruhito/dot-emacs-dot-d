@@ -149,6 +149,12 @@ Scala プロジェクトに移動した後、初回のみ `.ensime` ファイル
 
 	M-x ensime-shutdown
 
+build.sbt の `libraryDependencies` を変更した場合 `.ensime` ファイルを更新して ensime 設定を再読み込みしてください。
+
+	$ cd /path/to/your-scala-project
+	$ sbt gen-ensime
+	M-x ensime-reload
+
 ### 基本コマンド
 
 情報の調査
