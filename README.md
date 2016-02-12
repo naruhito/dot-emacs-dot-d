@@ -155,6 +155,8 @@ build.sbt の `libraryDependencies` を変更した場合 `.ensime` ファイル
 	$ sbt gen-ensime
 	M-x ensime-reload
 
+暗黙の型変換が行われる行は、左側に色丸がつきます。
+
 ### 基本コマンド
 
 情報の調査
