@@ -2,7 +2,7 @@
 (defvar username nil)
 (defvar hostname nil)
 (defvar mail-address "naruhito78@gmail.com")
-(defvar gui-frame-settings
+(defvar gui-frame-settings ;set `nil` for fullscreen mode
   '((top . 0) (left . 0)
     (height . 35) (width . 120)))
 

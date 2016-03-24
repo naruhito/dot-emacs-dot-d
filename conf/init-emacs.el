@@ -405,7 +405,9 @@
                '(".*Hiragino Maru Gothic ProN.*" . 1.3))
 
   ;; フレームサイズ等の設定
-  (setq initial-frame-alist gui-frame-settings)
+  (if gui-frame-settings
+      (setq initial-frame-alist gui-frame-settings)
+    (set-frame-parameter nil 'fullscreen 'maximized))
   )
 
  ;;;;;;;;;;;;;;;;;;; MAC OS X / Terminal ;;;;;;;;;;;;;;;;;;;;
