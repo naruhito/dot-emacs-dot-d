@@ -1,4 +1,0 @@
-# -*- mode: snippet -*-
-# name: perlfind
-# --
-perl -MFile::Find -e 'find sub{${1:rename($_, "PREFIX_$_")} if -f && $_ =~ /${2:PATTERN}/}, @ARGV' ${3:DIR/} $0
