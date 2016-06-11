@@ -1,17 +1,6 @@
 ;;; init-emacs.el --- Emacs Settings
 
-(require 'set-env-vars "~/.emacs.d/etc/set-env-vars")
-(require 'auto-complete)
-(require 'recentf)
-(require 'cc-vars)
-(require 'one-key)
-(require 'key-chord)
-(require 'hl-line)
 (require 'server)
-(require 'yasnippet-config)
-(require 'view)
-(require 'ruby-mode)
-(require 'markdown-mode)
 
 ;; 拡張子とメジャーモードの関連づけ
 (setq auto-mode-alist
