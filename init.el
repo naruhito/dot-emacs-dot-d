@@ -60,7 +60,6 @@
 (load "init-ispell")
 (load "init-web-search")
 (load "init-timeclock")
-(load "init-gist")
 (load "init-ediff")
 (load "init-viewer")
 (load "init-calendar")
