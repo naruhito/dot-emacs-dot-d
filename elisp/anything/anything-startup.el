@@ -36,9 +36,6 @@
 ;;; anything-show-completion.el shows current selection prettily.
 (require 'anything-show-completion)
 
-;;; anything-auto-install.el integrates auto-install.el with anything.
-(require 'anything-auto-install nil t)
-
 ;;; descbinds-anything.el replaces describe-bindings with anything interface.
 (when (require 'descbinds-anything nil t)
   ;; Comment if you do not want to replace `describe-bindings' with `anything'.

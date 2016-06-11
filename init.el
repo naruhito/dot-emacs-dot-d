@@ -42,7 +42,6 @@
 (load "init-lispxmp")
 (load "init-open-junk-file")
 (load "init-popwin")
-(load "init-auto-install")
 (load "init-auto-complete")
 (load "init-one-key")
 (load "init-key-chord")
