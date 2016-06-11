@@ -21,5 +21,3 @@
 	pager = cat
 	editor = emacsclient
 	excludesfile = ~/.gitignore
-[push]
-	default = matching
