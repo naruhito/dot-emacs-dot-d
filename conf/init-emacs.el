@@ -4,9 +4,7 @@
 (setq auto-mode-alist
       (append
        (list
-        '("\\.t$" . perl-mode)
         '("\\.php$" . web-mode)
-        '("\\.ctp$" . web-mode)
         '("\\.erb$" . web-mode)
         '("\\.html$" . web-mode)
         '("\\.yml$" . conf-mode)
@@ -37,8 +35,6 @@
 (defkey view-mode-map "C-b" 'View-scroll-page-backward)
 (defkey view-mode-map "C-d" 'View-scroll-half-page-forward)
 (defkey view-mode-map "C-u" 'View-scroll-half-page-backward)
-(defkey view-mode-map "?" 'View-search-regexp-backward)
-(defkey view-mode-map "N" 'View-search-last-regexp-backward)
 (defkey view-mode-map "G" 'View-goto-line-last)
 (defkey view-mode-map "0" 'move-beginning-of-line)
 (defkey view-mode-map "$" 'move-end-of-line)
@@ -55,7 +51,6 @@
 (gdefkey "C-x RET" 'switch-to-buffer)
 (gdefkey "M-+" 'word-count-mode)
 (gdefkey "C-M-y" 'browse-kill-ring)
-(gdefkey "C-x a s" 'auto-save-buffers-toggle)
 (gdefkey "C-x C-z" 'open-junk-file)
 (gdefkey "C-x C-j" 'skk-mode)
 (gdefkey "M-SPC" 'bm-toggle)
