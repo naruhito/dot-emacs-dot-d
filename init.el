@@ -65,6 +65,7 @@
 (load "init-markdown-mode")
 (load "init-ensime")
 (load "init-cmake-mode")
+(load "init-git-gutter")
 (load "init-emacs")
 
 ;;; init.el ends here.

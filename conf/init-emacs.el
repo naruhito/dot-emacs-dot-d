@@ -62,6 +62,10 @@
 (gdefkey "C-c C-r" 'window-resizer)
 (gdefkey "C-x r i" 'string-insert-rectangle)
 (gdefkey "C-x C-l" 'set-buffer-file-coding-system)
+(when (<= 24 emacs-major-version) ;23以前には未対応
+  (gdefkey "C-x p" 'git-gutter:previous-hunk)
+  (gdefkey "C-x n" 'git-gutter:next-hunk)
+  (gdefkey "C-x i" 'git-gutter:popup-hunk))
 (setq yas/trigger-key "I")
 
 (add-hook 'eshell-mode-hook
