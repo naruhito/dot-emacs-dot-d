@@ -99,8 +99,6 @@
         (("C-c" . "Calendar") . calendar)
         (("C-d" . "Define a New Snippet") . yas/new-snippet)
         (("C-e" . "Execute grep-find") . moccur-grep-find)
-        (("C-f" . "Clock out") . timeclock-out)
-        (("C-h" . "Clock in") . timeclock-in)
         (("C-i" . "Eshell") . eshell)
         (("C-j" . "Jump to Documents") . anything-apropos)
         (("C-k" . "Google Search") . web-search-query-default)

@@ -59,7 +59,6 @@
 (load "init-color-moccur")
 (load "init-ispell")
 (load "init-web-search")
-(load "init-timeclock")
 (load "init-ediff")
 (load "init-viewer")
 (load "init-calendar")
