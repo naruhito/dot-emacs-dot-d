@@ -53,7 +53,7 @@ Emacs.app を実行すると設定ファイルが読み込まれて Emacs が起
 ------------------
 
 ### Emacs ダウンロード
-対応しているバージョンは 23-24 です。yum 等のパッケージ管理ツールでインストールできる Emacs のバージョンが 22 以下の場合やシステムインストールの権限がない場合などは、ソースコードからビルドしてホームディレクトリ以下にインストールします。[GNU Emacs](http://www.gnu.org/software/emacs/) の Obtaining/Downloading GNU Emacs セクションの nearby GNU mirror リンクをクリックして `emacs-24.3.tar.gz` (v24 の場合) をダウンロードしてください。
+対応しているバージョンは 23-24 です。yum 等のパッケージ管理ツールでインストールできる Emacs のバージョンが 22 以下の場合やシステムインストールの権限がない場合などは、ソースコードからビルドしてホームディレクトリ以下にインストールします。[GNU Emacs](https://www.gnu.org/software/emacs/download.html) の nearby GNU mirror リンクをクリックして `emacs-24.3.tar.gz` (v24 の場合) をダウンロードしてください。
 
 ### 解凍
 
@@ -100,35 +100,9 @@ SKK の基本的な使用方法は以下のチュートリアルで把握でき�
 よく使用するコマンド一覧は `C-z` で表示できます。例えば `C-z C-i` で Eshell を実行できることが分かります。本レポジトリで設定されているキーバインド一覧は `~/.emacs.d/conf/init-emacs.el` に記載されています。パッケージ一覧は `~/.emacs.d/init.el` に記載されています。
 
 
-Scala 開発環境 Ensime の設定 (v24 のみ)
-------------------
-
-### Java 1.7+ インストール
-yum などで rpm をインストールする方法や [Oracle のサイトからダウンロード](http://www.oracle.com/technetwork/java/javase/downloads/) する方法があります。
-
-### sbt 0.13+ インストール
-
-Windows
-
-[msi installer](http://www.scala-sbt.org/0.13/docs/Installing-sbt-on-Windows.html) が提供されています。
-
-Mac OS X
-
-	$ brew install sbt
-
-その他 Unix 系 OS
-
-[sbt-launcher.jar](http://www.scala-sbt.org/0.13/docs/Manual-Installation.html) ダウンロードして `~/bin/sbt-launcher.jar` に保存してください。
-
-	$ vi ~/bin/sbt
-	#!/bin/bash
-	SBT_OPTS="-Xms512M -Xmx1536M -Xss1M -XX:+CMSClassUnloadingEnabled -XX:MaxMetaspaceSize=256M" # Java 1.8
-	#SBT_OPTS="-Xms512M -Xmx1536M -Xss1M -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=256M" # Java 1.7
-	java $SBT_OPTS -jar `dirname $0`/sbt-launch.jar "$@"
-
-`~/bin/` を `PATH` に設定しておき、パーミッション設定を行ってください。
-
-	$ chmod u+x ~/bin/sbt
+Scala 開発環境 Ensime の設定 (v24 のみ対応; 設定は任意です)
+==================
+一般的な sbt の設定を行った後に、追加で以下の設定を行います。
 
 ### ensime-sbt グローバルプラグインの設定
 
@@ -154,30 +128,3 @@ build.sbt の `libraryDependencies` を変更した場合 `.ensime` ファイル
 	$ cd /path/to/your-scala-project
 	$ sbt gen-ensime
 	M-x ensime-reload
-
-暗黙の型変換が行われる行は、左側に色丸がつきます。
-
-### 基本コマンド
-
-情報の調査
-
-- `C-c C-v i` カーソル上の要素の情報を表示
-- `C-c C-v t` カーソル上の要素の型を表示
-- `C-c C-v d` カーソル上の要素のドキュメントをブラウザ表示
-
-インポート
-
-- `C-c C-r t` カーソル上の要素用の import 候補を表示
-- `C-c C-v v` パッケージを検索して import を挿入
-- `C-c C-r o` import 設定を整理
-
-リファクタリング
-
-- `C-c C-r r` 変数名を一括編集
-
-その他
-
-- `C-c C-c a` エラーチェック
-- `M-.` 定義にジャンプ
-- `M-,` ジャンプもとに戻る
-- `C-c C-v .` 範囲選択 ("." と "," で拡大縮小)

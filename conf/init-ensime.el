@@ -3,6 +3,31 @@
 ;; 参考:  http://ensime.github.io/editors/emacs/install/#installing-the-server-from-assembly-builds-or-source
 ;;        > SNAPSHOT assembly jars are provided at http://ensime.typelevel.org/
 
+;;; 基本コマンド
+
+;; 情報の調査
+
+;; - `C-c C-v i` カーソル上の要素の情報を表示
+;; - `C-c C-v t` カーソル上の要素の型を表示
+;; - `C-c C-v d` カーソル上の要素のドキュメントをブラウザ表示
+
+;; インポート
+
+;; - `C-c C-r t` カーソル上の要素用の import 候補を表示
+;; - `C-c C-v v` パッケージを検索して import を挿入
+;; - `C-c C-r o` import 設定を整理
+
+;; リファクタリング
+
+;; - `C-c C-r r` 変数名を一括編集
+
+;; その他
+
+;; - `C-c C-c a` エラーチェック
+;; - `M-.` 定義にジャンプ
+;; - `M-,` ジャンプもとに戻る
+;; - `C-c C-v .` 範囲選択 ("." と "," で拡大縮小)
+
 (require 'utilities "~/.emacs.d/utilities")
 (add-to-load-path "~/.emacs.d/elisp/ensime")
 
