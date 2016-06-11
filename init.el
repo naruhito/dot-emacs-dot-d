@@ -36,7 +36,6 @@
 
 ;; Load init files.
 (load "init-eshell")
-(load "init-eldoc")
 (load "init-auto-save-buffers")
 (load "init-paredit")
 (load "init-lispxmp")
