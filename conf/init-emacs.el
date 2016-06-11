@@ -1,7 +1,5 @@
 ;;; init-emacs.el --- Emacs Settings
 
-(require 'server)
-
 ;; 拡張子とメジャーモードの関連づけ
 (setq auto-mode-alist
       (append
@@ -67,7 +65,6 @@
 (gdefkey "C-x C-y" 'yas/expand-oneshot-snippet)
 (gdefkey "C-c r" 'query-replace-regexp)
 (gdefkey "C-c C-r" 'window-resizer)
-(gdefkey "C-x C-c" 'server-edit)
 (gdefkey "C-x r i" 'string-insert-rectangle)
 (gdefkey "C-x C-l" 'set-buffer-file-coding-system)
 (setq yas/trigger-key "I")
@@ -219,11 +216,6 @@
 
 ;; ビープ音、画面フラッシュなし
 (setq ring-bell-function 'ignore)
-
-;; emacs-serverを (再) 起動する
-(if (server-running-p)
-    (server-force-delete))
-(server-start)
 
 ;; フェイスの設定値を一時的に書き出すファイルを指定 (list-faces-display)
 (setq custom-file "~/.emacs.d/var/customize-face-tmp.el")
