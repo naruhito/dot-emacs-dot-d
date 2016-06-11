@@ -50,7 +50,6 @@
 (load "init-session")
 (load "init-auto-async-byte-compile")
 (load "init-skk")
-(load "init-point-undo")
 (load "init-bm")
 (load "init-goto-chg")
 (load "init-yasnippet")
