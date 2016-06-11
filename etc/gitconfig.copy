@@ -21,3 +21,5 @@
 	pager = cat
 	editor = emacsclient
 	excludesfile = ~/.gitignore
+[push]
+	default = simple
