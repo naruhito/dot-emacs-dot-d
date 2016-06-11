@@ -48,7 +48,6 @@
 (load "init-browse-kill-ring")
 (load "init-word-count")
 (load "init-session")
-(load "init-auto-async-byte-compile")
 (load "init-skk")
 (load "init-bm")
 (load "init-goto-chg")

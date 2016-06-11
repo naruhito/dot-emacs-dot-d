@@ -178,10 +178,6 @@
 ;; 起動時のカレントディレクトリをホームディレクトリに設定
 (cd "~")
 
-;; Emacs終了時にバイトコンパイルを実行 (GitPullによる、".el"と".elc"の不整合問題への対策)
-(add-hook 'kill-emacs-hook '(lambda ()
-                              (byte-recompile-directory "~/.emacs.d" 0)))
-
 ;; エラーが起きてもデバッガが立ち上がらないようにする
 (setq debug-on-error nil)
 

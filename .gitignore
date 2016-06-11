@@ -1,4 +1,3 @@
-*.elc
 /var
 /etc/set-env-vars.el
 /etc/web-bookmarks.el
