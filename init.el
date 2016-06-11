@@ -50,7 +50,6 @@
 (load "init-session")
 (load "init-skk")
 (load "init-bm")
-(load "init-goto-chg")
 (load "init-yasnippet")
 (load "init-kmacro")
 (load "init-color-moccur")
