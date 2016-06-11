@@ -63,8 +63,6 @@
 (load "init-web-mode")
 (load "init-js-mode")
 (load "init-markdown-mode")
-(load "init-scala-mode2")
-(load "init-sbt-mode")
 (load "init-ensime")
 (load "init-emacs")
 

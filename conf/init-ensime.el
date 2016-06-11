@@ -1,3 +1,17 @@
+;;; scala-mode2.el --- Major mode for editing scala
+(when (<= 24 emacs-major-version) ;23以前には未対応
+  (require 'utilities "~/.emacs.d/utilities")
+  (add-to-load-path "~/.emacs.d/elisp/scala-mode2")
+  (require 'scala-mode2)
+  )
+
+;;; sbt-mode.el --- Functions for discovering the current sbt project
+(when (<= 24 emacs-major-version) ;23以前には未対応
+  (require 'utilities "~/.emacs.d/utilities")
+  (add-to-load-path "~/.emacs.d/elisp/sbt-mode")
+  (require 'sbt-mode)
+  )
+
 ;;; ensime.el --- ENhanced Scala Interaction Mode for Emacs
 ;; ensime-server を http://ensime.typelevel.org/ から取得して ~/.emacs.d/ensime/ に保存
 ;; 参考:  http://ensime.github.io/editors/emacs/install/#installing-the-server-from-assembly-builds-or-source
