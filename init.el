@@ -49,7 +49,6 @@
 (load "init-anything")
 (load "init-browse-kill-ring")
 (load "init-word-count")
-(load "init-yatex")
 (load "init-session")
 (load "init-auto-async-byte-compile")
 (load "init-skk")

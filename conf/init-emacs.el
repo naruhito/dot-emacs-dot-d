@@ -17,7 +17,6 @@
 (setq auto-mode-alist
       (append
        (list
-        '("\\.tex$" . yatex-mode)
         '("\\.t$" . perl-mode)
         '("\\.php$" . web-mode)
         '("\\.ctp$" . web-mode)
