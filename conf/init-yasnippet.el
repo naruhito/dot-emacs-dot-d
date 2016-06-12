@@ -1,10 +1,8 @@
 ;;; Yasnippet.el --- Yet another snippet extension for Emacs.
-(require 'utilities "~/.emacs.d/utilities")
-(add-to-load-path "~/.emacs.d/elisp/yasnippet")
-(require 'yasnippet-config)
-(yas/initialize)
-(setq yas/root-directory
-      '("~/.emacs.d/snippets"
-        "~/.emacs.d/elisp/yasnippet/snippets"
-        ))
-(mapc 'yas/load-directory yas/root-directory)
+(require 'yasnippet)
+(yas-global-mode 1)
+
+;; スニペットの保存場所
+(setq yas-snippet-dirs
+      '("~/.emacs.d/var/snippets"       ; 一時的な用途のスニペット
+        "~/.emacs.d/snippets"))
