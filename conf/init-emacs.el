@@ -71,6 +71,7 @@
   (gdefkey "C-c i" 'helm-imenu-in-all-buffers)
   (gdefkey "C-x C-f" 'helm-find-files)
   (gdefkey "M-x" 'helm-M-x)
+  (gdefkey "C-M-i" 'company-complete)
   (gdefkey "C-x p" 'git-gutter:previous-hunk)
   (gdefkey "C-x n" 'git-gutter:next-hunk)
   (gdefkey "C-x i" 'git-gutter:popup-hunk))
