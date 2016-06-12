@@ -62,10 +62,16 @@
 (gdefkey "C-c C-r" 'window-resizer)
 (gdefkey "C-x r i" 'string-insert-rectangle)
 (gdefkey "C-x C-l" 'set-buffer-file-coding-system)
-(when (<= 24 emacs-major-version) ;23以前には未対応
+(gdefkey "C-x C-c" 'kill-other-buffers)
+(when (<= 24 emacs-major-version)
   (gdefkey "C-x p" 'git-gutter:previous-hunk)
   (gdefkey "C-x n" 'git-gutter:next-hunk)
-  (gdefkey "C-x i" 'git-gutter:popup-hunk))
+  (gdefkey "C-x i" 'git-gutter:popup-hunk)
+  (defkey helm-find-files-map "TAB" 'helm-execute-persistent-action)
+  (defkey helm-map "C-h" 'delete-backward-char)
+  (gdefkey "C-c i" 'helm-imenu-in-all-buffers)
+  (gdefkey "C-x C-f" 'helm-find-files)
+  (gdefkey "M-x" 'helm-M-x))
 (setq yas/trigger-key "I")
 
 (add-hook 'eshell-mode-hook
@@ -78,16 +84,17 @@
 (defvar one-key-menu-alist-global nil)
 (setq one-key-menu-alist-global
       '((("C-a" . "Apropos") . apropos)
-        (("C-b" . "Browse Structure") . anything-imenu)
+        (("C-b" . "Browse Structure") . (lambda () (interactive) (if (<= 24 emacs-major-version) (helm-imenu) (anything-imenu))))
         (("C-c" . "Calendar") . calendar)
         (("C-d" . "Define a New Snippet") . yas/new-snippet)
         (("C-e" . "Execute grep-find") . moccur-grep-find)
         (("C-i" . "Eshell") . eshell)
-        (("C-j" . "Jump to Documents") . anything-apropos)
+        (("C-j" . "Jump to Documents") . (lambda (arg) (interactive (list (thing-at-point 'symbol))) (if (<= 24 emacs-major-version) (helm-apropos arg) (anything-apropos arg))))
         (("C-k" . "Google Search") . web-search-query-default)
         (("C-l" . "Look for on the Web") . web-search-query)
         (("C-m" . "Moccur") . moccur)
-        (("C-o" . "Open File/Buffer") . anything)
+        (("C-o" . "Open File") . (lambda () (interactive) (if (<= 24 emacs-major-version) (helm-buffers-list) (anything))))
+        (("C-p" . "Open Recent File") . (lambda () (interactive) (if (<= 24 emacs-major-version) (helm-recentf))))
         (("C-r" . "Regexp Builder") . re-builder)
         (("C-s" . "Save the Last Keyboard Macro") . kmacro-save)
         (("C-t" . "Describe Mode") . describe-mode)
@@ -157,6 +164,16 @@
   (interactive)
   (if (not (coding-system-equal buffer-file-coding-system 'utf-8-unix))
       (revert-buffer-with-coding-system 'utf-8-unix)))
+
+;; 現在開いているバッファー以外を閉じる
+(defun kill-other-buffers ()
+  "Kill all other buffers."
+  (interactive)
+  (let (other-buffers-to-kill)
+    (setq other-buffers-to-kill (delq (current-buffer) (buffer-list)))
+    (mapc (lambda (x) (setq other-buffers-to-kill (delq (get-buffer x) other-buffers-to-kill)))
+          '("*Messages*" "*scratch*"))
+    (mapc 'kill-buffer other-buffers-to-kill)))
 
 ;; 起動時のカレントディレクトリをホームディレクトリに設定
 (cd "~")

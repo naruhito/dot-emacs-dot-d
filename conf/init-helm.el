@@ -3,4 +3,18 @@
   (require 'utilities "~/.emacs.d/utilities")
   (add-to-load-path "~/.emacs.d/elisp/emacs-async")
   (add-to-load-path "~/.emacs.d/elisp/helm")
-  (require 'helm-config))
+  (require 'helm-config)
+
+  ;; Helm を有効にする
+  (helm-mode 1)
+
+  ;; helm-find-files 実行時に存在ファイルしないファイルを誤って指定してもバッファを作成しない
+  (defadvice helm-ff-kill-or-find-buffer-fname (around execute-only-if-exist activate)
+    "Execute command only if CANDIDATE exists"
+    (when (file-exists-p candidate)
+      ad-do-it))
+
+  ;; helm-find-files 実行時に *scratch*, *eshell* 等、ファイルと関連付けられていないバッファを候補から除外 (必要な場合、switch-to-buffer)
+  (setq helm-boring-buffer-regexp-list
+        (list (rx (or (group "*" (+ not-newline) "*")
+                      (group (+ not-newline) ".erb-template-indent-buffer"))))))
