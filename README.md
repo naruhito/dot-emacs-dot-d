@@ -53,16 +53,16 @@ Emacs.app を実行すると設定ファイルが読み込まれて Emacs が起
 ------------------
 
 ### Emacs ダウンロード
-対応しているバージョンは 23-24 です。yum 等のパッケージ管理ツールでインストールできる Emacs のバージョンが 22 以下の場合やシステムインストールの権限がない場合などは、ソースコードからビルドしてホームディレクトリ以下にインストールします。[GNU Emacs](https://www.gnu.org/software/emacs/download.html) の nearby GNU mirror リンクをクリックして `emacs-24.3.tar.gz` (v24 の場合) をダウンロードしてください。
+対応しているバージョンは 23-24 です。yum 等のパッケージ管理ツールでインストールできる Emacs のバージョンが 22 以下の場合やシステムインストールの権限がない場合などは、ソースコードからビルドしてホームディレクトリ以下にインストールします。[GNU Emacs](https://www.gnu.org/software/emacs/download.html) の nearby GNU mirror リンクをクリックして `emacs-24.5.tar.gz` をダウンロードしてください。
 
 ### 解凍
 
-	$ tar zxvf emacs-24.3.tar.gz
+	$ tar zxvf emacs-24.5.tar.gz
 
 ### ビルド
 `ncurses-devel`, `gcc-c++` 等、事前にビルドのために必要なパッケージをインストールしてから以下のコマンドを実行してください。
 
-	$ cd emacs-24.3/
+	$ cd emacs-24.5/
 	$ ./configure --prefix=$HOME/local --without-x
 	$ make
 
