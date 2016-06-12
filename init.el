@@ -41,7 +41,6 @@
 (load "init-lispxmp")
 (load "init-open-junk-file")
 (load "init-popwin")
-(load "init-auto-complete")
 (load "init-one-key")
 (load "init-key-chord")
 (load "init-anything")
@@ -63,10 +62,11 @@
 (load "init-web-mode")
 (load "init-js-mode")
 (load "init-markdown-mode")
-(load "init-ensime")
 (load "init-cmake-mode")
 (load "init-git-gutter")
 (load "init-helm")
+(load "init-company-mode")
+(load "init-ensime")
 (load "init-emacs")
 
 ;;; init.el ends here.

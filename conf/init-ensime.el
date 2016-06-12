@@ -42,19 +42,23 @@
 ;; - `M-,` ジャンプもとに戻る
 ;; - `C-c C-v .` 範囲選択 ("." と "," で拡大縮小)
 
-(require 'utilities "~/.emacs.d/utilities")
-(add-to-load-path "~/.emacs.d/elisp/ensime")
-
 (when (<= 24 emacs-major-version) ;23以前には未対応
+  (require 'utilities "~/.emacs.d/utilities")
+  (add-to-load-path "~/.emacs.d/elisp/ensime")
+  (add-to-load-path "~/.emacs.d/elisp/company-mode")
   (require 'scala-mode2)
-  (require 'auto-complete)
   (require 'ensime)
   (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
 
-  ;; ensime の補完に auto-complete を使用する
-  (setq ensime-completion-style 'auto-complete)
-
   ;; ドット '.' を補完機能のトリガーに設定
+  (defun scala/completing-dot-company ()
+    (eval-and-compile (require 'company))
+    (cond (company-backend
+           (company-complete-selection)
+           (scala/completing-dot))
+          (t
+           (insert ".")
+           (company-complete))))
   (defun scala/completing-dot ()
     "Insert a period and show company completions."
     (interactive "*")
@@ -65,7 +69,6 @@
       (delete-horizontal-space t))
     (cond ((not (and (ensime-connected-p) ensime-completion-style))
            (insert "."))
-          ((eq ensime-completion-style 'auto-complete)
-           (insert ".")
-           (ac-trigger-key-command t))))
+          ((eq ensime-completion-style 'company)
+           (scala/completing-dot-company))))
   (define-key scala-mode-map (kbd ".") 'scala/completing-dot))
