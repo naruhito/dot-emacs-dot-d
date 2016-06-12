@@ -1,4 +1,6 @@
 ;;; Yasnippet.el --- Yet another snippet extension for Emacs.
+(if (> 24 emacs-major-version)
+    (require 'cl-lib))
 (require 'yasnippet)
 (yas-global-mode 1)
 
