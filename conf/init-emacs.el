@@ -104,6 +104,7 @@
         (("C-w" . "What is this Key?") . describe-key)
         (("C-x" . "Revert Buffer with utf-8-unix") . revert-buffer-with-coding-system-utf-8-unix)
         (("C-z" . "Suspend Frame") . suspend-frame)
+        (("C-[" . "Bookmarks") . (lambda () (interactive) (if (<= 24 emacs-major-version) (helm-bm))))
         (("c" . "Customize Face") . list-faces-display)
         (("f" . "Face at Point") . describe-face-at-point)
         (("i" . "Check Spell Region") . ispell)

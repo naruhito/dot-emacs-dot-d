@@ -3,7 +3,12 @@
   (require 'utilities "~/.emacs.d/utilities")
   (add-to-load-path "~/.emacs.d/elisp/emacs-async")
   (add-to-load-path "~/.emacs.d/elisp/helm")
+
+  ;; 基本設定
   (require 'helm-config)
+
+  ;; bm を helm から利用する
+  (require 'helm-bm)
 
   ;; Helm を有効にする
   (helm-mode 1)
