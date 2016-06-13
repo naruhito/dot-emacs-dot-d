@@ -1,4 +1,8 @@
 ;;; flycheck.el --- On-the-fly syntax checking
+
+;; GCC のバージョンが古いと C/C++ チェックで以下のエラーが発生します。バージョンを上げてください。
+;; suspicious state from syntax checker c/c++-gcc
+
 (when (<= 24 emacs-major-version) ;23以前には未対応
   (require 'utilities "~/.emacs.d/utilities")
   (add-to-load-path "~/.emacs.d/elisp/seq")
