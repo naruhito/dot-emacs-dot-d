@@ -183,6 +183,9 @@
 ;; エラーが起きてもデバッガが立ち上がらないようにする
 (setq debug-on-error nil)
 
+;; 起動時にウィンンドウ分割して表示される通知を隠す
+(delete-other-windows)
+
 ;; recentfの保存場所を変更
 (setq recentf-save-file (convert-standard-filename "~/.emacs.d/var/recentf"))
 
