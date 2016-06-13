@@ -59,7 +59,7 @@
 (gdefkey "C-c C-r" 'window-resizer)
 (gdefkey "C-x r i" 'string-insert-rectangle)
 (gdefkey "C-x C-l" 'set-buffer-file-coding-system)
-(gdefkey "C-x C-c" 'kill-other-buffers)
+(gdefkey "C-x C-c" 'kill-other-file-buffers)
 (when (<= 24 emacs-major-version)
   (defkey helm-map "C-h" 'delete-backward-char)
   (defkey helm-find-files-map "TAB" 'helm-execute-persistent-action)
@@ -168,14 +168,13 @@
       (revert-buffer-with-coding-system 'utf-8-unix)))
 
 ;; 現在開いているバッファー以外を閉じる
-(defun kill-other-buffers ()
-  "Kill all other buffers."
+(defun kill-other-file-buffers ()
   (interactive)
-  (let (other-buffers-to-kill)
-    (setq other-buffers-to-kill (delq (current-buffer) (buffer-list)))
-    (mapc (lambda (x) (setq other-buffers-to-kill (delq (get-buffer x) other-buffers-to-kill)))
-          '("*Messages*" "*scratch*"))
-    (mapc 'kill-buffer other-buffers-to-kill)))
+  (mapc
+   (lambda (x)
+     (if (not (string-match (rx "*" (+ anything) "*") (buffer-name x)))
+         (kill-buffer x)))
+   (delq (current-buffer) (buffer-list))))
 
 ;; 起動時のカレントディレクトリをホームディレクトリに設定
 (cd "~")
