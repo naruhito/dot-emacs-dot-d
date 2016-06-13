@@ -68,6 +68,8 @@
   (defkey company-active-map "C-p" 'company-select-previous)
   (defkey company-active-map "C-n" 'company-select-next)
   (defkey company-active-map "C-h" nil)
+  (defkey flycheck-mode-map "C-c C-p" 'flycheck-previous-error)
+  (defkey flycheck-mode-map "C-c C-n" 'flycheck-next-error)
   (gdefkey "C-c i" 'helm-imenu-in-all-buffers)
   (gdefkey "C-x C-f" 'helm-find-files)
   (gdefkey "M-x" 'helm-M-x)
