@@ -92,6 +92,7 @@
         (("C-c" . "Calendar") . calendar)
         (("C-d" . "Define a New Snippet") . yas-new-snippet)
         (("C-e" . "Execute grep-find") . moccur-grep-find)
+        (("C-f" . "Full Screen") . (lambda () (interactive (set-frame-parameter nil 'fullscreen 'maximized))))
         (("C-i" . "Eshell") . eshell)
         (("C-j" . "Jump to Documents") . (lambda (arg) (interactive (list (thing-at-point 'symbol))) (if (<= 24 emacs-major-version) (helm-apropos arg) (anything-apropos arg))))
         (("C-k" . "Google Search") . web-search-query-default)
