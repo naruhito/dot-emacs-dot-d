@@ -303,7 +303,7 @@ See `ido-make-buffer-list' for more infos."
           (position-bytes (point-min)))))))
 
 (defun helm-buffer--show-details (buf-name prefix help-echo
-                                  size mode dir face1 face2
+                                  mode dir face1 face2
                                   proc details type)
   (append
    (list
@@ -312,7 +312,7 @@ See `ido-make-buffer-list' for more infos."
                         'help-echo help-echo
                         'type type)))
    (and details
-        (list size mode
+        (list mode
               (propertize
                (if proc
                    (format "(%s %s in `%s')"
@@ -335,40 +335,40 @@ See `ido-make-buffer-list' for more infos."
     ;; No fancy things on remote buffers.
     (if (and name-prefix helm-buffer-skip-remote-checking)
         (helm-buffer--show-details
-         name name-prefix file-name size mode dir
+         name name-prefix file-name mode dir
          'helm-buffer-file 'helm-buffer-process nil details 'filebuf)
       (cond
         ( ;; A dired buffer.
          (rassoc buf dired-buffers)
          (helm-buffer--show-details
-          name name-prefix dir size mode dir
+          name name-prefix dir mode dir
           'helm-buffer-directory 'helm-buffer-process nil details 'dired))
         ;; A buffer file modified somewhere outside of emacs.=>red
         ((and file-name
               (file-exists-p file-name)
               (not (verify-visited-file-modtime buf)))
          (helm-buffer--show-details
-          name name-prefix file-name size mode dir
+          name name-prefix file-name mode dir
           'helm-buffer-saved-out 'helm-buffer-process nil details 'modout))
         ;; A new buffer file not already saved on disk (or a deleted file) .=>indianred2
         ((and file-name (not (file-exists-p file-name)))
          (helm-buffer--show-details
-          name name-prefix file-name size mode dir
+          name name-prefix file-name mode dir
           'helm-buffer-not-saved 'helm-buffer-process nil details 'notsaved))
         ;; A buffer file modified and not saved on disk.=>orange
         ((and file-name (buffer-modified-p buf))
          (helm-buffer--show-details
-          name name-prefix file-name size mode dir
+          name name-prefix file-name mode dir
           'helm-ff-symlink 'helm-buffer-process nil details 'mod))
         ;; A buffer file not modified and saved on disk.=>green
         (file-name
          (helm-buffer--show-details
-          name name-prefix file-name size mode dir
+          name name-prefix file-name mode dir
           'helm-buffer-file 'helm-buffer-process nil details 'filebuf))
         ;; Any non--file buffer.=>grey italic
         (t
          (helm-buffer--show-details
-          name (and proc name-prefix) dir size mode dir
+          name (and proc name-prefix) dir mode dir
           'italic 'helm-buffer-process proc details 'nofile))))))
 
 (defun helm-highlight-buffers (buffers _source)

@@ -24,6 +24,9 @@
         (list (rx (or (group "*" (+ not-newline) "*")
                       (group (+ not-newline) ".erb-template-indent-buffer")))))
 
+  ;; `helm-buffers-list` で表示可能なファイル名の長さを設定
+  (setq helm-buffer-max-length 50)
+
   ;; C-x C-f ミニバッファで C-k した内容を kill-ring に保存する
   (defadvice helm-delete-minibuffer-contents (before helm-emulate-kill-line activate)
     (kill-new (buffer-substring (point) (field-end)))))
