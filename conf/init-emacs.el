@@ -58,7 +58,7 @@
 (gdefkey "C-c r" 'query-replace-regexp)
 (gdefkey "C-c C-r" 'window-resizer)
 (gdefkey "C-x r i" 'string-insert-rectangle)
-(gdefkey "C-x C-l" 'set-buffer-file-coding-system)
+(gdefkey "C-x C-l" 'set-buffer-file-coding-system-utf-8-unix)
 (gdefkey "C-x C-c" 'kill-other-file-buffers)
 (when (<= 24 emacs-major-version)
   (defkey helm-map "C-h" 'delete-backward-char)
@@ -155,16 +155,19 @@
   (interactive "p")
   (delete-word (- arg)))
 
-;; ファイルを開いたときなどに "utf-8-unix" でなければ変換するか尋ねる
+;; 現在のファイルを "utf-8-unix" に変換する (例えば shift_jis-dos のファイルを utf-8-unix のファイルに変換したい場合に使用)
 (defun set-buffer-file-coding-system-utf-8-unix ()
+  (interactive)
   (if (and (not (coding-system-equal buffer-file-coding-system 'utf-8-unix))
            (not (coding-system-equal buffer-file-coding-system 'undecided-unix))
            (y-or-n-p "Set buffer-file-coding-system as utf-8-unix? "))
       (set-buffer-file-coding-system 'utf-8-unix)))
+
+;; ファイルを開いたときなどに "utf-8-unix" でなければ変換するか尋ねる
 (add-hook 'find-file-hooks 'set-buffer-file-coding-system-utf-8-unix)
 (add-hook 'after-revert-hook 'set-buffer-file-coding-system-utf-8-unix)
 
-;; エディタが誤認識した場合等に使用。"utf-8-unix"で開きなおす。
+;; エディタが誤認識した場合等に使用。"utf-8-unix"で開きなおす (例えば utf-8-unix のファイルが shift_jis-dos として開かれた場合に使用)
 (defun revert-buffer-with-coding-system-utf-8-unix ()
   (interactive)
   (if (not (coding-system-equal buffer-file-coding-system 'utf-8-unix))
