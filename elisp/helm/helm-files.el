@@ -1870,7 +1870,7 @@ systems."
                     (setq file-error t)))))
         (dot  (concat directory "."))
         (dot2 (concat directory "..")))
-    (append (and (not file-error) (list dot dot2)) ls)))
+    (append (and (not file-error) (list)) ls)))
 
 (defun helm-ff-handle-backslash (fname)
   ;; Allow creation of filenames containing a backslash.
