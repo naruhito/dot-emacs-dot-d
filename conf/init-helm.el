@@ -22,4 +22,8 @@
   ;; helm-find-files 実行時に *scratch*, *eshell* 等、ファイルと関連付けられていないバッファを候補から除外 (必要な場合、switch-to-buffer)
   (setq helm-boring-buffer-regexp-list
         (list (rx (or (group "*" (+ not-newline) "*")
-                      (group (+ not-newline) ".erb-template-indent-buffer"))))))
+                      (group (+ not-newline) ".erb-template-indent-buffer")))))
+
+  ;; C-x C-f ミニバッファで C-k した内容を kill-ring に保存する
+  (defadvice helm-delete-minibuffer-contents (before helm-emulate-kill-line activate)
+    (kill-new (buffer-substring (point) (field-end)))))
