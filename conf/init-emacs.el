@@ -219,6 +219,10 @@
 (setq read-buffer-completion-ignore-case t)
 (setq read-file-name-completion-ignore-case t)
 
+;; upcase-region と downcase-region を利用できるように有効化
+(put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
+
 ;; 対応する括弧を強調表示
 (show-paren-mode t)
 
