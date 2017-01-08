@@ -68,6 +68,7 @@
 (load "init-company-mode")
 (load "init-ensime")
 (load "init-flycheck")
+(load "init-eclim")
 (load "init-emacs")
 
 ;;; init.el ends here.
