@@ -118,6 +118,7 @@
         (("o" . "Reopen Junk File at Point") . re-open-junk-file-at-point)
         (("p" . "Web Search at Point") . web-search-at-point)
         (("q" . "Quit") . save-buffers-kill-emacs)
+        (("x" . "Revert Buffer with utf-8-dos") . revert-buffer-with-coding-system-utf-8-dos)
         (("w" . "Copy Current Junk Filename") . copy-current-junk-filename)
         ))
 
@@ -168,11 +169,16 @@
 (add-hook 'find-file-hooks 'set-buffer-file-coding-system-utf-8-unix)
 (add-hook 'after-revert-hook 'set-buffer-file-coding-system-utf-8-unix)
 
-;; エディタが誤認識した場合等に使用。"utf-8-unix"で開きなおす (例えば utf-8-unix のファイルが shift_jis-dos として開かれた場合に使用)
+;; エディタが誤認識した場合等に使用。"utf-8-unix/dos"で開きなおす (例えば utf-8-unix のファイルが shift_jis-dos として開かれた場合に使用)
 (defun revert-buffer-with-coding-system-utf-8-unix ()
   (interactive)
   (if (not (coding-system-equal buffer-file-coding-system 'utf-8-unix))
       (revert-buffer-with-coding-system 'utf-8-unix)))
+
+(defun revert-buffer-with-coding-system-utf-8-dos ()
+  (interactive)
+  (if (not (coding-system-equal buffer-file-coding-system 'utf-8-dos))
+      (revert-buffer-with-coding-system 'utf-8-dos)))
 
 ;; 現在開いているバッファー以外を閉じる
 (defun kill-other-file-buffers ()
