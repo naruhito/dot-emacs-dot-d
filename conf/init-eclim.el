@@ -71,3 +71,11 @@
   (company-emacs-eclim-setup)
   (setq company-emacs-eclim-ignore-case t) ;大文字小文字を区別しない。
   (global-company-mode t))
+
+;; Java インデント設定
+(add-hook 'java-mode-hook
+          (lambda ()
+            (message "java-mode-hook")
+            (setq tab-width java-indent-width)
+            (setq indent-tabs-mode java-indent-tab)
+            (setq c-basic-offset java-indent-width)))
