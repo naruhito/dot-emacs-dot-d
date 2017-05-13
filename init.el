@@ -69,6 +69,7 @@
 (load "init-ensime")
 (load "init-flycheck")
 (load "init-eclim")
+(load "init-groovy-mode")
 (load "init-emacs")
 
 ;;; init.el ends here.

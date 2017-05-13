@@ -4,6 +4,7 @@
 (setq auto-mode-alist
       (append
        (list
+        '("\\.gradle$" . groovy-mode)
         '("\\.php$" . web-mode)
         '("\\.erb$" . web-mode)
         '("\\.html$" . web-mode)
