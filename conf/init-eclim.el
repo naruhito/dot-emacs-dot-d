@@ -52,9 +52,6 @@
   ;; Window > Show View > Other > Eclim > eclimd
   (setq eclimd-autostart nil)
 
-  ;; すべてのバッファで eclim を有効化
-  (global-eclim-mode)
-
   ;; 設定値がある場合は上書き
   (when eclipse-dir
     (setq eclim-eclipse-dirs (list eclipse-dir))
