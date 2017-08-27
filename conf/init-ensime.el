@@ -70,4 +70,25 @@
            (insert "."))
           ((eq ensime-completion-style 'company)
            (scala/completing-dot-company))))
-  (define-key scala-mode-map (kbd ".") 'scala/completing-dot))
+  (define-key scala-mode-map (kbd ".") 'scala/completing-dot)
+
+  ;; `ctags` を利用した定義ジャンプ http://blog.shibayu36.org/entry/2017/08/21/080047
+  ;; => `C-@` helm-etags-plus-select
+  ;;
+  ;; インストール
+  ;; $ brew install ctags
+  ;; $ touch ~/.ctags
+  ;; --langdef=scala
+  ;; --langmap=scala:.scala
+  ;; --regex-scala=/^[ \t]*((abstract|final|sealed|implicit|lazy)[ \t]*)*(private[^ ]*|protected)?[ \t]*class[ \t]+([a-zA-Z0-9_]+)/\4/c,classes/
+  ;; --regex-scala=/^[ \t]*((abstract|final|sealed|implicit|lazy)[ \t]*)*(private[^ ]*|protected)?[ \t]*object[ \t]+([a-zA-Z0-9_]+)/\4/c,objects/
+  ;; --regex-scala=/^[ \t]*((abstract|final|sealed|implicit|lazy)[ \t]*)*(private[^ ]*|protected)?[ \t]*((abstract|final|sealed|implicit|lazy)[ \t]*)*case class[ \t]+([a-zA-Z0-9_]+)/\6/c,case classes/
+  ;; --regex-scala=/^[ \t]*((abstract|final|sealed|implicit|lazy)[ \t]*)*(private[^ ]*|protected)?[ \t]*case object[ \t]+([a-zA-Z0-9_]+)/\4/c,case objects/
+  ;; --regex-scala=/^[ \t]*((abstract|final|sealed|implicit|lazy)[ \t]*)*(private[^ ]*|protected)?[ \t]*trait[ \t]+([a-zA-Z0-9_]+)/\4/t,traits/
+  ;; --regex-scala=/^[ \t]*((@inline|@noinline|abstract|final|sealed|implicit|lazy|private[^ ]*(\[[a-z]*\])*|protected)[ \t]*)*def[ \t]+([a-zA-Z0-9_]+)/\4/m,methods/
+  ;; --regex-scala=/^[ \t]*package[ \t]+([a-zA-Z0-9_.]+)/\1/p,packages/
+  ;;
+  ;; $ ctags --verbose -R -e
+  (require 'helm-etags-plus)
+  (setq helm-etags-plus-use-absolute-path nil)
+  (set-face-foreground 'helm-etags-plus-file-face "green"))

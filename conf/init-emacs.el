@@ -77,7 +77,8 @@
   (gdefkey "C-M-i" 'company-complete)
   (gdefkey "C-x p" 'git-gutter:previous-hunk)
   (gdefkey "C-x n" 'git-gutter:next-hunk)
-  (gdefkey "C-x i" 'git-gutter:popup-hunk))
+  (gdefkey "C-x i" 'git-gutter:popup-hunk)
+  (gdefkey "C-@" 'helm-etags-plus-select))
 
 (add-hook 'eshell-mode-hook
           '(lambda ()
