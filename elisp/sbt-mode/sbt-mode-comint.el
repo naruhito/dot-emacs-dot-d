@@ -3,8 +3,10 @@
 ;; Copyright(c) 2013 Heikki Vesalainen
 ;; For information on the License, see the LICENSE file
 
-(eval-when-compile (require 'cl)) ;; only need cl macros
+(require 'ansi-color)
+(require 'cl-lib)
 (require 'comint)
+(require 'sbt-mode-vars)
 (require 'sbt-mode-project)
 (require 'sbt-mode-buffer)
 
@@ -25,7 +27,7 @@ as the comint-input-ring on console start-up"
   :type 'string
   :group 'sbt)
 
-(defcustom sbt:sbt-prompt-regexp "^>[ ]*"
+(defcustom sbt:sbt-prompt-regexp "^\\(\\[[^\]]*\\] \\)?[>$][ ]*"
   "A regular expression to match sbt REPL prompt"
   :type 'string
   :group 'sbt)
@@ -40,16 +42,23 @@ as the comint-input-ring on console start-up"
   :type 'string
   :group 'sbt)
 
-(defcustom sbt:prompt-regexp "^\\(\\(scala\\)?>\\|[ ]+|\\)[ ]*"
+(defcustom sbt:prompt-regexp "^\\(\\(scala\\|\\[[^\]]*\\] \\)?[>$]\\|[ ]+|\\)[ ]*"
   "A regular expression to match sbt and scala console prompts"
   :type 'string
   :group 'sbt)
 
-(defcustom sbt:ansi-support 'filter
+(defcustom sbt:ansi-support t
   "See `ansi-color-for-comint-mode' in `ansi-color.el'"
   :type '(choice (const :tag "Do nothing" nil)
                  (const :tag "Filter" filter)
                  (const :tag "Translate" t))
+  :group 'sbt)
+
+(defcustom sbt:scroll-to-bottom-on-output nil
+  "If `t' will always scroll sbt buffer to the bottom on insertion of a new output.
+If `nil' will stop scrolling on a first error encountered or if point is not on last
+line of output buffer."
+  :type 'boolean
   :group 'sbt)
 
 (defvar sbt:quit-paste-command (if (eq system-type 'windows-nt)
@@ -62,12 +71,13 @@ as the comint-input-ring on console start-up"
   (when (derived-mode-p 'comint-mode)
 
     (setq comint-process-echoes t)
-    (setq comint-scroll-to-bottom-on-output t)
+    (setq comint-scroll-to-bottom-on-output sbt:scroll-to-bottom-on-output)
     (setq comint-prompt-regexp sbt:prompt-regexp)
     (setq-local comint-use-prompt-regexp t)
     (setq-local comint-prompt-read-only t)
     (setq-local comint-buffer-maximum-size 4096)
-    (setq-local comint-output-filter-functions '(ansi-color-process-output comint-postoutput-scroll-to-bottom))
+    (setq-local comint-preoutput-filter-functions '(sbt:move-marker-before-prompt-filter))
+    (setq-local comint-output-filter-functions '(ansi-color-process-output comint-postoutput-scroll-to-bottom sbt:move-marker-after-prompt-filter))
     (setq ansi-color-for-comint-mode sbt:ansi-support)
     (setq comint-input-sender 'sbt:input-sender)
     (setq-local sbt:previous-history-file nil)
@@ -98,6 +108,43 @@ line.")
         ;; delete the ansi code and the previous line
         (delete-region (save-excursion (forward-line -1) (point)) (match-end 0))))
     input))
+
+(defun sbt:move-marker-before-prompt-filter (input-string)
+  "Move the process marker to beginning of prompt so that the
+prompt will be moved with output. Also mangles the `input-string`
+so that if it contains the prompt, it is moved to the end of the
+input. This is needed because, especially in sbt, the output can
+contain out-of-band output from other Threads that mix up the
+prompt."
+
+  (let ((pmark (process-mark (get-buffer-process (current-buffer)))))
+    (save-excursion
+      (goto-char pmark)
+      (forward-line 0) ;; start of line
+      (when (looking-at sbt:console-prompt-regexp)
+        (set-marker pmark (- (point) 1)))))
+
+  (let ((new-input-string 
+         (if (string-match sbt:console-prompt-regexp input-string)
+             (let* ((beg (match-beginning 0))
+                    (before (substring input-string 0 (max 0 (- beg 1))))
+                    (nl (substring input-string (max 0 (- beg 1)) beg))
+                    (after (substring input-string (match-end 0)))
+                    (prompt (match-string 0 input-string)))
+               (concat before after nl prompt))
+           input-string)))
+    new-input-string))
+
+(defun sbt:move-marker-after-prompt-filter (input-string)
+  "Move the process marker to after prompt. This just reverses
+what `sbt:move-marker-before-prompt-filter` did."
+
+  (let ((pmark (process-mark (get-buffer-process (current-buffer)))))
+    (save-excursion
+      (goto-char pmark)
+      (forward-line 1)
+      (when (looking-at sbt:console-prompt-regexp)
+        (set-marker pmark (match-end 0))))))
 
 (defun sbt:switch-submode (input)
   (when (sbt:mode-p)
@@ -194,7 +241,10 @@ line.")
   (let ((point (point))
         (beg (save-excursion (comint-goto-process-mark)
                              (point)))
-        (end (max (point) (save-excursion (end-of-line)(skip-chars-backward " \t\n\r")(point))))
+        (end (max (point)
+                  (save-excursion (end-of-line)
+                                  (skip-chars-backward " \t\n\r")
+                                  (point))))
         mid)
     (goto-char beg)
     (beginning-of-line)

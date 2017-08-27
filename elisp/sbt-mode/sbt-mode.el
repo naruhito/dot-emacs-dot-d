@@ -1,10 +1,21 @@
-;;; scala-mode.el - Functions for discovering the current sbt project
+;;; sbt-mode.el --- Interactive support for sbt projects
+
+;; Copyright (c) 2013 Heikki Vesalainen
+
+;; Homepage: https://github.com/ensime/emacs-sbt-mode
+;; Keywords: languages
+;; Package-Version:  0.2
+;; Package-Requires: ((emacs "24.4"))
+
+;;; Commentary:
 ;;
-;; Copyright(c) 2013 Heikki Vesalainen
-;; For information on the License, see the LICENSE file
+;;  Documentation at http://ensime.github.io/editors/emacs/sbt-mode/
+;;
+;;; Code:
 
 (require 'compile)
 (require 'comint)
+(require 'sbt-mode-vars)
 (require 'sbt-mode-project)
 (require 'sbt-mode-buffer)
 (require 'sbt-mode-comint)
@@ -14,46 +25,6 @@
   (defvar sbt:submode)
   (defun scala-mode:set-scala-syntax-mode ()))
 
-(defcustom sbt:program-name "sbt"
-  "Program invoked by the `sbt:run-sbt' command."
-  :type 'string
-  :group 'sbt)
-
-(defcustom sbt:default-command "test:compile"
-  "The default command to run with sbt:command."
-  :type 'string
-  :group 'sbt)
-
-(defcustom sbt:save-some-buffers t
-  "Whether to run save-some-buffers before running a command."
-  :type 'boolean
-  :group 'sbt)
-
-(defcustom sbt:clear-buffer-before-command t
-  "Whether to clear the sbt buffer before running a command."
-  :type 'boolean
-  :group 'sbt)
-
-(defcustom sbt:display-command-buffer t
-  "Whether to display the buffer when running a command."
-  :type 'boolean
-  :group 'sbt)
-
-(defface sbt:error
-  '((t :inherit error))
-  "Face for displaying some sbt error messages"
-  :group 'sbt)
-
-(defface sbt:info
-  '((t :inherit success))
-  "A face for displaying some sbt info messages"
-  :group 'sbt)
-
-(defface sbt:warning
-  '((t :inherit warning))
-  "A face for displaying some sbt warning messages"
-  :group 'sbt)
-
 (defvar sbt:error-face 'sbt:error)
 (defvar sbt:info-face 'sbt:info)
 (defvar sbt:warning-face 'sbt:warning)
@@ -61,11 +32,6 @@
 (defvar-local sbt:previous-command sbt:default-command)
 
 (defvar sbt:command-history-temp nil)
-
-(defgroup sbt nil
-  "Support for sbt build REPL."
-  :group 'sbt
-  :prefix "sbt:")
 
 ;;;
 ;;; Our user commands
@@ -92,13 +58,13 @@ If the sbt buffer is not in REPL mode, it will switch to REPL mode (console)."
     (pop-to-buffer (sbt:buffer-name))))
 
 ;;;###autoload
-(defun sbt-command (command)
+(defun sbt-command (command &optional focus)
   "Send a command to the sbt process of the current buffer's sbt project.
 Prompts for the command to send when in interactive mode. You can
 use tab completion.
 
 This command does the following:
-  - displays the buffer without moving focus to it
+  - displays the buffer moving focus to it if focus is t
   - erases the buffer
   - forgets about compilation errors
 
@@ -112,7 +78,9 @@ that outputs errors."
      (list (completing-read (format "Command to run (default %s): " (sbt:get-previous-command))
                             (completion-table-dynamic 'sbt:get-sbt-completions-for-command)
                             nil nil nil 'sbt:command-history-temp (sbt:get-previous-command)))))
-  (sbt:command command))
+  (sbt:command command focus)
+  (with-current-buffer (sbt:buffer-name)
+    (setq sbt:previous-command command)))
 
 (defun sbt:get-sbt-completions-for-command (input)
   (ignore-errors (with-current-buffer (sbt:buffer-name) (sbt:get-sbt-completions input))))
@@ -149,6 +117,12 @@ subsequent call to this function may provide additional input."
   ;; (sbt:paste-region (region-beginning) (region-end) arg)
   (sbt:paste-region (region-beginning) (region-end) nil))
 
+(defun sbt-send-eol ()
+  "Send newline to the sbt process for the primary purpose of
+interrupting triggered execution, such as ~compile."
+  (interactive)
+  (comint-send-string (current-buffer) "\n"))
+
 (defun sbt:clear (&optional buffer)
   "Clear (erase) the SBT buffer."
   (with-current-buffer (or buffer (sbt:buffer-name))
@@ -158,8 +132,13 @@ subsequent call to this function may provide additional input."
       (erase-buffer)
       (ignore-errors (comint-send-string proc (kbd "C-l"))))))
 
-(defun sbt:command (command)
+(defun sbt:command (command &optional focus)
   (unless command (error "Please specify a command"))
+
+  (unless (sbt:find-root)
+    (error (concat "You're not in an sbt project.  "
+		   "Maybe build.sbt or build.scala is missing?  "
+		   "See http://ensime.org/build_tools")))
 
   (when (not (comint-check-proc (sbt:buffer-name)))
     (sbt:run-sbt))
@@ -171,7 +150,7 @@ subsequent call to this function may provide additional input."
 
   (with-current-buffer (sbt:buffer-name)
     (when sbt:display-command-buffer
-      (display-buffer (current-buffer)))
+      (if focus (pop-to-buffer (current-buffer)) (display-buffer (current-buffer))))
     (cond ((eq sbt:submode 'console)
            (comint-send-string (current-buffer) ":quit\n"))
           ((eq sbt:submode 'paste-mode)
@@ -182,8 +161,7 @@ subsequent call to this function may provide additional input."
         (sbt:clear (current-buffer))
       (ignore-errors (compilation-forget-errors)))
     (comint-send-string (current-buffer) (concat command "\n"))
-    (setq next-error-last-buffer (current-buffer))
-    (setq sbt:previous-command command)))
+    (setq next-error-last-buffer (current-buffer))))
 
 (defun sbt:get-previous-command ()
   (if (not (get-buffer (sbt:buffer-name)))
@@ -194,16 +172,18 @@ subsequent call to this function may provide additional input."
 (defun sbt:run-sbt (&optional kill-existing-p pop-p)
   "Start or re-strats (if kill-existing-p is non-NIL) sbt in a
 buffer called *sbt*projectdir."
-  (let* ((project-root (sbt:find-root))
-         (sbt-command-line (split-string sbt:program-name " "))
+  (let* ((project-root (or (sbt:find-root)
+			   (error "Could not find project root, type `C-h f sbt:find-root` for help.")))
          (buffer-name (sbt:buffer-name))
+         ;; WORKAROUND https://github.com/jline/jline2/pull/285
+         (process-environment (append '("EMACS=true") process-environment))
          (inhibit-read-only 1))
-    (when (null project-root)
-      (error "Could not find project root, type `C-h f sbt:find-root` for help."))
+    ;; (when (null project-root)
+    ;;   (error "Could not find project root, type `C-h f sbt:find-root` for help."))
 
-    (when (not (or (executable-find (nth 0 sbt-command-line))
-                   (file-executable-p (concat project-root (nth 0 sbt-command-line)))))
-      (error "Could not find %s in %s or on PATH. Please customize the sbt:program-name variable." (nth 0 sbt-command-line) project-root))
+    (when (not (or (executable-find sbt:program-name)
+                   (file-executable-p (concat project-root sbt:program-name))))
+      (error "Could not find %s in %s or on PATH. Please customize the sbt:program-name variable." sbt:program-name project-root))
 
     ;; kill existing sbt
     (when (and kill-existing-p (get-buffer buffer-name))
@@ -218,52 +198,32 @@ buffer called *sbt*projectdir."
         (cd project-root)
         (buffer-disable-undo)
         (message "Starting sbt in buffer %s " buffer-name)
-        ;;(erase-buffer)
 
         ;; insert a string to buffer so that process mark comes after
         ;; compilation-messages-start mark.
         (insert (concat "Running " sbt:program-name "\n"))
         (goto-char (point-min))
         (ignore-errors (compilation-forget-errors))
-        (comint-exec (current-buffer) buffer-name (nth 0 sbt-command-line) nil (cdr sbt-command-line)))
+        (comint-exec (current-buffer) buffer-name sbt:program-name nil sbt:program-options))
       (current-buffer))))
 
 (defun sbt:initialize-for-compilation-mode ()
-  (setq-local 
+  (setq-local
    compilation-directory-matcher
    '("--go-home-compile.el--you-are-drn^H^H^Hbugs--"))
-  (setq-local 
+  (setq-local
    compilation-error-regexp-alist
-   `((,(rx line-start
-           ?[ (or (group "error") (group "warn") ) ?]
-           " " (group (zero-or-one letter ":") (1+ (not (any ": "))))
-           
-           ?: (group (1+ digit)) ?:)
-      3 4 nil (2 . nil) 3 )))
-  (setq-local 
-   compilation-mode-font-lock-keywords
-   '(
-     ("^\\[error\\] \\(x .*\\|Failed: Total .*\\)"
-      (1 sbt:error-face))
-     ("^\\[info\\] \\(Passed: Total [0-9]+, Failed 0, Errors 0, Passed [0-9]+\\)\\(\\(?:, Skipped [0-9]*\\)?\\)"
-      (1 sbt:info-face)
-      (2 sbt:warning-face))
-     ("^\\[info\\] \\(Passed: Total [0-9]+, Failed [1-9][0-9]*.*\\)"
-      (1 sbt:error-face))
-     ("^\\[info\\] \\(Passed: Total [0-9]+, Failed [0-9]+, Errors [1-9][0-9]*.*\\)"
-      (1 sbt:error-face))
-     ("^\\[info\\] \\([0-9]+ examples?, 0 failure, 0 error\\)"
-      (1 sbt:info-face))
-     ("^\\[info\\] \\([0-9]+ examples?, [1-9][0-9]* failure, [0-9]+ error\\)"
-      (1 sbt:error-face))
-     ("^\\[info\\] \\([0-9]+ examples?, [0-9]* failure, [1-9][0-9]+ error\\)"
-      (1 sbt:error-face))
-     ("^\\[\\(error\\)\\]"
-      (1 sbt:error-face))
-     ("^\\[\\(warn\\)\\]"
-      (1 sbt:warning-face))
-     ("^\\[\\(success\\)\\]"
-      (1 sbt:info-face))))
+   '(;; scalac
+     ("^\\[error][[:space:]]\\([/[:word:]]:?[^:[:space:]]+\\):\\([[:digit:]]+\\):" 1 2 nil 2 1)
+     ("^\\[warn][[:space:]]\\([/[:word:]]:?[^:[:space:]]+\\):\\([[:digit:]]+\\):" 1 2 nil 1 1)
+     ("^\\[info][[:space:]]\\([/[:word:]]:?[^:[:space:]]+\\):\\([[:digit:]]+\\):" 1 2 nil 0 1)
+     ;; failing scalatests
+     ("^\\[info][[:space:]]+\\(.*\\) (\\([^:[:space:]]+\\):\\([[:digit:]]+\\))" 2 3 nil 2 1)
+     ;; https://github.com/Duhemm/sbt-errors-summary
+     ("^\\[error][[:space:]]\\[[[:digit:]]+][[:space:]]\\([/[:word:]]:?[^:[:space:]]+\\):\\([[:digit:]]+\\):\\([[:digit:]]+\\):" 1 2 3 2 1)
+     ("^\\[warn][[:space:]][[:space:]]\\[[[:digit:]]+][[:space:]]\\([/[:word:]]:?[^:[:space:]]+\\):\\([[:digit:]]+\\):\\([[:digit:]]+\\):" 1 2 3 1 1)
+     ))
+  (setq-local compilation-mode-font-lock-keywords nil)
   (compilation-setup t))
 
 (defvar sbt:mode-map
@@ -271,11 +231,31 @@ buffer called *sbt*projectdir."
     (set-keymap-parent map
                        (make-composed-keymap compilation-shell-minor-mode-map
                                              comint-mode-map))
+    (define-key map (kbd "C-c C-j") 'sbt-send-eol)
     (define-key map (kbd "TAB") 'sbt-completion-at-point)
     (define-key map (kbd "C-c C-v") 'sbt-clear)
 
     map)
   "Basic mode map for `sbt-start'")
+
+(defun sbt:compilation-parse-errors (start end &rest rules)
+  "Since with compile.el it is impossible to parse scalac error message
+with column information (since column indicator is on different line
+then file name and row), we are going to use this :after advice for parsing
+scalac output and update `compilation-message's in sbt buffer accordingly."
+  (when (string-prefix-p sbt:buffer-name-base (buffer-name))
+    (progn
+      (goto-char start)
+      (beginning-of-line)
+      (while (re-search-forward "^\\[error][[:space:]]+^$" end t)
+        (save-match-data
+          (let* ((error-column (current-column))
+                 (compilation-message-location (previous-single-property-change (point) 'compilation-message))
+                 (compilation-message-property (get-text-property (1- compilation-message-location) 'compilation-message))
+                 (compilation-message-loc (compilation--message->loc compilation-message-property)))
+            ;; update only `compilation-message-loc' which do not have column information already
+            (when (null (car compilation-message-loc))
+              (setcar compilation-message-loc (- error-column 8)))))))))
 
 (define-derived-mode sbt-mode comint-mode "sbt"
   "Major mode for `sbt-start'.
@@ -284,6 +264,8 @@ buffer called *sbt*projectdir."
   (use-local-map sbt:mode-map)
   (ignore-errors (scala-mode:set-scala-syntax-mode))
   (add-hook 'sbt-mode-hook 'sbt:initialize-for-comint-mode)
-  (add-hook 'sbt-mode-hook 'sbt:initialize-for-compilation-mode))
+  (add-hook 'sbt-mode-hook 'sbt:initialize-for-compilation-mode)
+  (advice-add 'compilation-parse-errors :after #'sbt:compilation-parse-errors))
 
 (provide 'sbt-mode)
+;;; sbt-mode.el ends here
