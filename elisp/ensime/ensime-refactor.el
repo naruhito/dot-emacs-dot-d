@@ -43,169 +43,20 @@
    map)
   "Key bindings for the refactor confirmation popup.")
 
-(defun ensime-refactor-notify-failure (result)
-  (message "Refactoring failed: %s" (plist-get result :reason)))
-
-
-(defun ensime-refactor-organize-imports ()
-  "Do a syntactic organization of the imports in the current buffer."
-  (interactive)
-  (cond ((ensime-visiting-java-file-p)
-	 (ensime-refactor-organize-java-imports)
-	 (message "Organized."))
-
-	(t
-	 (ensime-refactor-prepare
-	  'organizeImports
-	  `(file ,buffer-file-name)))))
-
 (defun ensime-refactor-organize-java-imports ()
-  "Sort all import statements lexicographically."
+  "Sort all import statements lexicographically and delete the duplicate imports."
   (save-excursion
     (goto-char (point-min))
     (search-forward-regexp "^\\s-*package\\s-" nil t)
     (goto-char (point-at-eol))
-    (let ((p (point)))
-
+    (let ((beg (point)) end)
       ;; Advance past all imports
       (while (looking-at "[\n\t ]*import\\s-\\(.+\\)\n")
-	(search-forward-regexp "import" nil t)
-	(goto-char (point-at-eol)))
-      (sort-lines nil p (point)))))
-
-
-(defun ensime-refactor-rename (&optional new-name)
-  "Rename a symbol, project-wide."
-  (interactive)
-  (let ((sym (ensime-sym-at-point)))
-    (if sym
-	(let* ((start (plist-get sym :start))
-	       (end (plist-get sym :end))
-	       (old-name (plist-get sym :name))
-	       (name (or new-name
-			 (read-string (format "Rename '%s' to: " old-name)))))
-	  (ensime-refactor-prepare
-	   'rename
-	   `(file ,buffer-file-name
-	     start ,(ensime-externalize-offset start)
-             end ,(ensime-externalize-offset end)
-             newName ,name)))
-      (message "Please place cursor on a symbol."))))
-
-
-(defun ensime-refactor-inline-local ()
-  "Get rid of an intermediate variable."
-  (interactive)
-  (let ((sym (ensime-sym-at-point)))
-    (if sym
-	(let* ((start (plist-get sym :start))
-	       (end (plist-get sym :end)))
-	  (ensime-refactor-prepare
-	   'inlineLocal
-	   `(file ,buffer-file-name
-	     start ,(ensime-externalize-offset start)
-	     end ,(ensime-externalize-offset end))))
-      (message "Please place cursor on a local value."))))
-
-(defun ensime-refactor-extract-method ()
-  "Extract a range of code into a method."
-  (interactive)
-  (let ((name (read-string "Name of method: ")))
-    (destructuring-bind (start end)
-        (ensime-computed-range)
-      (ensime-refactor-prepare
-       'extractMethod
-       `(file ,buffer-file-name
-         start ,start
-         end ,end
-         methodName ,name)))))
-
-(defun ensime-refactor-extract-local ()
-  "Extract a range of code into a val."
-  (interactive)
-  (let ((name (read-string "Name of local value: ")))
-    (destructuring-bind (start end)
-        (ensime-computed-range)
-      (ensime-refactor-prepare
-       'extractLocal
-       `(file ,buffer-file-name
-         start ,start
-         end ,end
-         name ,name)))))
-
-(defun ensime-refactor-add-import (&optional qual-name)
-  "Insert import statement."
-  (interactive)
-  (let ((qualified-name
-         (or qual-name
-             (read-string "Qualified name of type to import: "))))
-    (let ((result (ensime-refactor-prepare
-                   'addImport
-                   `(file ,buffer-file-name
-                     qualifiedName ,qualified-name) t t)))
-      (ensime-refactor-handle-result result))))
-
-(defun ensime-refactor-prepare (refactor-type params &optional non-interactive blocking)
-  (if (buffer-modified-p) (ensime-write-buffer nil t))
-  (incf ensime-refactor-id-counter)
-  (if (not blocking) (message "Please wait..."))
-  (ensime-rpc-refactor-prepare
-   ensime-refactor-id-counter
-   refactor-type
-   params
-   non-interactive
-   (if non-interactive
-       'ensime-refactor-handle-result
-     'ensime-refactor-prepare-handler)
-   blocking))
-
-(defun ensime-refactor-prepare-handler (result)
-  (let ((refactor-type (plist-get result :refactor-type))
-	(status (plist-get result :status))
-	(id (plist-get result :procedure-id))
-	(changes (plist-get result :changes)))
-    (if (equal status 'success)
-	(let ((cont `(lambda () (ensime-rpc-refactor-exec
-                                 ,id ',refactor-type
-                                 'ensime-refactor-handle-result)))
-              (cancel `(lambda () (ensime-rpc-refactor-cancel ,id))))
-
-          (ensime-with-popup-buffer
-           (ensime-refactor-info-buffer-name t t)
-           ;; Override ensime-popup-buffer-mode's normal keymap
-           ;; because of "q"
-           (add-to-list
-            'minor-mode-overriding-map-alist
-            (cons 'ensime-popup-buffer-mode ensime-refactor-info-map))
-           (set (make-local-variable 'cancel-refactor) cancel)
-           (set (make-local-variable 'continue-refactor) cont)
-           (ensime-refactor-populate-confirmation-buffer
-            refactor-type changes)
-           (goto-char (point-min)))
-
-          (ensime-event-sig :refactor-at-confirm-buffer))
-
-      (ensime-refactor-notify-failure result))))
-
-
-(defun ensime-refactor-handle-result (result)
-  (let ((touched (plist-get result :touched-files)))
-    (ensime-revert-visited-files touched t)
-    (ensime-event-sig :refactor-done touched)
-    (kill-buffer ensime-refactor-info-buffer-name)))
-
-(defun ensime-refactor-populate-confirmation-buffer (refactor-type changes)
-  (let ((header
-	 "Please review the proposed changes."))
-
-    (ensime-insert-with-face
-     (concat header " (c to confirm, q to cancel)")
-     'font-lock-constant-face)
-    (insert "\n\n\n")
-
-    (if (null changes)
-	(insert "Nothing to be done.")
-      (ensime-insert-change-list changes))))
+        (search-forward-regexp "import" nil t)
+        (goto-char (point-at-eol)))
+      (setq end (point))
+      (sort-lines nil beg end)
+      (delete-duplicate-lines beg end nil t))))
 
 (defun ensime-refactor-diff-rename (&optional new-name)
   "Rename a symbol, project-wide."
@@ -276,6 +127,19 @@
                   end ,(ensime-externalize-offset end))))
       (message "Please place cursor on a local value."))))
 
+(defun ensime-refactor-expand-match-cases ()
+  "Expand the cases for a match block on a sealed trait, case class or case object."
+  (interactive)
+  (destructuring-bind (start end)
+      (ensime-computed-range)
+    (ensime-refactor-diff
+     'expandMatchCases
+     `(file ,buffer-file-name
+            start ,start
+            end ,end
+            tpe "expandMatchCases"
+            ))))
+
 (defun ensime-refactor-diff (refactor-type params &optional non-interactive blocking)
   (if (buffer-modified-p) (ensime-write-buffer nil t))
   (incf ensime-refactor-id-counter)
@@ -310,7 +174,8 @@
 (defun ensime-refactor-diff-preview-popup (diff)
   (ensime-with-popup-buffer (ensime-refactor-info-buffer-name
                              nil t 'diff-mode)
-                            (insert-file-contents diff)))
+                            (insert-file-contents diff)
+                            (ensime-refactor-diff-buffer-local-key)))
 
 (defun ensime-refactor-diff-preview-apply-popup (diff)
   (ensime-with-popup-buffer (ensime-refactor-info-buffer-name
@@ -382,6 +247,26 @@ Do not asks user about each one if `ensime-refactor-save-with-no-questions' is n
                    (equal src-buffer-name (buffer-name)))
                  src-buffer-name)))))
 
+(defun ensime-refactor-add-type-annotation ()
+  "Add type annotation to current symbol."
+  (interactive)
+  (let* ((type (ensime-rpc-get-type-at-point))
+         (shortname (ensime-type-name-with-args type)))
+    (save-excursion
+      (forward-word)
+      (while (let ((current-char (thing-at-point 'char)))
+               (or (equal "(" current-char) (equal "[" current-char)))
+        (forward-list))
+      (insert (concat ": " shortname)))))
+
+(defun ensime-refactor-diff-buffer-local-key ()
+  "Define a buffer local key in a copy of `diff-mode-map'"
+  (use-local-map (copy-keymap diff-mode-map))
+  (local-set-key (kbd "a")
+                 (lambda ()
+                   (interactive)
+                   (ensime-refactor-diff-apply-hunks)
+                   (ensime-refactor-diff-save-source-files))))
 
 (provide 'ensime-refactor)
 

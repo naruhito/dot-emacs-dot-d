@@ -23,7 +23,8 @@
   (require 'cl)
   (require 'ensime-macros))
 
-(require 'scala-mode2-syntax)
+(require 'scala-mode-syntax)
+(require 'dash)
 
 ;; In order to efficiently and accurately match completion prefixes, we construct
 ;; a regular expression which matches scala identifiers in reverse.
@@ -62,20 +63,14 @@
   "Maps plist structures to propertized strings that will survive
  being passed through the innards of auto-complete or company."
   (mapcar
-   (lambda (m)
-     (let* ((type-sig (plist-get m :type-sig))
-	    (type-id (plist-get m :type-id))
-	    (is-callable (plist-get m :is-callable))
-	    (to-insert (plist-get m :to-insert))
-	    (name (plist-get m :name))
-	    (candidate name))
-       (propertize candidate
-		   'symbol-name name
-		   'type-sig type-sig
-		   'type-id type-id
-		   'is-callable is-callable
-		   'to-insert to-insert
-		   ))) completions))
+   (lambda (completion)
+     (ensime-plist-bind
+      (type-info to-insert name)
+      completion
+      (propertize name
+                  'type-info type-info
+                  'to-insert to-insert)))
+   completions))
 
 
 (defun ensime-completion-prefix-at-point ()
@@ -93,6 +88,14 @@
       ;; Then use a proper scala identifier regex to extract the prefix.
       (if (string-match ensime--rev-id-re s)
 	  (s-reverse (match-string 1 s)) ""))))
+
+(defun ensime-completion-suffix-at-point ()
+  "Returns the suffix following point."
+  ;; A bit of a hack: Piggyback on font-lock's tokenization to
+  ;; avoid requesting completions inside comments.
+  (when (not (ensime-in-comment-p (point)))
+    (when (looking-at scala-syntax:plainid-re)
+      (match-string 1))))
 
 (defun ensime-get-completions-async
     (max-results case-sense callback)
@@ -123,30 +126,6 @@
 	(when (and (= (length candidates) 1)
 		   (string= prefix (car candidates)))
 	  (car candidates))))))
-
-(defun ensime-call-completion-info (candidate is-scala)
-  "Returns a call-completion-info for the candidate, including details
- required for expanding a parameter template."
-  (if is-scala
-      ;; Scala case is trivial: request the info by type id
-      (ensime-rpc-get-call-completion (get-text-property 0 'type-id candidate))
-
-    ;; TODO until we sort out ensime-rpc-get-call-completion
-    ;; for Java, use the candidate signature instead as a poor man's
-    ;; call completion info.
-    (let ((type-sig (get-text-property 0 'type-sig candidate)))
-      (let* ((sections (car type-sig))
-	     (return-type (cadr type-sig)))
-	`(:param-sections
-	  ,(mapcar
-	    (lambda (section)
-	      (list :params
-		    (mapcar
-		     (lambda (p) (let ((name (car p))
-				       (type-name (cadr p)))
-				   `(,name (:name ,type-name
-						  :full-name ,type-name))))
-		     section))) sections))))))
 
 (provide 'ensime-completion-util)
 

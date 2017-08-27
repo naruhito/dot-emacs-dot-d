@@ -6,6 +6,7 @@
 
 (require 'dash)
 (require 'cl-lib)
+(require 'ensime-overlay)
 
 ;; Note: This might better be a connection-local variable, but
 ;; afraid that might lead to hanging overlays..
@@ -36,6 +37,7 @@
 
     (ensime-make-note-overlays notes)
     (ensime-update-note-counts)
+    (ensime-event-sig :notes-added)
     ))
 
 
@@ -161,14 +163,41 @@ any buffer visiting the given file."
     (overlay-put ov 'ensime-overlay  t)
     (overlay-put ov 'priority 100)
     (let ((char (plist-get visuals :char)))
-      (when char
-        (overlay-put ov 'before-string
-                     (propertize char
-                      'display
-                      (list 'left-fringe
-                            (plist-get visuals :bitmap)
-                            (plist-get visuals :fringe))))))
+      (if (window-system)
+          (when char
+            (overlay-put ov 'before-string
+                         (propertize char
+                                     'display
+                                     (list 'left-fringe
+                                           (plist-get visuals :bitmap)
+                                           (plist-get visuals :fringe)))))
+        (when (and char ensime-left-margin-gutter)
+          (ensime-show-sign-overlay char (plist-get visuals :fringe) ov))))
     ov))
+
+(defun ensime-show-sign-overlay (sign face ov)
+  (save-excursion
+    (overlay-put ov 'before-string (ensime-before-string sign face))))
+
+(defun ensime-before-string (sign face)
+  (propertize " " 'display `((margin left-margin)
+                             ,(propertize sign 'face
+                                          (face-remap-add-relative face
+                                                                   :underline nil
+                                                                   :weight 'normal
+                                                                   :slant 'normal)))))
+
+(defun ensime-set-left-window-margin (width)
+  (let ((curwin (get-buffer-window)))
+    (set-window-margins curwin width (cdr (window-margins curwin)))))
+
+(defun ensime-show-left-margin-hook ()
+  "Shows the left margin. This function is called by
+ window-configuration-change-hook."
+  (when (and
+         (not window-system)
+         ensime-left-margin-gutter)
+    (ensime-set-left-window-margin 1)))
 
 (defun ensime-overlays-at (point)
   "Return list of overlays of type 'ensime-overlay at point."
@@ -196,7 +225,7 @@ any buffer visiting the given file."
         (max-external-offset (ensime-externalize-offset (point-max))))
     (dolist (note notes)
       (if (and (ensime-files-equal-p (ensime-note-file note)
-				     buffer-file-name)
+				     (buffer-file-name-with-indirect))
 	       (/= (ensime-note-beg note) external-offset))
 	  (let ((dist (cond
 		       (forward
@@ -227,9 +256,7 @@ any buffer visiting the given file."
 	  (goto-char (ensime-internalize-offset (ensime-note-beg next-note)))
 	  (message (ensime-note-message next-note)))
       (message (concat
-		"No more compilation issues in this buffer. "
-		"Use ensime-typecheck-all [C-c C-c a] to find"
-		" all issues, project-wide.")))))
+                "No more compilation issues in this buffer.")))))
 
 (defun ensime-forward-note ()
   "Goto the next compilation note in this buffer"
@@ -244,12 +271,19 @@ any buffer visiting the given file."
 (defun ensime-errors-at (point)
   (delq nil (mapcar (lambda (x) (overlay-get x 'help-echo)) (ensime-overlays-at point))))
 
-(defun ensime-print-errors-at-point ()
-  (interactive)
+(defun ensime-print-errors-at-point (&optional arg)
+  (interactive "P")
   (let ((msgs (append (ensime-errors-at (point))
                       (ensime-implicit-notes-at (point)))))
     (when msgs
-      (message "%s" (mapconcat 'identity msgs "\n")))))
+      (let ((msg (mapconcat 'identity msgs "\n")))
+        (when (equal arg '(16))
+          (ensime--make-result-overlay
+              (format "%S" msg)
+            :where (point)
+            :duration 'command))
+        (message "%s" msg)))
+    (ensime-event-sig :errors-at-point-printed)))
 
 (defun ensime-implicit-notes-at (point)
   (cl-labels

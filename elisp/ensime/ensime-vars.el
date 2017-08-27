@@ -14,7 +14,7 @@
   "Interaction with the ENhanced Scala Environment UI."
   :group 'ensime)
 
-(defcustom ensime-default-buffer-prefix "inferior-ensime-server-"
+(defcustom ensime-default-buffer-prefix "ENSIME-"
   "The prefix of the buffer that the ENSIME server process runs in."
   :type 'string
   :group 'ensime-ui)
@@ -46,6 +46,12 @@
   :type 'boolean
   :group 'ensime-ui)
 
+(defcustom ensime-eldoc-hints nil
+  "If non-nil, eldoc hints are activated.
+It can be set to 'all, 'error, 'implicit or 'type to limit the type of hints shown"
+  :type 'symbol
+  :group 'ensime-ui)
+
 (defcustom ensime-graphical-tooltips nil
   "If non-nil, show graphical bubbles for tooltips."
   :type 'boolean
@@ -68,14 +74,6 @@ update it when the project definition changes. At the moment, this only
 works for sbt projects."
   :type 'boolean
   :group 'ensime-ui)
-
-(defcustom ensime-server-version "0.9.10-SNAPSHOT"
-  "Distributed version of the server to upgrade and start.
-This is primarily useful for ENSIME developers (or bug reporters)
-to test against. The client is designed to work with the default
-version."
-  :type 'string
-  :group 'ensime-server)
 
 (defcustom ensime-default-server-env ()
   "A `process-environment' compatible list of environment variables"
@@ -163,15 +161,15 @@ used it must be installed separately."
 
 (defcustom ensime-goto-test-config-defaults
   '(:test-class-names-fn ensime-goto-test--test-class-names
-    :test-class-suffixes ("Test" "Spec" "Specification" "Check")
+    :test-class-suffixes ("Spec" "Test" "Check" "Specification")
     :impl-class-name-fn  ensime-goto-test--impl-class-name
     :impl-to-test-dir-fn ensime-goto-test--impl-to-test-dir
     :is-test-dir-fn      ensime-goto-test--is-test-dir
-    :test-template-fn    ensime-goto-test--test-template-default)
+    :test-template-fn    ensime-goto-test--test-template-scalatest-flatspec)
 
   "Configures the default behavior of the \"go to test/implementation\"
 feature. Behavior can also be defined on a per-project basis. See
-`ensime-goto-test-config'.
+`ensime-goto-test-configs'.
 
 The value must be a plist with the following keys/values
 
@@ -237,12 +235,15 @@ and parameters."
   :type 'boolean
   :group 'ensime-ui)
 
-(defcustom ensime-refactor-enable-beta nil
-  "If non-nil, Ensime will use diff api for refactoring."
+(defcustom ensime-left-margin-gutter t
+  "If non-nil, Ensime will show the compilation and warning icons
+in the left margin, when in terminal mode. These icons can
+interfere with other modes that use the left-margin. (git-gutter,
+linum, etc..)"
   :type 'boolean
   :group 'ensime-ui)
 
-(defcustom ensime-refactor-preview nil
+(defcustom ensime-refactor-preview t
   "Enable or disable a refactor preview feature.
 Non-nil means Ensime will show a preview of the changes in the
 *ENSIME-Refactoring* buffer. Diff hunks can be applied manually
@@ -265,9 +266,9 @@ less of equal to the value."
   :type 'number
   :group 'ensime-ui)
 
-(defcustom ensime-refactor-preview-override-hunk 0
+(defcustom ensime-refactor-preview-override-hunk 10
   "The overriding criterion for a non-nil `ensime-refactor-preview'.
-Automatically apply hunks when the number of hunks is less of
+Automatically apply hunks when the number of hunks is less or
 equal to the value."
   :type 'number
   :group 'ensime-ui)
@@ -305,6 +306,12 @@ Possible types: `organizeImport', `rename', `extractLocal',
 (defcustom ensime-refactor-save-with-no-questions t
   "Save buffers affected by refactoring with no confirmation questions."
   :type 'boolean
+  :group 'ensime-ui)
+
+(defcustom ensime-search-interface 'classic
+  "Completion mechanism for search.
+The options are `classic', `helm' and `ivy'."
+  :type '(repeat symbol)
   :group 'ensime-ui)
 
 (provide 'ensime-vars)

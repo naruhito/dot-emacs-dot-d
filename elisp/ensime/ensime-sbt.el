@@ -16,6 +16,8 @@
   (require 'ensime-macros))
 
 (require 'sbt-mode)
+(require 'ensime-config)
+(require 'ensime-inf)
 
 (defgroup ensime-sbt nil
   "Support for sbt build REPL."
@@ -43,31 +45,64 @@
          (ensime-connected-p)
          ensime-sbt-perform-on-save
          (get-buffer (sbt:buffer-name)))
-    (sbt-command ensime-sbt-perform-on-save)))
+    (sbt:command ensime-sbt-perform-on-save)))
 
-(defun ensime-sbt-switch ()
+(defalias 'ensime-sbt-switch 'ensime-sbt)
+
+(defun ensime-sbt-send-eol ()
   (interactive)
-  (ensime-sbt))
+  (let ((sbt:clear-buffer-before-command nil))
+    (sbt:command "")))
 
 (defun ensime-sbt-do-compile ()
+  "Compile all sources including tests." 
   (interactive)
-  (sbt-command "compile"))
+  (sbt:command "test:compile"))
+
+(defun ensime-sbt-do-compile-only (arg)
+  "Compile this buffer using `sbt-ensime's `ensimeCompileOnly', ARG will add `-Xprint:typer'."
+  (interactive "P")
+  (save-buffer)
+  (let ((command
+         (if arg "ensimeCompileOnly -Xprint:typer" "ensimeCompileOnly")))
+    (ensime-sbt-run-command-in-subproject command (buffer-file-name-with-indirect))))
+
+(defun ensime-sbt-do-scalariform-only ()
+  "Format the current file using Scalariform."
+  (interactive)
+  (save-buffer)
+  (ensime-sbt-run-command-in-subproject "ensimeScalariformOnly" (buffer-file-name-with-indirect)))
+
+(defun ensime-sbt-run-command-in-subproject (command file-name)
+  "Run a sbt COMMAND in the module containing FILE-NAME, if specified."
+  (let ((subproject (ensime-subproject-for-config)))
+    (if subproject
+        (if (ensime-is-test-file file-name)
+            (sbt:command (concat subproject "/" "test:" command " " file-name))
+          (sbt:command (concat subproject "/" command " " file-name)))
+      (if (ensime-is-test-file file-name)
+          (sbt:command (concat "test:"command " " file-name))
+        (sbt:command (concat command " " file-name))))))
 
 (defun ensime-sbt-do-run ()
+  "Execute the sbt `run' command for the project."
   (interactive)
-  (sbt-command "run"))
+  (sbt:command "run"))
 
 (defun ensime-sbt-do-clean ()
+  "Execute the sbt `clean' command for the project."
   (interactive)
-  (sbt-command "clean"))
+  (sbt:command "clean"))
 
-(defun ensime-sbt-do-gen-ensime ()
+(defun ensime-sbt-do-ensime-config ()
+  "Execute the sbt `ensimeConfig' command for the project."
   (interactive)
-  (sbt-command "gen-ensime"))
+  (sbt:command "ensimeConfig"))
 
 (defun ensime-sbt-do-package ()
+  "Build a jar file of the project."
   (interactive)
-  (sbt-command "package"))
+  (sbt:command "package"))
 
 ;; shameless copypasta from magit-utils.el
 ;; added one little thing to eval the dynamic submodule binding
@@ -104,8 +139,8 @@ string.
 Results in the same module name, but with brackets enclosing the
 abbreviation character."
   (let ((left (s-left li module))
-	(prompt-abbrev (char-to-string abbrev))
-	(right (-> (- (length module) ri) (s-right module))))
+        (prompt-abbrev (char-to-string abbrev))
+        (right (-> (- (length module) ri) (s-right module))))
     (s-concat left "[" prompt-abbrev "]" right)))
 
 (defun ensime-sbt-prompt-char-indices (module li ri module-prompt-clauses)
@@ -123,82 +158,78 @@ character use it, otherwise move on to the next character and try
 again."
   (let ((abbrev (-> (substring module li ri) string-to-char)))
     (if (eq nil (assoc abbrev module-prompt-clauses))
-	(list abbrev li ri)
+        (list abbrev li ri)
       (ensime-sbt-prompt-char-indices module (+ 1 li) (+ 1 ri) module-prompt-clauses))))
-
-(defun ensime-sbt-module-prompt-clauses ()
-  "Creates the module prompt associative list, used during prompting.
-
-From ensime config file, get subproject names, and transform them
-into an associative list with elements
-  (char-abbrev module-prompt-string module-name)"
-  (let* ((config (-> (ensime-connection) ensime-config))
-	 (subprojects (->> (plist-get config :subprojects)
-			   (-map (lambda (sp) (plist-get sp :name)))))
-	 (module-clauses
-	  (let (prompt-clauses)
-	    (-each subprojects
-	      (lambda (sp)
-		(let* ((ai (ensime-sbt-prompt-char-indices sp 0 1 prompt-clauses))
-		       (prompt (apply 'ensime-sbt-module-prompt sp ai))
-		       (new-clauses (cons (list (car ai) prompt sp) prompt-clauses)))
-		  (setq prompt-clauses new-clauses))))
-	    prompt-clauses)))
-    module-clauses))
 
 (defun ensime-sbt-prompt-for-test ()
   "Prompt sequence when `*-test-dwim' can't figure out what to do."
   (let ((module
-	 (ensime-sbt-read-char-prompt
-	  "Do you want to run from module " t ensime-sbt-module-prompt-clauses))
-	(source-set
-	 (ensime-sbt-read-char-prompt "Do you want to run from " t
-				      (?t "[t]est" "")
-				      (?i "[i]t" "it:")
-				      (?f "[f]un" "fun:")))
-	(task
-	 (ensime-sbt-read-char-prompt "Do you want to run " t
-				      (?t "[t]est" "test")
-				      (?o "test-[o]nly" "testOnly")
-				      (?q "test-[q]uick" "testQuick"))))
+         (completing-read "Module to test: "
+                          (->> (-> (ensime-connection) ensime-config (plist-get :subprojects))
+                               (-map (lambda (sp) (plist-get sp :name))))))
+        (source-set
+         (ensime-sbt-read-char-prompt "Test suite: " t
+                                      (?t "[t]est" "")
+                                      (?i "[i]t" "it:")
+                                      (?f "[f]un" "fun:")))
+        (task
+         (ensime-sbt-read-char-prompt "Test command: " t
+                                      (?t "[t]est" "test")
+                                      (?o "test-[o]nly" "testOnly")
+                                      (?q "test-[q]uick" "testQuick"))))
     (concat module "/" source-set task)))
 
-(defun ensime-sbt-find-subproject (file-name source-set)
-  (when source-set
-    (let* ((config (-> (ensime-connection) ensime-config))
-	   (subprojects (plist-get config :subprojects))
-	   (matches-subproject-dir? (lambda (dir) (string-match-p dir file-name)))
-	   (find-subproject (lambda (sp)
-			      (-any matches-subproject-dir? (plist-get sp :source-roots)))))
-      (-> (-find find-subproject subprojects) (plist-get :name)))))
-
 (defun ensime-sbt-test-dwim (command)
-  (let* ((file-name (or buffer-file-name default-directory))
-	 (source-set (cond
-		      ((string-match-p "src/test" file-name) "")
-		      ((string-match-p "src/it" file-name) "it:")
-		      ((string-match-p "src/fun" file-name) "fun:"))))
+  (let* ((file-name (or (buffer-file-name-with-indirect) default-directory))
+         (source-set (cond
+                      ((string-match-p "src/test" file-name) "")
+                      ((string-match-p "/test" file-name) "") ;; for Play's default dir layout
+                      ((string-match-p "src/it" file-name) "it:")
+                      ((string-match-p "src/fun" file-name) "fun:"))))
     (if source-set
-	(-> (ensime-sbt-find-subproject file-name source-set)
-	    (concat "/" source-set command)
-	    sbt-command)
-      (-> (ensime-sbt-prompt-for-test) sbt-command))))
+        (-> (ensime-subproject-for-config)
+            (concat "/" source-set command)
+            sbt:command)
+      (-> (ensime-sbt-prompt-for-test) sbt:command)
+      (message "Run `%s' from a test file to avoid the prompts"
+               (key-description
+                (where-is-internal this-command overriding-local-map t))))))
+
+(defun ensime-sbt-do-test ()
+  "Run all the tests."
+  (interactive)
+  (sbt-command "test"))
 
 (defun ensime-sbt-do-test-dwim ()
+  "Execute the sbt `test' command for the project and suite that
+corresponds to the current source test file.
+
+If not run from a test source file, then prompt for the project
+module, test suite and test command."
   (interactive)
   (ensime-sbt-test-dwim "test"))
 
 (defun ensime-sbt-do-test-quick-dwim ()
+  "Execute the sbt `testQuick' command for the project and suite
+that corresponds to the current source test file.
+
+If not run from a test source file, then prompt for the project
+module, test suite and test command."
   (interactive)
   (ensime-sbt-test-dwim "testQuick"))
 
 (defun ensime-sbt-do-test-only-dwim ()
+  "Execute the sbt `testOnly' command for the project and suite
+that corresponds to the current source test file.
+
+If not run from a test source file, then prompt for the project
+module, test suite and test command."
   (interactive)
   (let* ((impl-class
-	  (or (ensime-top-level-class-closest-to-point)
-	      (return (message "Could not find top-level class"))))
-	 (cleaned-class (replace-regexp-in-string "<empty>\\." "" impl-class))
-	 (command (concat "test-only" " " cleaned-class)))
+          (or (ensime-top-level-class-closest-to-point)
+              (return (message "Could not find top-level class"))))
+         (cleaned-class (replace-regexp-in-string "<empty>\\." "" impl-class))
+         (command (concat "test-only" " " cleaned-class)))
     (ensime-sbt-test-dwim command)))
 
 

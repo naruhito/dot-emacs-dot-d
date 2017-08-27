@@ -78,6 +78,9 @@
 (defvar ensime-db-thread-suspended-hook nil
   "Hook called whenever the debugger suspends a thread.")
 
+(defvar ensime-db-attached nil
+  "Whether the debugger was started with ensime-db-attach.")
+
 (defvar ensime-db-marker-overlays '())
 
 (defvar ensime-db-breakpoint-overlays '())
@@ -182,7 +185,7 @@
 
   (-when-let (exc-val (ensime-rpc-debug-value
                        (ensime-db-make-obj-ref-location
-                        (plist-get evt :exception))))
+                        (number-to-string (plist-get evt :exception)))))
     (ensime-ui-show-nav-buffer
      ensime-db-value-buffer
      exc-val t))
@@ -190,7 +193,9 @@
   )
 
 (defun ensime-db-handle-start (evt)
-  (message "Debug VM started. Set breakpoints and then execute ensime-db-run.")
+  (if ensime-db-attached
+      (message "Attached to target VM - program running")
+    (message "Debug VM started. Set breakpoints and then execute ensime-db-run."))
   (when (get-buffer ensime-db-output-buffer)
     (kill-buffer ensime-db-output-buffer)))
 
@@ -734,9 +739,7 @@
 (defun ensime-db-run ()
   "Start debugging the current program."
   (interactive)
-  (if (ensime-rpc-debug-active-vm)
-      (ensime-rpc-debug-run)
-    (ensime-db-start)))
+  (ensime-rpc-debug-run))
 
 (defun ensime-db-set-break (f line)
   "Set a breakpoint in the current source file at point."
@@ -797,56 +800,38 @@ the current project's dependencies. Returns list of form (cmd [arg]*)"
   (ensime-db-clear-breakpoint-overlays)
   (ensime-db-clear-marker-overlays))
 
+(defun ensime--db-post-start (ret action attaching)
+  (setq ensime-db-attached attaching)
+  (if (string= (plist-get ret :status) "success")
+      (progn
+        (message (concat action "..."))
+        (add-hook 'ensime-db-thread-suspended-hook
+                  'ensime-db-update-backtraces)
 
-(defun ensime-db-start ()
-  "Start a debug VM"
-  (interactive)
+        (add-hook 'ensime-net-process-close-hooks
+                  'ensime-db-connection-closed))
 
-  (ensime-with-conn-interactive
-   conn
-   (let ((root-path (or (ensime-configured-project-root) "."))
-         (cmd-line (ensime-db-get-cmd-line)))
+    (message (format "An error occurred during %s: %s" action
+                     (plist-get ret :details))))
+  )
 
-     (let ((ret (ensime-rpc-debug-start cmd-line)))
-       (if (string= (plist-get ret :status) "success")
-           (progn
-             (message "Starting debug VM...")
-             (add-hook 'ensime-db-thread-suspended-hook
-                       'ensime-db-update-backtraces)
-
-             (add-hook 'ensime-net-process-close-hooks
-                       'ensime-db-connection-closed))
-
-         (message (format "An error occured during starting debug VM: %s"
-                          (plist-get ret :details))))
-       ))))
-
-
-(defun ensime-db-attach ()
+(defun ensime-db-attach (&optional override-host override-port)
   "Attach to a debug VM"
   (interactive)
+  ;; would be better to use the interactive parser for host/port
+  ;; instead of this hack of calling out to separate functions
 
   (ensime-with-conn-interactive
    conn
-   (let ((hostname (ensime-db-get-hostname))
-         (port (ensime-db-get-port)))
+   (let ((hostname (or override-host (ensime-db-get-hostname)))
+         (port (or override-port (ensime-db-get-port))))
 
-     (let ((ret (ensime-rpc-debug-attach hostname port)))
-       (if (string= (plist-get ret :status) "success")
-           (progn
-             (message "Attaching to target VM...")
-             (add-hook 'ensime-db-thread-suspended-hook
-                       'ensime-db-update-backtraces)
-
-             (add-hook 'ensime-net-process-close-hooks
-                       'ensime-db-connection-closed))
-
-         (message "An error occured during attaching to target VM: %s"
-                  (plist-get ret :details)))))
-   ))
+     (ensime--db-post-start (ensime-rpc-debug-attach hostname port)
+                            "attaching to target VM"
+                            t)
+   )))
 
 (provide 'ensime-debug)
 
 ;; Local Variables:
 ;; End:
-

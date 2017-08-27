@@ -1,4 +1,11 @@
-;;; ensime-editor.el  -- Editor and navigation commands
+;;; ensime-editor.el -- Editor and navigation commands -*- lexical-binding: t -*-
+
+;; Copyright (C) 2015 ENSIME authors
+;; License: http://www.gnu.org/licenses/gpl.html
+
+;;; Commentary:
+;;
+;;; Code:
 
 (eval-when-compile
   (require 'cl)
@@ -6,12 +13,15 @@
 
 (require 'dash)
 (require 'popup)
+(require 'ensime-ivy)
+(require 'ensime-vars)
+
+(autoload 'ensime-helm-select-entry "ensime-helm")
 
 (defvar ensime-compile-result-buffer-name "*ENSIME-Compilation-Result*")
 
 (defvar ensime-compile-result-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "g") 'ensime-show-all-errors-and-warnings)
     (define-key map (kbd "TAB") 'forward-button)
     (define-key map (kbd "<backtab>") 'backward-button)
     (define-key map (kbd "M-n") 'forward-button)
@@ -48,6 +58,7 @@
    :keymap `()))
 
 (defvar ensime-uses-buffer-name "*Uses*")
+(defvar ensime-hierarchy-buffer-name "*Hierarchy*")
 
 (defvar ensime-uses-buffer-map
   (let ((map (make-sparse-keymap)))
@@ -255,26 +266,47 @@
   (interactive)
   (pop-tag-mark))
 
-(defun ensime-edit-definition-other-window ()
-  (interactive)
-  (ensime-edit-definition 'window))
+(defun ensime-edit-definition-other-window (arg)
+  (interactive "P")
+  (ensime-edit-definition arg 'window))
 
-(defun ensime-edit-definition-other-frame ()
-  (interactive)
-  (ensime-edit-definition 'frame))
+(defun ensime-edit-definition-other-frame (arg)
+  (interactive "P")
+  (ensime-edit-definition arg 'frame))
 
-(defun ensime-edit-definition (&optional where)
-  "Lookup the definition of the name at point."
-  (interactive)
+(defun ensime-edit-definition (arg &optional where)
+  "Lookup the definition of the name at point.
 
+If provided with the universal arguments looks up the definition
+of the type of the thing at point."
+  (interactive "P")
+  (if arg
+      (ensime-edit-definition-of-type-of-thing-at-point where)
+    (ensime-edit-definition-of-thing-at-point where)))
+
+(defun ensime-edit-definition-of-thing-at-point (&optional where)
+  "Lookup the definition of the name at point.
+Goes to the point of the definition (returning point), or fails with `nil'."
+  (interactive)
   (let* ((info (ensime-rpc-symbol-at-point))
-	 (pos (ensime-symbol-decl-pos info)))
-    (if (ensime-pos-valid-local-p pos)
-	(progn
-	  (ensime-push-definition-stack)
-	  (ensime-goto-source-location pos where))
-      (message "Sorry, no definition found."))))
+         (pos (ensime-symbol-decl-pos info)))
+    (ensime-edit-definition-at-pos pos where)))
 
+(defun ensime-edit-definition-of-type-of-thing-at-point (&optional where)
+  "Lookup the type at point.
+Goes to the point of the definition of the type."
+  (interactive)
+  (let* ((type (ensime-rpc-get-type-at-point))
+         (pos (plist-get type :pos)))
+    (ensime-edit-definition-at-pos pos where)))
+
+(defun ensime-edit-definition-at-pos (pos where)
+  "Edits the definition at pos."
+  (if (ensime-pos-valid-local-p pos)
+      (progn
+        (ensime-push-definition-stack)
+        (ensime-goto-source-location pos where))
+    (not (message "Sorry, ENSIME couldn't find the definition."))))
 
 (defun ensime-files-equal-p (f1 f2)
   "Return t if file-names refer to same file."
@@ -311,7 +343,7 @@
 	 (file-visible-window (ensime-window-showing-file file)))
 
     (when (not file-visible-window)
-      (ensime-find-file-from-pos pos where)
+      (ensime-find-file-from-pos pos (eq where 'window) (eq where 'frame))
       (setq file-visible-window
 	    (ensime-window-showing-file file)))
 
@@ -325,7 +357,7 @@
 	(goto-char pt)
         (set-window-point file-visible-window pt)))))
 
-(defun ensime-find-file-from-pos (pos other-window-p)
+(defun ensime-find-file-from-pos (pos other-window-p other-frame-p)
   (let* ((archive (ensime-pos-archive pos))
          (entry (ensime-pos-file pos))
          (effective-file (ensime-pos-effective-file pos))
@@ -343,71 +375,15 @@
           (let ((backup-inhibited t))
             (write-file effective-file)))))
 
-    (if other-window-p
-        (find-file-other-window effective-file)
-      (find-file effective-file))
+    (cond (other-window-p (find-file-other-window effective-file))
+	  (other-frame-p (find-file-other-frame effective-file))
+	  (t (find-file effective-file)))
 
     (let* ((config (ensime-config-for-buffer))
            (dep-src-dir (ensime-source-jars-dir config)))
       (when (ensime-path-includes-dir-p effective-file dep-src-dir)
         (with-current-buffer (get-file-buffer effective-file)
           (setq buffer-read-only t))))))
-
-;; Compilation result interface
-
-(defun ensime-show-compile-result-buffer (notes-in)
-  "Show a popup listing the results of the last build."
-
-  (ensime-with-popup-buffer
-   (ensime-compile-result-buffer-name t t)
-   (use-local-map ensime-compile-result-map)
-   (ensime-insert-with-face
-    "Latest Compilation Results (q to quit, g to refresh, TAB to jump to next error)"
-    'font-lock-constant-face)
-   (if (null notes-in)
-       (insert "\n0 errors, 0 warnings.")
-     (save-excursion
-
-       ;; Group notes by their file and sort by
-       ;; position in the buffer.
-       (let ((notes-by-file (make-hash-table :test 'equal)))
-	 (dolist (note notes-in)
-	   (let* ((f (ensime-note-file note))
-		  (existing (gethash f notes-by-file)))
-	     (puthash f (cons note existing) notes-by-file)))
-	 (maphash (lambda (file-heading notes-set)
-		    (let ((notes (sort (copy-list notes-set)
-				       (lambda (a b) (< (ensime-note-beg a)
-							(ensime-note-beg b))))))
-
-		      ;; Output file heading
-		      (ensime-insert-with-face
-		       (concat "\n" file-heading "\n")
-		       'font-lock-comment-face)
-
-		      ;; Output the notes
-		      (dolist (note notes)
-			(destructuring-bind
-			    (&key severity msg beg
-				  end line col file &allow-other-keys) note
-			  (let ((face (case severity
-					(error 'ensime-compile-errline)
-					(warn 'ensime-compile-warnline)
-					(info font-lock-string-face)
-					(otherwise font-lock-comment-face)))
-				(header (case severity
-					  (error "ERROR")
-					  (warn "WARNING")
-					  (info "INFO")
-					  (otherwise "MISC")))
-				(p (point)))
-			    (insert (format "%s: %s : line %s"
-					    header msg line))
-			    (ensime-make-code-link p (point) file beg face)))
-			(insert "\n"))))
-		  notes-by-file)))
-     (forward-button 1))))
-
 
 ;; Compilation on request
 
@@ -423,35 +399,10 @@
   (ensime-typecheck-current-buffer))
 
 (defun ensime-reload-open-files ()
-  "Make the ENSIME server forget about all files ; reload .class files
-in the project's path ;  then reload only the Scala files that are
-currently open in emacs."
+  "Make the ENSIME server forget about all files then reload only
+the Scala files that are currently open in emacs."
   (interactive)
-  (message "Unloading all files...")
-  (ensime-rpc-unload-all)
-  (message "Reloading open files...")
-  (setf (ensime-last-typecheck-run-time (ensime-connection)) (float-time))
-  (let* ((buffers (ensime-connection-visiting-buffers (ensime-connection)))
-	 (files (-filter #'file-exists-p (-map #'buffer-file-name buffers))))
-    (ensime-rpc-async-typecheck-files files 'identity)))
-
-(defun ensime-typecheck-all ()
-  "Send a request for re-typecheck of whole project to the ENSIME server.
-   Current file is saved if it has unwritten modifications."
-  (interactive)
-  (message "Checking entire project...")
-  (if (buffer-modified-p) (ensime-write-buffer nil t))
-  (setf (ensime-awaiting-full-typecheck (ensime-connection)) t)
-  (setf (ensime-last-typecheck-run-time (ensime-connection)) (float-time))
-  (ensime-rpc-async-typecheck-all 'identity))
-
-(defun ensime-show-all-errors-and-warnings ()
-  "Show a summary of all compilation notes."
-  (interactive)
-  (let ((notes
-         (append (ensime-java-compiler-notes (ensime-connection))
-                 (ensime-scala-compiler-notes (ensime-connection)))))
-    (ensime-show-compile-result-buffer notes)))
+  (ensime-rpc-restart-scala-compiler))
 
 (defun ensime-sym-at-point (&optional point)
   "Return information about the symbol at point, using the an RPC request.
@@ -486,108 +437,277 @@ currently open in emacs."
               :end end
               :name (buffer-substring-no-properties start end))))))
 
-(defun ensime-insert-import (qualified-name)
-  "A simple, hacky import insertion."
-  (save-excursion
+(defun ensime-java-new-import (qualified-name)
+  (format "import %s;\n" qualified-name))
 
+(defun ensime-scala-new-import (qualified-name)
+  (format "import %s\n" qualified-name))
+
+(defun ensime-scala-new-import-grouped-package (base-package grouped-classes)
+  (format "import %s.{ %s }" base-package grouped-classes))
+
+(defun ensime-no-imports-in-buffer-p ()
+  (looking-at "^\\s-*package\\s-"))
+
+(defun ensime-import-block-in-buffer-p ()
+  (looking-at "^\\s-*import\\s-"))
+
+(defun ensime-same-base-package-p (current-import qualified-name)
+  "Compare CURRENT-IMPORT's package to QUALIFIED-NAME's package, returning true if they are equal."
+  (equal (->> current-import (s-split "\\.") -butlast)
+         (->> qualified-name (s-split "\\.") -butlast)))
+
+(defun ensime-past-starting-point (starting-point)
+  "Past STARTING-POINT of excursion.
+Should not insert past STARTING-POINT - move to beginning of line that STARTING-POINT is on.
+STARTING-POINT is the point where the `ensime-insert-import' was invoked from."
+  (when (>= (point) starting-point)
+    (goto-char starting-point)
+    (goto-char (point-at-bol))))
+
+(defun ensime-indent-line ()
+  (indent-region (point-at-bol) (point-at-eol)))
+
+(defun ensime-insert-new-import-no-imports-in-buffer (starting-point java-scala-new-import qualified-name)
+  "Insert new import when there are no current import statements in the buffer.
+STARTING-POINT is the point where the `ensime-insert-import' was invoked from.
+JAVA-SCALA-NEW-IMPORT is a function to format the import statement for either java or scala.
+QUALIFIED-NAME is the name to import.
+Returns a function/closure to invoke the necessary buffer operations to perform the insertion."
+  (lambda ()
+    (goto-char (point-at-eol))
+    (newline)
+    (newline)
+    (ensime-past-starting-point starting-point)
+    (save-excursion (insert (funcall java-scala-new-import qualified-name)))
+    (ensime-indent-line)))
+
+(defun ensime-insert-new-import-no-imports-or-package-in-buffer (starting-point java-scala-new-import qualified-name)
+  "Insert new import when there are no current import statements or package statement in the buffer.
+STARTING-POINT is the point where the `ensime-insert-import' was invoked from.
+JAVA-SCALA-NEW-IMPORT is a function to format the import statement for either java or scala.
+QUALIFIED-NAME is the name to import.
+Returns a function/closure to invoke the necessary buffer operations to perform the insertion."
+  (lambda ()
+    (unless (looking-at "^\s*$")
+     (newline)
+     (backward-char 1))
+    (ensime-past-starting-point starting-point)
+    (save-excursion (insert (funcall java-scala-new-import qualified-name)))
+    (ensime-indent-line)))
+
+(defun ensime-insert-new-import-next-line (starting-point java-scala-new-import qualified-name)
+  "Insert new import on the next line in the buffer.
+STARTING-POINT is the point where the `ensime-insert-import' was invoked from.
+JAVA-SCALA-NEW-IMPORT is a function to format the import statement for either java or scala.
+QUALIFIED-NAME is the name to import.
+Returns a function/closure to invoke the necessary buffer operations to perform the insertion."
+  (lambda ()
+    (goto-char (point-at-eol))
+    (if (equal (point) (point-max)) (newline) (forward-char 1))
+    (ensime-past-starting-point starting-point)
+    (save-excursion (insert (funcall java-scala-new-import qualified-name)))
+    (ensime-indent-line)))
+
+(defun ensime-insert-new-scala-import-grouped-package-next-line (current-import qualified-name)
+  "Insert new grouped import on the next line in the buffer, overriding the whole line.
+CURRENT-IMPORT is qualified name of the import line where the base package matches that of QUALIFIED-NAME.
+QUALIFIED-NAME is the name to import.
+Returns a function/closure to invoke the necessary buffer operations to perform the insertion."
+  (let* ((current-import-components (->> current-import (s-split "\\.")))
+         (base-package (->> current-import-components -butlast (s-join ".")))
+         (current-imports (->> current-import-components -last-item))
+         (qualified-class-name (->> qualified-name (s-split "\\.") -last-item))
+         (new-imports (->> current-imports (s-chop-prefix "{") (s-chop-suffix "}")
+                           (s-split ",") (-map 's-trim)
+                           (cons qualified-class-name) (-sort 's-less?) (s-join ", "))))
+    (lambda ()
+      (cond
+        ((equal (point) (point-max)) (newline))
+        ; if the import statement is at point-min we can't be above it and are actually at point-at-bol
+        ((equal (point) (point-at-eol)) (forward-char 1)))
+      (kill-line)
+      (->> (ensime-scala-new-import-grouped-package base-package new-imports)
+           insert save-excursion)
+      (ensime-indent-line))))
+
+(defun ensime-move-to-end-of-multiline-import ()
+  "Move point to the end of a multiline import."
+  (when (not (string-match (rx (zero-or-more any) ?} (zero-or-more whitespace) eol) (thing-at-point 'line)))
+      (goto-char (point-at-eol))
+      (when (not (equal (point) (point-max)))
+        (forward-line 1)
+        (ensime-move-to-end-of-multiline-import)
+      )))
+
+(defun ensime-at-start-of-multiline-block ()
+  "Returns t when at start of multiline block."
+      (string-match (rx (zero-or-more anything) ?{ (zero-or-more (not (any ?})))) (thing-at-point 'line)))
+
+(defun ensime-java-new-import-insertion-decisioning-in-import-block (insertion-range starting-point qualified-name)
+  "Search through import statements in buffer above INSERTION-RANGE and STARTING-POINT.
+Decide what line to insert QUALIFIED-NAME."
+  (let ((looking-at-import? (looking-at "[\n\t ]*import\\s-\\(.+\\)\n"))
+        (matching-import (match-string 1)))
+    (cond
+     ;; insert at the end of the import block
+     ((not looking-at-import?) (ensime-insert-new-import-next-line starting-point 'ensime-java-new-import qualified-name))
+     ;; insert next line
+     ((not (s-less? matching-import qualified-name))
+      (ensime-insert-new-import-next-line starting-point 'ensime-java-new-import qualified-name))
+     ;; continue looking for insertion point
+     (t
+      (search-forward-regexp "^\\s-*import\\s-" insertion-range t)
+      (goto-char (point-at-eol))
+      (ensime-java-new-import-insertion-decisioning-in-import-block insertion-range starting-point qualified-name)))))
+
+(defun ensime-scala-new-import-insertion-decisioning-in-import-block (insertion-range starting-point qualified-name)
+  "Search through import statements in buffer above INSERTION-RANGE and STARTING-POINT.
+Decide what line to insert QUALIFIED-NAME."
+  (let ((looking-at-import? (looking-at "[\n\t ]*import\\s-\\(.+\\)\n"))
+        (matching-import (match-string 1)))
+    (cond
+     ;; insert at the end of the import block
+     ((not looking-at-import?)
+      (when (ensime-at-start-of-multiline-block) (ensime-move-to-end-of-multiline-import))
+      (ensime-insert-new-import-next-line starting-point 'ensime-scala-new-import qualified-name))
+     ;; same base package, insert on next line, overriding the entire line
+     ((ensime-same-base-package-p matching-import qualified-name)
+      (ensime-insert-new-scala-import-grouped-package-next-line matching-import qualified-name))
+     ;; insert next line
+     ((not (s-less? matching-import qualified-name))
+      (ensime-insert-new-import-next-line starting-point 'ensime-scala-new-import qualified-name))
+     ;; continue looking for insertion point
+     (t
+      (search-forward-regexp "^\\s-*import\\s-" insertion-range t)
+      (goto-char (point-at-eol))
+      (ensime-scala-new-import-insertion-decisioning-in-import-block insertion-range starting-point qualified-name)))))
+
+(defun ensime-insert-java-import (insertion-range starting-point qualified-name)
+  "A simple java import insertion in buffer above INSERTION-RANGE and STARTING-POINT.
+Decide what line to insert QUALIFIED-NAME."
+  (cond
+   ((ensime-no-imports-in-buffer-p)
+    (ensime-insert-new-import-no-imports-in-buffer starting-point
+                                                   'ensime-java-new-import
+                                                   qualified-name))
+   ((ensime-import-block-in-buffer-p)
+    (unless (equal (point) (point-min)) (backward-char))
+    (ensime-java-new-import-insertion-decisioning-in-import-block insertion-range
+                                                     starting-point
+                                                     qualified-name))
+   ;; Neither import nor package: stay at beginning of buffer
+   (t
+    (ensime-insert-new-import-no-imports-or-package-in-buffer starting-point
+                                                              'ensime-java-new-import
+                                                              qualified-name))))
+
+(defun ensime-insert-scala-import (insertion-range starting-point qualified-name)
+  "A simple scala import insertion in buffer above INSERTION-RANGE and STARTING-POINT.
+Decide what line to insert QUALIFIED-NAME."
+  (cond
+   ((ensime-no-imports-in-buffer-p)
+    (ensime-insert-new-import-no-imports-in-buffer starting-point
+                                                   'ensime-scala-new-import
+                                                   qualified-name))
+   ((ensime-import-block-in-buffer-p)
+    (unless (equal (point) (point-min)) (backward-char))
+    (ensime-scala-new-import-insertion-decisioning-in-import-block insertion-range
+                                                                   starting-point
+                                                                   qualified-name))
+   ;; Neither import nor package: stay at beginning of buffer
+   (t
+    (ensime-insert-new-import-no-imports-or-package-in-buffer starting-point
+                                                              'ensime-scala-new-import
+                                                              qualified-name))))
+
+(defun ensime-insert-import (qualified-name)
+  "A simple ensime import insertion in buffer of QUALIFIED-NAME."
+  (save-excursion
     (let ((insertion-range (point))
-          (starting-point (point)))
-      (unless
-          (search-backward-regexp "^\\s-*package\\s-" nil t)
-        (goto-char (point-min)))
+          (starting-point (point))
+          (insert-import-fn (if (ensime-visiting-java-file-p) 'ensime-insert-java-import 'ensime-insert-scala-import)))
+      (goto-char (point-min))
+      (let ((finished? nil))
+        (while (not finished?)
+          (let ((prev (point)))
+            (cond ((not (search-forward-regexp
+                         "^\\s-*package\\s-+\\(.+?\\)\\(?:\\s-\\|$\\)"
+                         nil t))
+                   ;; No more package statements
+                   (setq finished? t))
+                  ((string= (match-string 1) "object")
+                   ;; Found a package object - reverting
+                   (goto-char prev)
+                   (setq finished? t))))))
       (search-forward-regexp "^\\s-*import\\s-" insertion-range t)
       (goto-char (point-at-bol))
+      (funcall (funcall insert-import-fn insertion-range starting-point qualified-name)))))
 
-      (cond
-       ;; No imports yet
-       ((looking-at "^\\s-*package\\s-")
-        (goto-char (point-at-eol))
-        (newline)
-        (newline))
-
-       ;; Found import block, insert alphabetically
-       ((looking-at "^\\s-*import\\s-")
-        (unless (equal (point) (point-min)) (backward-char))
-        (while (progn
-                 (if (looking-at "[\n\t ]*import\\s-\\(.+\\)\n")
-                     (let ((imported-name (match-string 1)))
-                       (string< imported-name qualified-name))))
-          (search-forward-regexp "^\\s-*import\\s-" insertion-range t)
-          (goto-char (point-at-eol)))
-        (if (equal (point) (point-max)) (newline) (forward-char 1)))
-
-       ;; Neither import nor package: stay at beginning of buffer
-       (t
-        (unless (looking-at "^\s*$")
-          (newline)
-          (backward-char 1))))
-
-      (when (>= (point) starting-point)
-        (goto-char starting-point)
-        (goto-char (point-at-bol)))
-      (save-excursion
-        (insert (format (cond ((ensime-visiting-scala-file-p) "import %s\n")
-                              ((ensime-visiting-java-file-p) "import %s;\n"))
-                        qualified-name)))
-      (indent-region (point-at-bol) (point-at-eol)))))
+(defun ensime-ask-user-to-select-entry (title entries)
+  "Prompt the user to select an entry from entries."
+  (pcase ensime-search-interface
+    (`classic
+     (popup-menu* entries :point (point)))
+    (`helm
+     (if (featurep 'helm)
+         (ensime-helm-select-entry entries title)
+       (progn
+         (message "Helm is not installed, falling back to popup interface.")
+         (popup-menu* entries :point (point)))))
+    (`ivy
+     (if (featurep 'ivy)
+         (ivy-read title entries)
+       (progn
+         (message "Ivy is not installed, falling back to popup interface.")
+         (popup-menu* entries :point (point)))))))
 
 (defun ensime-import-type-at-point (&optional non-interactive)
   "Suggest possible imports of the qualified name at point.
- If user selects and import, add it to the import list."
+If user selects an import, add it to the import list."
   (interactive)
   (let* ((sym (ensime-local-sym-at-point))
-	 (name (plist-get sym :name))
-	 (name-start (plist-get sym :start))
-	 (name-end (plist-get sym :end))
-	 (suggestions (when name (ensime-rpc-import-suggestions-at-point (list name) 10))))
-    (when suggestions
+         (name (plist-get sym :name))
+         (name-start (plist-get sym :start))
+         (name-end (plist-get sym :end))
+         (suggestions (when name
+                        (ensime-rpc-import-suggestions-at-point
+                         (list name) 10))))
+    (if (car-safe suggestions)
       (let* ((names (mapcar
-		     (lambda (s)
-		       (propertize (plist-get s :name)
-				   'local-name
-				   (plist-get s :local-name)))
-		     (apply 'append suggestions)))
-	     (selected-name
-	      (if non-interactive (car names)
-		(popup-menu*
-		 names :point (point)))))
-	(when selected-name
-	  (save-excursion
-	    (when (and (not (equal selected-name name))
+                     (lambda (s)
+                       (propertize (plist-get s :name)
+                                   'local-name
+                                   (plist-get s :local-name)))
+                     (apply 'append suggestions)))
+             (selected-name (if non-interactive
+                                (car names)
+                              (ensime-ask-user-to-select-entry "Import type: "
+                                                               names))))
+        (when selected-name
+          (save-excursion
+            (when (and (not (equal selected-name name))
                        name-start name-end)
-	      (goto-char name-start)
-	      (delete-char (- name-end name-start))
-	      (insert (ensime-short-local-name
+              (goto-char name-start)
+              (delete-char (- name-end name-start))
+              (insert (ensime-short-local-name
                        (get-text-property
                         0 'local-name selected-name))))
-	    (let ((qual-name
-		   (ensime-strip-dollar-signs
-		    (ensime-kill-txt-props selected-name))))
-	      (ensime-insert-import qual-name)
-	      (ensime-typecheck-current-buffer))))))))
+            (let ((qual-name
+                   (ensime-strip-dollar-signs
+                    (ensime-kill-txt-props selected-name))))
+              (ensime-insert-import qual-name)
+              (ensime-typecheck-current-buffer)))))
+      (message "No import suggestions were returned for %S" name))))
 
-;; Source Formatting
-
+;; Source Formatting - transition cue to sbt task
 (defun ensime-format-source ()
-  "Format the source in the current buffer using the Scalariform
- formatting library."
+  "DEPRECATED - use ensime-sbt-do-scalariform-only directly.
+Functionality was moved from ensime-server to the build tool plugins.
+Use build tools tasks appropriately"
   (interactive)
-  (if (version< (ensime-protocol-version) "0.8.11")
-      (ensime-with-buffer-written-to-tmp
-       (file)
-       (message "Formatting...")
-       (ensime-rpc-async-format-files
-        (list file)
-        `(lambda (result)
-           (ensime-revert-visited-files (list (list ,buffer-file-name ,file)) t))))
-    (let ((formatted (ensime-rpc-format-buffer)))
-      (when formatted
-        (when (eq 1 (coding-system-eol-type buffer-file-coding-system))
-          (setq formatted (replace-regexp-in-string "\r$" "" formatted)))
-        (let ((pt (point)))
-          (erase-buffer)
-          (insert formatted)
-          (goto-char pt))))))
+  (message "Function use is deprecated, please transition to ensime-sbt-do-scalariform-only.")
+  (ensime-sbt-do-scalariform-only))
 
 (defun ensime-revert-visited-files (files &optional typecheck)
   "files is a list of buffer-file-names to revert or lists of the form
@@ -688,15 +808,6 @@ currently open in emacs."
 	    (end (cadr range)))
 	(ensime-set-selection start end)))))
 
-(defun ensime-inspect-bytecode ()
-  "Show the bytecode for the current method."
-  (interactive)
-  (let ((bc (ensime-rpc-method-bytecode buffer-file-name (ensime-current-line))))
-    (if (not bc)
-	(message "Could not find bytecode.")
-      (progn
-	(ensime-ui-show-nav-buffer "*ensime-method-bytecode-buffer*" bc t)))))
-
 (defun ensime-ui-insert-method-bytecode (val)
   (destructuring-bind
       (&key class-name name bytecode &allow-other-keys) val
@@ -712,63 +823,116 @@ currently open in emacs."
 
 ;; Uses UI
 
-(defun ensime-show-uses-of-symbol-at-point ()
-  "Display a hyperlinked list of the source locations
- where the symbol under point is referenced."
+(defun ensime-show-hierarchy-of-type-at-point ()
+  "Show the type hierarchy of type at point."
   (interactive)
+  (let ((hierarchy (ensime-rpc-hierarchy-of-type-at-point)))
+    (if hierarchy
+        (progn
+          (switch-to-buffer (get-buffer-create ensime-hierarchy-buffer-name))
+          (setq buffer-read-only nil)
+          (erase-buffer)
+          (let ((ancestors (ensime-type-ancestors hierarchy))
+                (inheritors (ensime-type-inheritors hierarchy)))
+            (insert "### Ancestors\n")
+            (ensime-write-hierarchy-entries-to-buffer ancestors)
+            (insert "\n\n### Inheritors\n")
+            (ensime-write-hierarchy-entries-to-buffer inheritors))
+          (goto-char 0)
+          (grep-mode))
+      (message "Nothing to show."))))
+
+(defun ensime-write-hierarchy-entries-to-buffer (hierarchy-entries)
+  (dolist (hierarchy-entry hierarchy-entries)
+    (let ((source-position (ensime-type-source-position hierarchy-entry)))
+      (insert (ensime-format-source-position source-position))
+      (insert ": ")
+      (insert (ensime-type-fqn hierarchy-entry))
+      (insert "\n"))))
+
+(defun ensime-show-uses-of-symbol-at-point (&optional arg)
+  "Display a hyperlinked list of the source locations
+where the symbol under point is referenced.
+when given the universal-argument the display
+falls back to the classic version."
+  (interactive "P")
   (let ((uses (ensime-rpc-uses-of-symbol-at-point)))
-    (ensime-with-popup-buffer
-     (ensime-uses-buffer-name t t)
-     (use-local-map ensime-uses-buffer-map)
+    (if uses
+        (progn
+          (if (equal arg '(4))
+              (ensime-classic-show-uses-of-symbol-at-point uses)
+            (progn (let ((selection
+                          (pcase ensime-search-interface
+                            (`classic
+                             (ensime-classic-show-uses-of-symbol-at-point uses))
+                            (`helm
+                             (if (featurep 'helm)
+                                 (ensime-helm-select-source-position uses "uses")
+                               (message "Please ensure helm is installed and loaded.")))
+                            (`ivy
+                             (if (featurep 'ivy)
+                                 (ensime-ivy-select-source-position uses "Uses: ")
+                               (message "Please ensure ivy is installed and loaded."))))))
+                     (when selection
+                       (let ((source-position (ensime-source-hint-position selection)))
+                         (find-file (ensime-pos-file source-position))
+                         (ensime-goto-line (ensime-pos-line source-position))))))))
+      (message "Nothing to show."))))
+
+(defun ensime-classic-show-uses-of-symbol-at-point (uses)
+  "Renders uses in a new buffer."
+  (switch-to-buffer (get-buffer-create ensime-uses-buffer-name))
+  (setq buffer-read-only nil)
+  (erase-buffer)
+  (dolist (source-hint uses)
+    (let ((preview (plist-get source-hint :preview)))
+      (insert (ensime-format-source-position (ensime-source-hint-position source-hint)))
+      (insert ": ")
+      (when preview
+        (insert preview)))
+    (insert "\n"))
+  (goto-char 0)
+  (grep-mode))
 
 
-     (ensime-insert-with-face
-      "TAB to advance to next use, q to quit"
-      'font-lock-constant-face)
-     (insert "\n\n\n")
+(defun ensime-format-source-position (source-position)
+  "Format source position SOURCE-POSITION."
+  (let* ((file-name (ensime-pos-file source-position))
+         (maybe-line (ensime-pos-line source-position))
+         (root-dir (ensime-configured-project-root))
+         (shortened-file-name (if root-dir
+                                  (replace-regexp-in-string (concat "^" (regexp-quote (expand-file-name root-dir)) "[/]?") "" file-name)
+                                file-name)))
+    (let ((line (if maybe-line (number-to-string (if (= 0 maybe-line) 1 maybe-line)) "?")))
+      (concat shortened-file-name
+              (propertize (concat ":" line) 'face 'font-lock-comment-face)))))
 
-     (dolist (pos uses)
-       (let* ((file (ensime-pos-file pos))
-              (pos-internal-offset (ensime-internalize-offset-for-file
-                                    file
-                                    (ensime-pos-offset pos)))
 
-	      (range-start (- pos-internal-offset 80))
-	      (range-end (+ pos-internal-offset 80))
-	      (result (ensime-extract-file-chunk
-		       file range-start range-end))
-	      (chunk-text (plist-get result :text))
-	      (chunk-start (plist-get result :chunk-start))
-	      (chunk-start-line (plist-get result :chunk-start-line)))
 
-	 (ensime-insert-with-face file 'font-lock-comment-face)
-	 (ensime-insert-with-face
-	  (format "\n------------------- @line %s -----------------------\n"
-		  chunk-start-line)
-	  'font-lock-comment-face)
+(defun ensime-type-at-point (&optional arg use-full-name)
+  "Echo the type at point to the minibuffer.
+A prefix argument will add the type to the kill ring.
+If additional parameter use-full-name is provided it'll use type fullname"
+  (interactive "P")
+  (let* ((type (ensime-rpc-get-type-at-point))
+         (type-name (if use-full-name
+                        (ensime-type-full-name-with-args type)
+                      (ensime-type-name-with-args type))))
+    (when  (equal arg '(4))
+      (kill-new type-name))
+    (when (equal arg '(16))
+      (ensime--make-result-overlay
+          (format "%S" type-name)
+        :where (point)
+        :duration 'command))
+    (message type-name)))
 
-	 (let ((p (point)))
+(defun ensime-type-at-point-full-name (&optional arg)
+  "Echo the full type name at point to the minibuffer.
+A prefix argument will add the type to the kill ring."
+  (interactive "P")
+  (ensime-type-at-point arg t))
 
-	   ;; Insert the summary chunk
-	   (insert chunk-text)
-
-	   ;; Highlight the occurances
-	   (let* ((external-from (plist-get pos :start))
-                  (from (ensime-internalize-offset-for-file
-                         file
-                         (plist-get pos :start)))
-		  (to (ensime-internalize-offset-for-file
-                       file
-                       (plist-get pos :end)))
-		  (buffer-from (+ p (- from chunk-start)))
-		  (buffer-to (+ p (- to chunk-start))))
-	     (ensime-make-code-link
-	      buffer-from buffer-to file external-from)))
-
-	 (insert "\n\n\n")))
-     (goto-char (point-min))
-     (when uses (forward-button 1)))
-    (ensime-event-sig :references-buffer-shown)))
 
 (provide 'ensime-editor)
 

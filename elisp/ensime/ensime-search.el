@@ -24,9 +24,19 @@
   (require 'ensime-macros))
 
 (require 'dash)
+(require 'ensime-helm)
+(require 'ensime-ivy)
+
+(defvar ensime-search-interface)
+(defvar ensime-buffer-connection)
+
+(autoload 'ensime-helm-search "ensime-helm")
 
 (defvar ensime-search-mode nil
   "Enables the ensime-search minor mode.")
+
+(defvar ensime-search-mode-hook nil
+  "Hooks to run after entering ensime-search-mode")
 
 (defvar ensime-search-buffer-name "*ensime-search*"
   "Buffer to use for ensime-search.")
@@ -65,7 +75,6 @@
 (defvar ensime-search-max-results 50
   "The max number of results to return per rpc call.")
 
-
 (defvar ensime-search-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map "\C-c\C-q" 'ensime-search-quit)
@@ -76,7 +85,7 @@
     (define-key map (kbd "<down>") 'ensime-search-next-match)
     (define-key map "\C-n" 'ensime-search-next-match)
     (define-key map "\C-i" 'ensime-search-insert-import-of-current-result)
-    (define-key map [(return)] 'ensime-search-choose-current-result)
+    (define-key map (kbd "RET") 'ensime-search-choose-current-result)
     map)
   "Keymap used by ensime-search.")
 
@@ -88,13 +97,12 @@
     (define-key map "\C-n" 'ensime-search-next-match)
     (define-key map (kbd "<down>") 'ensime-search-next-match)
     (define-key map "\C-i" 'ensime-search-insert-import-of-current-result)
-    (define-key map [(return)] 'ensime-search-choose-current-result)
+    (define-key map (kbd "RET") 'ensime-search-choose-current-result)
     map)
   "Keymap used by ensime-search.")
 
 (defvar ensime-search-selection-overlay nil
   "Overlay that highlights the currently selected search result.")
-
 
 (defstruct ensime-search-result
   "A ensime-search search result.
@@ -116,9 +124,24 @@
   (summary-start 0)
   (data nil))
 
-
 (defun ensime-search ()
   "The main entrypoint for ensime-search-mode.
+   Initiate an incremental search of all live buffers."
+  (interactive)
+  (pcase ensime-search-interface
+    (`classic
+     (ensime-search-classic))
+    (`helm
+     (if (featurep 'helm)
+         (ensime-helm-search)
+       (message "Please ensure helm is installed and loaded.")))
+    (`ivy
+     (if (featurep 'ivy)
+         (ensime-search-ivy)
+       (message "Please ensure ivy is installed and loaded.")))))
+
+(defun ensime-search-classic ()
+  "The classic entrypoint for ensime-search-mode.
    Initiate an incremental search of all live buffers."
   (interactive)
   (ensime-with-conn-interactive
@@ -128,7 +151,7 @@
 
        (message "Already in ensime-search buffer")
 
-     (when buffer-file-name
+     (when (buffer-file-name-with-indirect)
        (setq ensime-search-originating-buffer (current-buffer)))
 
      (setq ensime-search-window-config (current-window-configuration))
@@ -140,7 +163,13 @@
      (use-local-map ensime-search-target-buffer-map)
      (setq ensime-buffer-connection conn)
 
-     (select-window (split-window (selected-window) (- (window-height) 4)))
+     ;; Compute the heights of the search window and text entry area
+     ;; The entry height is 4 lines unless the window-height is too small
+     (let* ((wh (window-height))
+            (eh (min (- wh 2) 4))
+            (size (- wh eh)))
+       (select-window (split-window (selected-window) size))
+       )
      (switch-to-buffer (get-buffer-create ensime-search-buffer-name))
      (setq ensime-buffer-connection conn)
      (erase-buffer)
@@ -151,10 +180,10 @@
 
 
 (defun ensime-search-mode ()
-  "Major mode for incrementally seaching through all open buffers."
+  "Major mode for incrementally searching through all open buffers."
   (interactive)
   (setq major-mode 'ensime-search-mode
-        mode-name "ensime-search-mode")
+        mode-name "ensime-search")
 
   (use-local-map ensime-search-mode-map)
 
@@ -169,7 +198,7 @@
 	    'ensime-search-auto-update)
   (make-local-variable 'ensime-search-kill-buffer)
   (add-hook 'kill-buffer-hook 'ensime-search-kill-buffer nil t)
-  )
+  (run-hooks 'ensime-search-mode-hook))
 
 
 (defun ensime-search-quit ()
@@ -188,9 +217,14 @@
     (let ((ensime-dispatching-connection ensime-buffer-connection))
       (ensime-search-quit)
       (let* ((r ensime-search-current-selected-result)
-	     (item (ensime-search-result-data r)))
+             (item (ensime-search-result-data r)))
 
-	;; If the chosen item has a source location,
+        ;; If the chosen item has a source location,
+        ;; jump there..
+        (ensime-search-jump-to-item item)))))
+
+(defun ensime-search-jump-to-item (item)
+  "Opens the item in a new buffer if the item has a source location"
 	;; jump there..
 	(let ((pos (ensime-search-sym-pos item)))
 	  (let* ((file-name (ensime-pos-file pos))
@@ -204,20 +238,7 @@
 		  (find-file file-name)
                   (cond
                    (offset (goto-char (ensime-internalize-offset offset)))
-                   (line (ensime-goto-line line))))
-
-	      ;; Otherwise, open the inspector
-	      (let ((decl-as (ensime-search-sym-decl-as item)))
-		(cond
-		 ((or (equal decl-as 'method)
-		      (equal decl-as 'field))
-		  (ensime-inspect-by-path
-		   (ensime-search-sym-owner-name item)
-		   (ensime-search-sym-local-name item)
-		   ))
-
-		 (t (ensime-inspect-by-path
-		     (ensime-search-sym-name item))))))))))))
+                   (line (ensime-goto-line line))))))))
 
 
 (defun ensime-search-next-match ()
@@ -282,7 +303,7 @@
 	(goto-char target-point)
 	(setq ensime-search-selection-overlay
 	      (ensime-make-overlay target-point (point-at-eol)
-				   nil 'ensime-warnline-highlight))
+				   nil '(:face 'ensime-warnline-highlight)))
 	(set-window-point (ensime-window-showing-buffer
 			   ensime-search-target-buffer)
 			  target-point)
@@ -295,7 +316,7 @@
  BEG, END and LENOLD are passed in from the hook.
  An actual update is only done if the regexp has changed or if the
  optional fourth argument FORCE is non-nil."
-  (let ((new-query (buffer-string)))
+  (let ((new-query (buffer-substring-no-properties (point-min) (point-max))))
     (when (not (equal new-query ensime-search-text))
       (setq ensime-search-text new-query)
       (if (>= (length new-query) ensime-search-min-length)

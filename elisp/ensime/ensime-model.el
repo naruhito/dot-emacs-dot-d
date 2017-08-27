@@ -4,6 +4,14 @@
   (require 'cl)
   (require 'ensime-macros))
 
+(require 's)
+(require 'dash)
+
+;; these accessors are all redundant in light of -let or
+;; ensime-plist-bind
+;;
+;; also, we should consider creating a `defclass' mirror of the
+;; ensime-server API https://github.com/ensime/ensime-emacs/issues/452
 (defun ensime-search-sym-name (sym)
   (plist-get sym :name))
 
@@ -19,20 +27,11 @@
 (defun ensime-search-sym-decl-as (sym)
   (plist-get sym :decl-as))
 
-(defun ensime-symbol-name (sym)
-  (plist-get sym :name))
-
 (defun ensime-symbol-decl-pos (sym)
   (plist-get sym :decl-pos))
 
 (defun ensime-symbol-type (sym)
   (plist-get sym :type))
-
-(defun ensime-symbol-is-callable (sym)
-  (plist-get sym :is-callable))
-
-(defun ensime-symbol-owner-type-id (sym)
-  (plist-get sym :owner-type-id))
 
 (defun ensime-package-name (info)
   (plist-get info :name))
@@ -46,55 +45,32 @@
 (defun ensime-package-p (info)
   (equal 'package (plist-get info :info-type)))
 
-(defun ensime-type-inspection-p (info)
-  (equal 'typeInspect (plist-get info :info-type)))
-
 (defun ensime-type-name (type)
-  (plist-get type :name))
+  ;; legacy method
+  (replace-regexp-in-string "\\[.*" ""
+                            (plist-get type :name)))
 
-(defun ensime-type-id (type)
-  (plist-get type :type-id))
+(defun ensime-type-full-name (type)
+  ;; legacy method
+  (replace-regexp-in-string "\\[.*" ""
+                            (plist-get type :full-name)))
 
 (defun ensime-type-is-object-p (type)
   (equal (plist-get type :decl-as) 'object))
 
-(defun ensime-outer-type-id (type)
-  (plist-get type :outer-type-id))
-
-(defun ensime-type-full-name (type)
-  (if (plist-get type :arrow-type)
-      (plist-get type :name)
-    (plist-get type :full-name)))
-
 (defun ensime-type-full-name-with-args (type)
-  (if (plist-get type :arrow-type)
-      (plist-get type :name)
-    (concat
-     (plist-get type :full-name)
-     (ensime-type-type-args-postfix type))))
-
-(defun ensime-type-type-args-postfix (type)
-  (let ((args (ensime-type-type-args type)))
-    (if args
-	(concat "["
-		(mapconcat
-		 (lambda(tpe)
-		   (ensime-type-name-with-args tpe)) args ", ")
-		"]")
-      "")))
+  (plist-get type :full-name))
 
 (defun ensime-type-param-sections (type)
   (plist-get type :param-sections))
 
 (defun ensime-type-name-with-args (type)
-  (concat (plist-get type :name)
-      (ensime-type-type-args-postfix type)))
-
-(defun ensime-type-is-function-p (type)
-  (string-match "^scala.Function[0-9]*" (plist-get type :full-name)))
+  (plist-get type :name))
 
 (defun ensime-type-is-by-name-p (type)
-  (string-match "^scala.<byname>" (plist-get type :full-name)))
+  ;; These two patterns should match both the old representation of by-name parameters
+  ;; from ensime and the new (standard) representation
+  (string-match "\\(^scala.<byname>\\|^=>\s+\\)" (plist-get type :full-name)))
 
 (defun ensime-declared-as (obj)
   (plist-get obj :decl-as))
@@ -122,12 +98,13 @@
      )))
 
 (defun ensime-param-section-accepts-block-p (section)
-  "Returns t if the section has a single functional parameter."
+  "Returns t if `SECTION' has a single functional parameter."
   (let* ((params (plist-get section :params))
-	 (arg-type (cadr (car params))))
+         (arg-type (cadar params)))
     (and (= 1 (length params))
-	 (or (ensime-type-is-function-p arg-type)
-	     (ensime-type-is-by-name-p arg-type)))))
+         (or
+          (plist-get arg-type :arrow-type)
+          (ensime-type-is-by-name-p arg-type)))))
 
 (defun ensime-type-result-type (type)
   (plist-get type :result-type))
@@ -194,22 +171,21 @@
 (defun ensime-note-message (note)
   (plist-get note :msg))
 
-(defun ensime-brief-type-sig (completion-type-sig)
-  "Return a formatted string representing the given method signature."
-  ;;(ensime-brief-type-sig '(((("aemon" "Person"))) "Dude"))
-  (let* ((sections (car completion-type-sig))
-	 (return-type (cadr completion-type-sig)))
-    (if sections
-	(format "%s: %s"
-		(mapconcat
-		 (lambda (section)
-		   (format "(%s)"
-			   (mapconcat
-			    (lambda (param-pair)
-			      (format "%s: %s" (car param-pair) (cadr param-pair)))
-			    section ", ")))
-		 sections "=>") return-type)
-      return-type)))
+(defun ensime-type-ancestors (type)
+  (plist-get type :ancestors))
+
+(defun ensime-type-inheritors (type)
+  (plist-get type :inheritors))
+
+(defun ensime-type-fqn (type)
+  (plist-get type :fqn))
+
+(defun ensime-type-source-position (type)
+  (plist-get type :source-position))
+
+(defun ensime-source-hint-position (hint)
+  (plist-get hint :position))
+
 
 
 (provide 'ensime-model)
