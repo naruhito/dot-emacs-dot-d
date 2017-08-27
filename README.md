@@ -109,6 +109,10 @@ Scala 開発環境 Ensime の設定 (v24 のみ対応; 設定は任意です)
 	$ vi ~/.sbt/0.13/plugins/plugins.sbt
 	addSbtPlugin("org.ensime" % "sbt-ensime" % "1.12.14")
 
+	$ vi ~/.sbt/0.13/global.sbt
+	import org.ensime.EnsimeKeys._
+	ensimeIgnoreMissingDirectories := true
+
 ### 使用方法
 Scala プロジェクトに移動した後、初回のみ `.ensime` ファイルを生成してください。
 
