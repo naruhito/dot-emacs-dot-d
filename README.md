@@ -107,13 +107,13 @@ Scala 開発環境 Ensime の設定 (v24 のみ対応; 設定は任意です)
 ### ensime-sbt グローバルプラグインの設定
 
 	$ vi ~/.sbt/0.13/plugins/plugins.sbt
-	addSbtPlugin("org.ensime" % "ensime-sbt" % "0.3.2")
+	addSbtPlugin("org.ensime" % "sbt-ensime" % "1.12.14")
 
 ### 使用方法
 Scala プロジェクトに移動した後、初回のみ `.ensime` ファイルを生成してください。
 
 	$ cd /path/to/your-scala-project
-	$ sbt gen-ensime
+	$ sbt ensimeConfig
 
 `ensime-server` を起動してください。
 
@@ -126,5 +126,5 @@ Scala プロジェクトに移動した後、初回のみ `.ensime` ファイル
 build.sbt の `libraryDependencies` を変更した場合 `.ensime` ファイルを更新して ensime 設定を再読み込みしてください。
 
 	$ cd /path/to/your-scala-project
-	$ sbt gen-ensime
+	$ sbt ensimeConfig
 	M-x ensime-reload

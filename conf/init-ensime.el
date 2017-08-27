@@ -1,11 +1,11 @@
-;;; scala-mode2.el --- Major mode for editing scala
+;;; scala-mode.el --- Major mode for editing Scala
 (when (<= 24 emacs-major-version) ;23以前には未対応
   (require 'utilities "~/.emacs.d/utilities")
-  (add-to-load-path "~/.emacs.d/elisp/scala-mode2")
-  (require 'scala-mode2)
+  (add-to-load-path "~/.emacs.d/elisp/scala-mode")
+  (require 'scala-mode)
   )
 
-;;; sbt-mode.el --- Functions for discovering the current sbt project
+;;; sbt-mode.el --- Interactive support for sbt projects
 (when (<= 24 emacs-major-version) ;23以前には未対応
   (require 'utilities "~/.emacs.d/utilities")
   (add-to-load-path "~/.emacs.d/elisp/sbt-mode")
@@ -13,16 +13,13 @@
   )
 
 ;;; ensime.el --- ENhanced Scala Interaction Mode for Emacs
-;; ensime-server を http://ensime.typelevel.org/ から取得して ~/.emacs.d/ensime/ に保存
-;; 参考:  http://ensime.github.io/editors/emacs/install/#installing-the-server-from-assembly-builds-or-source
-;;        > SNAPSHOT assembly jars are provided at http://ensime.typelevel.org/
 
 ;;; 基本コマンド
 
 ;; 情報の調査
 
-;; - `C-c C-v i` カーソル上の要素の情報を表示
-;; - `C-c C-v t` カーソル上の要素の型を表示
+;; - `C-c C-v e ` カーソル上の警告やエラーの内容を表示
+;; - `C-c C-v t (or T)` カーソル上の要素の型を表示
 ;; - `C-c C-v d` カーソル上の要素のドキュメントをブラウザ表示
 
 ;; インポート
@@ -37,7 +34,7 @@
 
 ;; その他
 
-;; - `C-c C-c a` エラーチェック
+;; - `C-c C-b c` エラーチェック (コンパイル)
 ;; - `M-.` 定義にジャンプ
 ;; - `M-,` ジャンプもとに戻る
 ;; - `C-c C-v .` 範囲選択 ("." と "," で拡大縮小)
@@ -46,9 +43,11 @@
   (require 'utilities "~/.emacs.d/utilities")
   (add-to-load-path "~/.emacs.d/elisp/ensime")
   (add-to-load-path "~/.emacs.d/elisp/company-mode")
-  (require 'scala-mode2)
+  (require 'scala-mode)
   (require 'ensime)
-  (add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
+  (add-hook 'scala-mode-hook 'ensime-mode)
+  (setq ensime-startup-snapshot-notification nil)
+  (setq ensime-startup-notification nil)
 
   ;; ドット '.' を補完機能のトリガーに設定
   (defun scala/completing-dot-company ()
