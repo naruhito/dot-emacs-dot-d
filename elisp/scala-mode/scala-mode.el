@@ -1,23 +1,31 @@
-;;; scala-mode2.el --- Major mode for editing scala
+;;; scala-mode.el --- Major mode for editing Scala
 
 ;; Copyright (c) 2012 Heikki Vesalainen
-;; For information on the License, see the LICENSE file
-;; URL: http://github.com/hvesalai/scala-mode2
-;; Based on Scala Language Specification (SLS) Version 2.9
 
-(require 'scala-mode2-lib)
-(require 'scala-mode2-syntax)
-(require 'scala-mode2-paragraph)
-(require 'scala-mode2-indent)
-(require 'scala-mode2-fontlock)
-(require 'scala-mode2-map)
-(require 'scala-mode2-sbt)
-(require 'scala-mode2-imenu)
+;; Homepage: https://github.com/ensime/emacs-scala-mode
+;; Keywords: languages
+;; Package-Version:  0.23
+;; Package-Requires: ()
+
+;;; Commentary:
+;;
+;;  Documentation at http://ensime.org/editors/emacs/scala-mode/
+;;
+;;; Code:
+
+(require 'scala-mode-lib)
+(require 'scala-mode-syntax)
+(require 'scala-mode-paragraph)
+(require 'scala-mode-indent)
+(require 'scala-mode-fontlock)
+(require 'scala-mode-map)
+(require 'scala-mode-imenu)
+(require 'scala-mode-prettify-symbols)
 
 ;; Tested only for emacs 24
 (unless (<= 24 emacs-major-version)
   (error
-   (format "The Scala mode has been tested only on Emacs version 24.2 (and not your Emacs version %s.%s)"  
+   (format "The Scala mode has been tested only on Emacs version 24.2 (and not your Emacs version %s.%s)"
            emacs-major-version  emacs-minor-version)))
 
 (defgroup scala nil
@@ -64,12 +72,12 @@ If there is no plausible default, return nil."
 
 ;;;###autoload
 (defun scala-mode:set-scala-syntax-mode ()
-  "Sets the syntax-table and other realted variables for the current buffer to those of scala-mode. Can be used to make some other major mode (such as sbt-mode) use scala syntax-table."
+  "Sets the syntax-table and other related variables for the current buffer to those of scala-mode. Can be used to make some other major mode (such as sbt-mode) use scala syntax-table."
   (set-syntax-table scala-syntax:syntax-table)
   (scala-mode:make-local-variables
    'syntax-propertize-function
    'parse-sexp-lookup-properties
-   'forward-sexp-function)  
+   'forward-sexp-function)
 
   (add-hook 'syntax-propertize-extend-region-functions
             'scala-syntax:propertize-extend-region)
@@ -78,14 +86,22 @@ If there is no plausible default, return nil."
         forward-sexp-function           'scala-mode:forward-sexp-function))
 
 ;;;###autoload
+(defun scala-mode:goto-start-of-code ()
+  "Go to the start of the real code in the file: object, class or trait."
+  (interactive)
+  (let* ((case-fold-search nil))
+    (search-forward-regexp "\\([[:space:]]+\\|^\\)\\(class\\|object\\|trait\\)" nil t)
+    (move-beginning-of-line nil)))
+
+;;;###autoload
 (define-derived-mode scala-mode prog-mode "Scala"
   "Major mode for editing scala code.
 
-When started, runs `scala-mode-hook'. 
+When started, runs `scala-mode-hook'.
 
-\\{scala-mode-map}" 
+\\{scala-mode-map}"
   :syntax-table scala-syntax:syntax-table
-;  :group                               
+;  :group
 ;  :abbrev
 
   (scala-mode:make-local-variables
@@ -161,5 +177,5 @@ When started, runs `scala-mode-hook'.
                '("\\.\\(scala\\|sbt\\)\\'" . scala-mode))
   (modify-coding-system-alist 'file "\\.\\(scala\\|sbt\\)\\'" 'utf-8))
 
-(provide 'scala-mode2)
-;;; scala-mode2.el ends here
+(provide 'scala-mode)
+;;; scala-mode.el ends here

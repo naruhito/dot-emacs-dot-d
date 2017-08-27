@@ -2,8 +2,8 @@
 ;;; Copyright (c) 2012 Heikki Vesalainen
 ;;; For information on the License, see the LICENSE file
 
-(require 'scala-mode2-syntax)
-(require 'scala-mode2-lib)
+(require 'scala-mode-syntax)
+(require 'scala-mode-lib)
 
 (eval-when-compile
   (defvar scala-indent:effective-run-on-strategy)
@@ -13,6 +13,7 @@
   "The number of spaces an indentation step should be. The actual
 indentation will be one or two steps depending on context."
   :type 'integer
+  :safe #'integerp
   :group 'scala)
 
 (defcustom scala-indent:indent-value-expression nil
@@ -62,6 +63,7 @@ val x = foo(1, List(1, 2, 3) map (i =>
   ), 2)
 "
   :type 'boolean
+  :safe #'booleanp
   :group 'scala)
 
 (defcustom scala-indent:align-forms nil
@@ -120,6 +122,7 @@ are not ruled out by the language specification.
   "When non-nil, a space will be added after a scaladoc asterisk,
 when it is added to an empty line."
   :type 'boolean
+  :safe #'booleanp
   :group 'scala)
 
 (defcustom scala-indent:use-javadoc-style nil
@@ -127,6 +130,7 @@ when it is added to an empty line."
 style (i.e. indented to the first asterisk). This overrides the
 Scaladoc behavior of indenting comment lines to the second asterisk."
   :type 'boolean
+  :safe #'booleanp
   :group 'scala)
 
 (defun scala-indent:run-on-strategy ()
@@ -183,6 +187,7 @@ enclosing list."
     (ignore-errors
       (while (> (point) code-beg)
         (scala-syntax:backward-sexp)
+	(skip-syntax-backward ".")
         (when (< (point) code-beg)
           ;; moved to previous line, set new target
           (setq code-beg (scala-lib:point-after
@@ -239,7 +244,7 @@ and the empty line")
   (regexp-opt '("abstract" "catch" "case" "class" "def" "do" "else" "final"
                 "finally" "for" "if" "implicit" "import" "lazy" "new" "object"
                 "override" "package" "private" "protected" "return" "sealed"
-                "throw" "trait" "try" "type" "val" "var" "while" "yield")
+                "throw" "trait" "try" "type" "val" "var" "while" "yield" "inline")
               'words)
   "Words that we don't want to continue the previous line")
 
@@ -290,8 +295,9 @@ and are infact a sign of run-on. Reserved-symbols not included.")
        ((looking-at scala-indent:mustNotTerminate-line-beginning-re)
         t)
        ;; YES: end of prev line must not terminate
-       ((scala-syntax:looking-back-token
-         scala-indent:mustBeContinued-line-end-re)
+       ((let ((case-fold-search nil))
+          (scala-syntax:looking-back-token
+         scala-indent:mustBeContinued-line-end-re))
         t)
        ;; YES: this line starts with type param
        ((= (char-after) ?\[)
@@ -524,8 +530,8 @@ condition (or generators in the case of 'for') in parentheses.")
   "Other flow control keywords (not followed by parentheses)")
 
 (defconst scala-indent:control-keywords-re
-  (concat scala-indent:control-keywords-cond-re
-          scala-indent:control-keywords-other-re))
+  (concat "\\(" scala-indent:control-keywords-cond-re
+          "\\|" scala-indent:control-keywords-other-re "\\)"))
 
 (defun scala-indent:body-p (&optional point)
   "Returns the position of '=' symbol, or one of the
@@ -537,7 +543,8 @@ keyword, or nil if not."
     (when point (goto-char point))
     (scala-syntax:beginning-of-code-line)
     (or (scala-syntax:looking-back-token scala-syntax:body-start-re 3)
-        (scala-syntax:looking-back-token scala-indent:control-keywords-other-re)
+        (let ((case-fold-search nil))
+          (scala-syntax:looking-back-token scala-indent:control-keywords-other-re))
         (progn
           ;; if, else if
           (when (scala-syntax:looking-back-token ")" 1)
@@ -556,7 +563,8 @@ keyword, or nil if not."
   (let ((declaration-end (scala-indent:body-p point)))
     (when declaration-end
       (goto-char declaration-end)
-      (if (looking-at scala-indent:control-keywords-re)
+      (if (let ((case-fold-search nil))
+            (looking-at scala-indent:control-keywords-re))
           (point)
         (when (scala-indent:backward-sexp-to-beginning-of-line)
           (scala-indent:goto-run-on-anchor
@@ -919,7 +927,7 @@ of a line inside a multi-line comment "
 
 
 (defun scala-indent:fixup-whitespace ()
-  "scala-mode2 version of `fixup-whitespace'"
+  "scala-mode version of `fixup-whitespace'"
   (interactive "*")
   (save-excursion
     (delete-horizontal-space)
@@ -933,7 +941,7 @@ of a line inside a multi-line comment "
       (insert ?\s))))
 
 (defun scala-indent:join-line (&optional arg)
-  "scala-mode2 version of `join-line', i.e. `delete-indentation'"
+  "scala-mode version of `join-line', i.e. `delete-indentation'"
   (interactive "*P")
   (beginning-of-line)
   (if arg (forward-line 1))
@@ -952,4 +960,4 @@ of a line inside a multi-line comment "
         (delete-forward-char 3))))
     (scala-indent:fixup-whitespace)))
 
-(provide 'scala-mode2-indent)
+(provide 'scala-mode-indent)

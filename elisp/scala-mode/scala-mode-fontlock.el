@@ -2,7 +2,7 @@
 ;;; Copyright (c) 2012 Heikki Vesalainen
 ;;; For information on the License, see the LICENSE file
 
-(require 'scala-mode2-syntax)
+(require 'scala-mode-syntax)
 
 (defcustom scala-font-lock:constant-list '()
   "A list of strigs that should be fontified in constant
@@ -68,9 +68,9 @@ scala-mode has been reloaded."
 (defun scala-font-lock:mark-pattern1-part (&optional limit pattern-p)
   "Parses a part of val, var and case pattern (or id). Always
 parses a variable or constant name first and then type, leaving
-the pointer at the next variablename, constnat name, list or
+the pointer at the next variablename, constant name, list or
 Pattern3, if any, and setting up match data 1 (variable),
-2 (constant) and 3 (type) acordingly. If there is no variable
+2 (constant) and 3 (type) accordingly. If there is no variable
 name before the first type, then the match data for the variable
 name is nil. Returns t if something was matched or nil if nothing
 was found.
@@ -487,6 +487,8 @@ Does not continue past limit.
     (scala-font-lock:mark-floatingPointLiteral . font-lock-constant-face)
     (scala-font-lock:mark-integerLiteral . font-lock-constant-face)
 
+    (scala-syntax:interpolation-matcher 0 font-lock-variable-name-face t)
+
     ))
 
 (defun scala-font-lock:syntactic-face-function (state)
@@ -579,4 +581,4 @@ Does not continue past limit.
 (defvar scala-font-lock:var-keyword-face 'scala-font-lock:var-keyword-face
   "Face for the scala var keyword.")
 
-(provide 'scala-mode2-fontlock)
+(provide 'scala-mode-fontlock)
