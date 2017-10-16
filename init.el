@@ -70,6 +70,7 @@
 (load "init-flycheck")
 (load "init-eclim")
 (load "init-groovy-mode")
+(load "init-yaml-mode")
 (load "init-emacs")
 
 ;;; init.el ends here.
