@@ -417,7 +417,7 @@
     (set-frame-parameter nil 'fullscreen 'maximized))
   )
 
- ;;;;;;;;;;;;;;;;;;; MAC OS X / Terminal ;;;;;;;;;;;;;;;;;;;;
+ ;;;;;;;;;;;;;;;;;;; macOS / Terminal ;;;;;;;;;;;;;;;;;;;;
  ((and (eq system-type 'darwin)
        (not window-system))
   )

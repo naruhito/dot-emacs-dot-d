@@ -99,6 +99,7 @@
 (eshell/alias "q" "exit")
 (eshell/alias "g" "git $*")
 (eshell/alias "v" "vagrant $*")
+(eshell/alias "d" "docker $*")
 (eshell/alias "cd" "cd $*; ls")
 (eshell/alias "ff" "find-file $1 > /dev/null")
 (cond
