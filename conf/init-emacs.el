@@ -8,7 +8,6 @@
         '("\\.php$" . web-mode)
         '("\\.erb$" . web-mode)
         '("\\.html$" . web-mode)
-        '("\\.yml$" . conf-mode)
         '("file$" . ruby-mode)
         '("\\.json$" . js-mode)
         '("\\.md$" . markdown-mode)
