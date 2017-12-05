@@ -1,4 +1,0 @@
-# -*- mode: snippet -*-
-# name: perl
-# --
-perl ${1:-MO=Deparse }${2:-MPerl::Module }${3:-i.bak }${4:-l }${5:-p }-e '${6:$_ = (split / /)[0]}' $0*.txt

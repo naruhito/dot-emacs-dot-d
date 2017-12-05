@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: aws
+# key: aws
+# --
+ruby -e "require 'rotp'; puts ROTP::TOTP.new(ARGV[0]).now" $0
