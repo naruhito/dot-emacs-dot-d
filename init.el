@@ -71,6 +71,7 @@
 (load "init-eclim")
 (load "init-groovy-mode")
 (load "init-yaml-mode")
+(load "init-anzu")
 (load "init-emacs")
 
 ;;; init.el ends here.
