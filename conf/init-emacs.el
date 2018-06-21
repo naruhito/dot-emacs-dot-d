@@ -424,6 +424,35 @@
  ;;;;;;;;;;;;;;;;;;; Linux / X ;;;;;;;;;;;;;;;;;;;;
  ((and (eq system-type 'gnu/linux)
        (eq window-system 'x))
+
+  ;; マシンスペックに応じて設定。処理を軽くする。
+  (setq gc-cons-threshold (* gc-cons-threshold 10))
+
+  ;; メニューバーを非表示に設定
+  (menu-bar-mode -1)
+
+  ;; ツールバーを非表示に設定
+  (tool-bar-mode -1)
+
+  ;; スクロールバーを非表示に設定
+  (scroll-bar-mode -1)
+
+  ;; 編集中ファイルのフルパスをタイトルバーに表示する
+  (setq frame-title-format
+        (format "%%f  Emacs@%s" (system-name)))
+
+  ;; 透明度の設定
+  (add-to-list 'default-frame-alist
+               '(alpha . 80))
+
+  ;; 選択時の色 (文字: Black, 背景: PaleGreen)
+  (set-face-foreground 'region "Black")
+  (set-face-background 'region "PaleGreen")
+
+  ;; 通常時の色 (文字: White, 背景: Black, カーソル: Gray)
+  (set-foreground-color "White")
+  (set-background-color "Black")
+  (set-cursor-color "Gray")
   )
 
  ;;;;;;;;;;;;;;;;;;; Linux / Terminal ;;;;;;;;;;;;;;;;;;;;

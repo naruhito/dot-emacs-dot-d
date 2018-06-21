@@ -86,7 +86,8 @@
           (async-shell-command (format "start %s" arg) "*open*"))
         )
        ((eq system-type 'gnu/linux)
-        (message "%s" "open is not supported.")
+        (save-window-excursion
+          (async-shell-command (format "xdg-open %s" arg) "*open*"))
         )
        (t
         (error "Unknown system type: %s" system-type)
@@ -117,4 +118,5 @@
   )
  ((eq system-type 'gnu/linux)
   (eshell/alias "diff" "/usr/bin/diff $*")
+  (eshell/alias "grep" "/bin/grep $*")
   ))
