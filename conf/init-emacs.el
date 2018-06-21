@@ -55,7 +55,7 @@
 (gdefkey "M-SPC" 'bm-toggle)
 (gdefkey "M-[" 'bm-previous)
 (gdefkey "M-]" 'bm-next)
-(gdefkey "C-c r" 'query-replace-regexp)
+(gdefkey "C-c r" 'anzu-query-replace-regexp)
 (gdefkey "C-c C-r" 'window-resizer)
 (gdefkey "C-x r i" 'string-insert-rectangle)
 (gdefkey "C-x C-l" 'set-buffer-file-coding-system-utf-8-unix)
