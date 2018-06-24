@@ -15,8 +15,7 @@
   (interactive)
   (let ((s (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
     (when (string-match (rx (= 4 (any "0-9")) "/" (= 2 (any "0-9")) "/" (= 2 (any "0-9")) "-" (= 6 (any "0-9")) ".txt") s)
-      (find-file (concat "~/.emacs.d/var/junk/" (match-string 0 s)))
-      (message (match-string 0 s)))))
+      (find-file (concat "~/.emacs.d/var/junk/" (match-string 0 s))))))
 
 (defun copy-current-junk-filename ()
   (interactive)

@@ -5,7 +5,7 @@ Windows
 ------------------
 
 ### Emacs ダウンロード
-対応しているバージョンは 23-24 です。[こちら](https://ftp.gnu.org/gnu/emacs/windows/)から Windows 用のバイナリファイル `emacs-24.3-bin-i386.zip` をダウンロードして解凍してください。解凍したものを、例えば `~/emacs` に配置します。
+対応しているバージョンは 23-25 です。[こちら](https://ftp.gnu.org/gnu/emacs/windows/)から Windows 用のバイナリファイル `emacs-25.3-x86_64.zip` をダウンロードして解凍してください。解凍したものを、例えば `~/emacs` に配置します。
 
 ### Cygwin ダウンロード
 Cygwin で Unix コマンドをインストールして Emacs の Eshell で使用します。[こちらのサイト](https://www.cygwin.com/)からパッケージマネージャをダウンロードして、必要なコマンドをインストールしてください。
@@ -34,7 +34,7 @@ macOS (GUI)
 ------------------
 
 ### Emacs ダウンロード
-対応しているバージョンは 23-24 です。[こちら](http://emacsformacosx.com/)からバイナリファイル `Emacs-24.5-1-universal.dmg` をダウンロードして Applications フォルダに保存してください。
+対応しているバージョンは 23-25 です。[こちら](http://emacsformacosx.com/)からバイナリファイル `Emacs-25.3-universal.dmg` をダウンロードして Applications フォルダに保存してください。
 
 ### .emacs.d の配置
 本レポジトリを `~/.emacs.d` に配置してください。
@@ -53,16 +53,16 @@ Emacs.app を実行すると設定ファイルが読み込まれて Emacs が起
 ------------------
 
 ### Emacs ダウンロード
-対応しているバージョンは 23-24 です。yum 等のパッケージ管理ツールでインストールできる Emacs のバージョンが 22 以下の場合やシステムインストールの権限がない場合などは、ソースコードからビルドしてホームディレクトリ以下にインストールします。[GNU Emacs](https://www.gnu.org/software/emacs/download.html) の nearby GNU mirror リンクをクリックして `emacs-24.5.tar.gz` をダウンロードしてください。
+対応しているバージョンは 23-25 です。yum 等のパッケージ管理ツールでインストールできる Emacs のバージョンが 22 以下の場合やシステムインストールの権限がない場合などは、ソースコードからビルドしてホームディレクトリ以下にインストールします。[GNU Emacs](https://www.gnu.org/software/emacs/download.html) の nearby GNU mirror リンクをクリックして `emacs-25.3.tar.gz` をダウンロードしてください。
 
 ### 解凍
 
-	$ tar zxvf emacs-24.5.tar.gz
+	$ tar zxvf emacs-25.3.tar.gz
 
 ### ビルド
 `ncurses-devel`, `gcc-c++` 等、事前にビルドのために必要なパッケージをインストールしてから以下のコマンドを実行してください。
 
-	$ cd emacs-24.5/
+	$ cd emacs-25.3/
 	$ ./configure --prefix=$HOME/local --without-x
 	$ make
 
