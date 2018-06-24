@@ -86,6 +86,7 @@
           (async-shell-command (format "start %s" arg) "*open*"))
         )
        ((eq system-type 'gnu/linux)
+        (setq process-connection-type nil)
         (save-window-excursion
           (async-shell-command (format "xdg-open %s" arg) "*open*"))
         )
