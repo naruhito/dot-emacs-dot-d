@@ -12,6 +12,7 @@
 	last = log -1 -p HEAD
 	amend = commit --amend
 	discard = checkout
+	graph = log --graph
 [color]
 	ui = auto
 	diff = auto
