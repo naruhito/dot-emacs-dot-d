@@ -8,6 +8,7 @@
 	co = checkout
 	di = diff
 	lg = log -5
+	oneline = log --pretty=format:"%h%x09%an%x09%ad%x09%s"
 	unstage = reset HEAD
 	last = log -1 -p HEAD
 	amend = commit --amend
