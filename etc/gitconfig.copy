@@ -13,7 +13,7 @@
 	last = log -1 -p HEAD
 	amend = commit --amend
 	discard = checkout
-	graph = log --graph
+	graph = log --graph --decorate
 [color]
 	ui = auto
 	diff = auto
