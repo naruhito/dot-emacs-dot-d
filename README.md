@@ -40,7 +40,7 @@ Windows
 ------------------
 1. Supported versions are 24-25. Download a EXE file into the `~/emacs` directory from [here](https://ftp.gnu.org/gnu/emacs/windows/).
 1. Install necessary commands with [Cygwin](https://www.cygwin.com/) to be used on Emacs-eshell.
-1. Set the following environmental variables from windows control panel.
+1. Set the following environment variables from windows control panel.
     - HOME: `C:\Users\YOUR_USERNAME`
     - PATH: `C:\cygwin\bin`
     - CYGWIN: `nodosfilewarning`
