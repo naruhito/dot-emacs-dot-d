@@ -10,6 +10,7 @@
         '("file$" . ruby-mode)
         '("\\.json$" . js-mode)
         '("\\.md$" . markdown-mode)
+        '("\\.txt$" . markdown-mode)
         ) auto-mode-alist))
 
 ;; キーバインディングの設定
