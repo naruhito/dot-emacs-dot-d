@@ -77,6 +77,8 @@
 (gdefkey "C-x n" 'git-gutter:next-hunk)
 (gdefkey "C-x i" 'git-gutter:popup-hunk)
 (gdefkey "C-@" 'helm-etags-plus-select)
+(gdefkey "<C-tab>" 'tabbar-forward-tab)
+(gdefkey "<C-S-tab>" 'tabbar-backward-tab)
 
 (add-hook 'eshell-mode-hook
           '(lambda ()

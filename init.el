@@ -73,6 +73,7 @@
 (load "init-yaml-mode")
 (load "init-anzu")
 (load "init-qml-mode")
+(load "init-tabbar")
 (load "init-emacs")
 
 ;;; init.el ends here.
