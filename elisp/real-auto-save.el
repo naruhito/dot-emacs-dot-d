@@ -1,6 +1,5 @@
 ;;; real-auto-save.el --- Automatically save your all your buffers/files at regular intervals.
 
-
 ;; Copyright (C) 2008-2015, Chaoji Li, Anand Reddy Pandikunta
 
 ;; Author: Chaoji Li <lichaoji AT gmail DOT com>
@@ -41,9 +40,7 @@
 ;;
 ;;
 
-
 ;;; Code:
-
 
 (defgroup real-auto-save nil
   "Save buffers automatically."
@@ -106,7 +103,6 @@
           (real-auto-save-restart-timer)
           (add-to-list 'real-auto-save-buffers-list (current-buffer))
           (add-hook 'kill-buffer-hook 'real-auto-save-remove-buffer-from-list)))))
-
 
 (provide 'real-auto-save)
 ;;; real-auto-save.el ends here
