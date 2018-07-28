@@ -7,10 +7,10 @@
 	ci = commit
 	co = checkout
 	di = diff
-	lg = log -5
+	lg = log -5 --name-status
 	oneline = log --pretty=format:"%h%x09%an%x09%ad%x09%s"
 	unstage = reset HEAD
-	last = log -1 -p HEAD
+	last = log -1 --name-status HEAD
 	amend = commit --amend
 	discard = checkout
 	graph = log --graph --decorate
