@@ -57,6 +57,7 @@
 (gdefkey "C-c r" 'anzu-query-replace-regexp)
 (gdefkey "C-c C-r" 'window-resizer)
 (gdefkey "C-x r i" 'string-insert-rectangle)
+(gdefkey "C-x h" 'git-gutter:stage-hunk)
 (gdefkey "C-x C-l" 'set-buffer-file-coding-system-utf-8-unix)
 (gdefkey "C-x C-c" 'kill-other-file-buffers)
 (defkey helm-map "C-h" 'delete-backward-char)
