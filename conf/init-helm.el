@@ -1,6 +1,6 @@
 ;;; helm.el --- Emacs incremental and narrowing framework -*- lexical-binding: t -*-
 (require 'utilities "~/.emacs.d/utilities")
-(add-to-load-path "~/.emacs.d/elisp/emacs-async")
+(add-to-load-path "~/.emacs.d/elisp/async")
 (add-to-load-path "~/.emacs.d/elisp/helm")
 
 ;; 基本設定

@@ -32,6 +32,7 @@
 
 ;; Add "elisp/" and "conf/" to load-path.
 (add-to-load-path "~/.emacs.d/elisp"
+                  "~/.emacs.d/elisp/emacs"
                   "~/.emacs.d/conf")
 
 ;; Load init files.

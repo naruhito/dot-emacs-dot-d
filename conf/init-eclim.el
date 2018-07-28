@@ -41,7 +41,7 @@
 ;; - カーソルの箇所のメンバ変数の getter と setter を生成
 
 (require 'utilities "~/.emacs.d/utilities")
-(add-to-load-path "~/.emacs.d/elisp/emacs-eclim")
+(add-to-load-path "~/.emacs.d/elisp/eclim")
 (require 'eclim)
 
 ;; eclimd を自動では起動しません。
