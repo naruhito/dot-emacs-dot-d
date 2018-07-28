@@ -40,34 +40,31 @@
 ;; eclim-java-generate-getter-and-setter (C-c C-e g)
 ;; - カーソルの箇所のメンバ変数の getter と setter を生成
 
-(when (and
-       (= 24 emacs-major-version)
-       (<= 5 emacs-minor-version)) ;24.5 以降のみ対応
-  (require 'utilities "~/.emacs.d/utilities")
-  (add-to-load-path "~/.emacs.d/elisp/emacs-eclim")
-  (require 'eclim)
+(require 'utilities "~/.emacs.d/utilities")
+(add-to-load-path "~/.emacs.d/elisp/emacs-eclim")
+(require 'eclim)
 
-  ;; eclimd を自動では起動しません。
-  ;; http://eclim.org/install.html に記載の手順で手動起動します。
-  ;; Window > Show View > Other > Eclim > eclimd
-  (setq eclimd-autostart nil)
+;; eclimd を自動では起動しません。
+;; http://eclim.org/install.html に記載の手順で手動起動します。
+;; Window > Show View > Other > Eclim > eclimd
+(setq eclimd-autostart nil)
 
-  ;; 設定値がある場合は上書き
-  (when eclipse-dir
-    (setq eclim-eclipse-dirs (list eclipse-dir))
-    (setq eclim-executable (concat eclipse-dir "/eclim")))
+;; 設定値がある場合は上書き
+(when eclipse-dir
+  (setq eclim-eclipse-dirs (list eclipse-dir))
+  (setq eclim-executable (concat eclipse-dir "/eclim")))
 
-  ;; カーソルのある箇所に関するエラーメッセージを echo エリアに表示します。
-  (setq help-at-pt-display-when-idle t)
-  (setq help-at-pt-timer-delay 0.1)
-  (help-at-pt-set-timer)
+;; カーソルのある箇所に関するエラーメッセージを echo エリアに表示します。
+(setq help-at-pt-display-when-idle t)
+(setq help-at-pt-timer-delay 0.1)
+(help-at-pt-set-timer)
 
-  ;; 補完設定
-  (require 'company)
-  (require 'company-emacs-eclim)
-  (company-emacs-eclim-setup)
-  (setq company-emacs-eclim-ignore-case t) ;大文字小文字を区別しない。
-  (global-company-mode t))
+;; 補完設定
+(require 'company)
+(require 'company-emacs-eclim)
+(company-emacs-eclim-setup)
+(setq company-emacs-eclim-ignore-case t) ;大文字小文字を区別しない。
+(global-company-mode t)
 
 ;; Java インデント設定
 (add-hook 'java-mode-hook
