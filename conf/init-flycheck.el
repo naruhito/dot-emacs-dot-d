@@ -4,7 +4,7 @@
 ;; suspicious state from syntax checker c/c++-gcc
 
 (require 'utilities "~/.emacs.d/utilities")
-(add-to-load-path "~/.emacs.d/elisp/seq")
+(add-to-load-path "~/.emacs.d/elisp/emacs/seq")
 
 ;; elisp 関連ファイルでは無効化
 (defvar flycheck-disabled-checkers '(emacs-lisp emacs-lisp-checkdoc))
