@@ -16,11 +16,8 @@
 	graph = log --graph --decorate
 [color]
 	ui = auto
-	diff = auto
-	status = auto
-	branch = auto
 [core]
-	pager = cat
+	pager = less
 	excludesfile = ~/.gitignore
 [push]
 	default = simple

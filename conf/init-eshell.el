@@ -111,7 +111,7 @@
 (eshell/alias "la" "ls -a $*")
 (eshell/alias "ll" "ls -l $*")
 (eshell/alias "q" "exit")
-(eshell/alias "g" "git $*")
+(eshell/alias "g" "git -c color.ui=always -c core.pager=cat $*")
 (eshell/alias "v" "vagrant $*")
 (eshell/alias "d" "docker $*")
 (eshell/alias "cd" "cd $*; ls")
