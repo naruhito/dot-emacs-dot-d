@@ -45,13 +45,25 @@
   (setq exec-path (append exec-path additional-paths))
   )
 
-;; promptに表示する文字列の変更
+;; git ブランチ名を取得する関数
+(defun git-prompt-branch-name ()
+    "Get current git branch name"
+    (let ((args '("symbolic-ref" "HEAD" "--short")))
+      (with-temp-buffer
+        (apply #'process-file "git" nil (list t nil) nil args)
+        (unless (bobp)
+          (goto-char (point-min))
+          (buffer-substring-no-properties (point) (line-end-position))))))
+
+;; promptに表示する文字列の変更 (git コマンドが存在する前提)
 (setq eshell-prompt-function
       (lambda ()
-        (concat "[" (or username (getenv "USERNAME") (getenv "USER"))
-                "@" (or hostname (getenv "HOSTNAME") (getenv "USERDOMAIN"))
-                " " (eshell/pwd) " " (format "<%s>" (car default-process-coding-system))
-                (if (= (user-uid) 0) "]\n# " "]\n$ "))))
+        (let ((branch-name (git-prompt-branch-name)))
+          (concat "[" (or username (getenv "USERNAME") (getenv "USER"))
+                  "@" (or hostname (getenv "HOSTNAME") (getenv "USERDOMAIN"))
+                  " " (eshell/pwd) " " (format "<%s>" (car default-process-coding-system))
+                  (if branch-name (format " (%s)" branch-name))
+                  (if (= (user-uid) 0) "]\n# " "]\n$ ")))))
 (setq eshell-prompt-regexp "^[^#$]*[$#] ")
 
 ;; 変数を評価するための関数
