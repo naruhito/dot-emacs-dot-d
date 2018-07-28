@@ -54,8 +54,6 @@
 (gdefkey "M-SPC" 'bm-toggle)
 (gdefkey "M-[" 'bm-previous)
 (gdefkey "M-]" 'bm-next)
-(gdefkey "<C-tab>" 'tabbar-forward-tab)
-(gdefkey "<C-S-tab>" 'tabbar-backward-tab)
 (gdefkey "C-x p" 'git-gutter:previous-hunk)
 (gdefkey "C-x n" 'git-gutter:next-hunk)
 (gdefkey "C-x i" 'git-gutter:popup-hunk)
@@ -76,6 +74,12 @@
 (gdefkey "C-x r i" 'string-insert-rectangle)
 (gdefkey "C-x C-l" 'set-buffer-file-coding-system-utf-8-unix)
 (gdefkey "C-x C-c" 'kill-other-file-buffers)
+(gdefkey "C-t" nil)
+(gdefkey "C-t C-t" 'switch-to-previous-buffer)
+(gdefkey "C-t n" 'tabbar-forward-tab)
+(gdefkey "C-t p" 'tabbar-backward-tab)
+(gdefkey "<C-tab>" 'tabbar-forward-tab)
+(gdefkey "<C-S-tab>" 'tabbar-backward-tab)
 
 (add-hook 'eshell-mode-hook
           '(lambda ()
