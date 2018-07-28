@@ -76,6 +76,7 @@
 (gdefkey "C-x C-c" 'kill-other-file-buffers)
 (gdefkey "C-t" nil)
 (gdefkey "C-t C-t" 'switch-to-previous-buffer)
+(gdefkey "C-t ," 'rename-buffer)
 (gdefkey "C-t n" 'tabbar-forward-tab)
 (gdefkey "C-t p" 'tabbar-backward-tab)
 (gdefkey "<C-tab>" 'tabbar-forward-tab)
