@@ -5,7 +5,6 @@
       (append
        (list
         '("\\.gradle$" . groovy-mode)
-        '("\\.php$" . web-mode)
         '("\\.erb$" . web-mode)
         '("\\.html$" . web-mode)
         '("file$" . ruby-mode)
@@ -89,17 +88,17 @@
 (defvar one-key-menu-alist-global nil)
 (setq one-key-menu-alist-global
       '((("C-a" . "Apropos") . apropos)
-        (("C-b" . "Browse Structure") . (lambda () (interactive) (if (<= 24 emacs-major-version) (helm-imenu) (anything-imenu))))
+        (("C-b" . "Browse Structure") . (helm-imenu))
         (("C-c" . "Calendar") . calendar)
         (("C-d" . "Define a New Snippet") . yas-new-snippet)
         (("C-e" . "Execute grep-find") . moccur-grep-find)
         (("C-f" . "Full Screen") . (lambda () (interactive (set-frame-parameter nil 'fullscreen 'maximized))))
         (("C-i" . "Eshell") . (lambda () (interactive) (eshell) (if (<= 26 emacs-major-version) (delete-other-windows))))
-        (("C-j" . "Jump to Documents") . (lambda (arg) (interactive (list (thing-at-point 'symbol))) (if (<= 24 emacs-major-version) (helm-apropos arg) (anything-apropos arg))))
+        (("C-j" . "Jump to Documents") . (lambda (arg) (interactive (list (thing-at-point 'symbol))) (helm-apropos arg)))
         (("C-k" . "Google Search") . web-search-query-default)
         (("C-l" . "Look for on the Web") . web-search-query)
         (("C-m" . "Moccur") . moccur)
-        (("C-o" . "Open File") . (lambda () (interactive) (if (<= 24 emacs-major-version) (helm-buffers-list) (anything))))
+        (("C-o" . "Open File") . (lambda () (interactive) (helm-buffers-list)))
         (("C-p" . "Open Recent File") . (lambda () (interactive)
                                           (when (<= 24 emacs-major-version)
                                             (helm-recentf)

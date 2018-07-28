@@ -43,7 +43,6 @@
 (load "init-popwin")
 (load "init-one-key")
 (load "init-key-chord")
-(load "init-anything")
 (load "init-browse-kill-ring")
 (load "init-word-count")
 (load "init-session")
