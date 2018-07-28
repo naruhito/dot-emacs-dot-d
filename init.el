@@ -1,9 +1,9 @@
 ;;;; init.el --- Initialize Emacs
 
 ;; Author: naruhito <naruhito78@gmail.com>
-;; URL: https://github.com/naruhito/
+;; URL: https://github.com/naruhito/dot-emacs-dot-d
 
-;; Compatibility: GNU Emacs 23-25
+;; Compatibility: GNU Emacs 24-25
 
 ;;; License
 
