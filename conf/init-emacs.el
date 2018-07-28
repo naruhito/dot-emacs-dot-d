@@ -77,6 +77,8 @@
 (gdefkey "C-t" nil)
 (gdefkey "C-t C-t" 'switch-to-previous-buffer)
 (gdefkey "C-t ," 'rename-buffer)
+(gdefkey "C-t k" 'kill-this-buffer)
+(gdefkey "C-t c" '(lambda () (interactive) (eshell (format-time-string "%s" (current-time)))))
 (gdefkey "C-t n" 'tabbar-forward-tab)
 (gdefkey "C-t p" 'tabbar-backward-tab)
 (gdefkey "<C-tab>" 'tabbar-forward-tab)
