@@ -47,6 +47,7 @@
 (load "init-browse-kill-ring")
 (load "init-word-count")
 (load "init-session")
+(load "init-neotree")
 (load "init-skk")
 (load "init-bm")
 (load "init-yasnippet")
@@ -74,7 +75,6 @@
 (load "init-anzu")
 (load "init-qml-mode")
 (load "init-tabbar")
-(load "init-neotree")
 (load "init-emacs")
 
 ;;; init.el ends here.
