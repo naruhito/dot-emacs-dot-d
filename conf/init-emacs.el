@@ -56,7 +56,7 @@
 (gdefkey "M-]" 'bm-next)
 (gdefkey "C-x p" 'git-gutter:previous-hunk)
 (gdefkey "C-x n" 'git-gutter:next-hunk)
-(gdefkey "C-x i" 'git-gutter:popup-hunk)
+(gdefkey "C-x i" 'git-gutter/custom:toggle-popup-hunk)
 (gdefkey "C-x h" 'git-gutter:stage-hunk)
 (gdefkey "C-x C-f" 'helm-find-files)
 (gdefkey "C-h" 'delete-backward-char)
