@@ -74,6 +74,7 @@
 (load "init-anzu")
 (load "init-qml-mode")
 (load "init-tabbar")
+(load "init-neotree")
 (load "init-emacs")
 
 ;;; init.el ends here.

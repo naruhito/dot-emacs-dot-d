@@ -122,6 +122,7 @@
         (("j" . "Jump to URL at Point") . browse-url-at-point)
         (("k" . "Web Search Region") . web-search-region)
         (("l" . "Call Last kbd macro") . kmacro-end-or-call-macro)
+        (("m" . "Open/Close NewTree") . neotree-toggle)
         (("n" . "Create New Junk File") . create-new-junk-file)
         (("o" . "Reopen Junk File at Point") . (lambda () (interactive) (re-open-junk-file-at-point) (if (<= 26 emacs-major-version) (delete-other-windows))))
         (("p" . "Web Search at Point") . web-search-at-point)
