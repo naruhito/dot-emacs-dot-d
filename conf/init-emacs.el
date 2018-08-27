@@ -81,6 +81,7 @@
 (gdefkey "C-t p" 'tabbar-backward-tab)
 (gdefkey "<C-tab>" 'tabbar-forward-tab)
 (gdefkey "<C-S-tab>" 'tabbar-backward-tab)
+(gdefkey "<C-iso-lefttab>" 'tabbar-backward-tab)
 
 (add-hook 'eshell-mode-hook
           '(lambda ()
