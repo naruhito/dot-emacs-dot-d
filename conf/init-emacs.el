@@ -28,8 +28,6 @@
 (defkey view-mode-map "K" 'View-scroll-line-backward)
 (defkey view-mode-map "f" 'View-scroll-page-forward)
 (defkey view-mode-map "b" 'View-scroll-page-backward)
-(defkey view-mode-map "C-f" 'View-scroll-page-forward)
-(defkey view-mode-map "C-b" 'View-scroll-page-backward)
 (defkey view-mode-map "C-d" 'View-scroll-half-page-forward)
 (defkey view-mode-map "C-u" 'View-scroll-half-page-backward)
 (defkey view-mode-map "G" 'View-goto-line-last)
@@ -84,6 +82,7 @@
 (gdefkey "C-t p" 'tabbar-backward-tab)
 (gdefkey "<C-tab>" 'tabbar-forward-tab)
 (gdefkey "<C-S-tab>" 'tabbar-backward-tab)
+(gdefkey "<C-iso-lefttab>" 'tabbar-backward-tab)
 
 (add-hook 'eshell-mode-hook
           '(lambda ()
