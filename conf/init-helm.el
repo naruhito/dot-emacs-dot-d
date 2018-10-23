@@ -29,3 +29,10 @@
 ;; C-x C-f ミニバッファで C-k した内容を kill-ring に保存する
 (defadvice helm-delete-minibuffer-contents (before helm-emulate-kill-line activate)
   (kill-new (buffer-substring (point) (field-end))))
+
+;; macOS の場合は glocate を利用 (C-x C-f C-x C-f)
+;; brew install findutils
+(when (and (eq system-type 'darwin)
+           (eq window-system 'ns))
+  (setq locate-command "glocate")
+  (setq helm-locate-command "glocate %s %s"))

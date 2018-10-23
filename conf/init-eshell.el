@@ -129,6 +129,7 @@
   (eshell/alias "egrep" "/usr/bin/egrep --colour=always $*")
   (eshell/alias "date" "/bin/date $*")
   (eshell/alias "man" "/usr/bin/man -P cat $*")
+  (eshell/alias "locate" "glocate $*")
   )
  ((eq system-type 'gnu/linux)
   (eshell/alias "diff" "/usr/bin/diff $*")
