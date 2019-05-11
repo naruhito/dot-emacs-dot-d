@@ -9,5 +9,6 @@
  '(markdown-header-delimiter-face ((t (:inherit markdown-header-face))))
  '(markdown-link-face ((t (:inherit font-lock-builtin-face :foreground "#D68E31"))))
  '(markdown-pre-face ((t (:inherit font-lock-constant-face :foreground "#3BAF75"))))
+ '(markdown-inline-code-face ((t (:inherit font-lock-constant-face :foreground "#3BAF75"))))
  '(markdown-list-face ((t (:inherit font-lock-builtin-face :foreground "#FBD01D" :weight bold))))
  )
