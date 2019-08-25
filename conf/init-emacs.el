@@ -461,6 +461,11 @@
   (set-foreground-color "White")
   (set-background-color "Black")
   (set-cursor-color "Gray")
+
+  ;; フレームサイズ等の設定
+  (if gui-frame-settings
+      (setq initial-frame-alist gui-frame-settings)
+    (set-frame-parameter nil 'fullscreen 'maximized))
   )
 
  ;;;;;;;;;;;;;;;;;;; Linux / Terminal ;;;;;;;;;;;;;;;;;;;;
