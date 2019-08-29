@@ -10,6 +10,7 @@
         '("file$" . ruby-mode)
         '("\\.json$" . js-mode)
         '("\\.md$" . markdown-mode)
+        '("CMakeLists.txt$" . cmake-mode)
         '("\\.txt$" . markdown-mode)
         '("\\.qml$" . qml-mode)
         ) auto-mode-alist))
