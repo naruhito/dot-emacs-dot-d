@@ -7,6 +7,7 @@
         '("\\.gradle$" . groovy-mode)
         '("\\.erb$" . web-mode)
         '("\\.html$" . web-mode)
+        '("Dockerfile$" . conf-mode)
         '("file$" . ruby-mode)
         '("\\.json$" . js-mode)
         '("\\.md$" . markdown-mode)
@@ -225,6 +226,9 @@
 ;; インデントではモードを問わず空白を挿入する
 (setq-default tab-width 4 indent-tabs-mode nil)
 (setq c-basic-offset 4)
+(setq sh-basic-offset 2)
+(setq sh-indentation 2)
+(setq smie-indent-basic 2)
 
 ;; upcase-word の対象を直前の単語に変更
 (defadvice upcase-word (before before-upcase-word)
