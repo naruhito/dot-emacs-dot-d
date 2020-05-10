@@ -19,3 +19,6 @@
 
 ;; コメント設定
 (add-to-list 'web-mode-comment-formats '("jsx" . "//" ))
+
+;; '=' の後に "" を自動追加しない。
+(setq web-mode-enable-auto-quoting nil)
