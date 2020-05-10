@@ -7,6 +7,15 @@
 
 ;; インデント設定
 (defun web-mode-hook ()
-  (setq web-mode-code-indent-offset 2))
+  (setq web-mode-code-indent-offset 2)
+  (setq web-mode-attr-indent-offset nil)
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-css-indent-offset 2)
+  (setq web-mode-sql-indent-offset 2)
+  (setq indent-tabs-mode nil)
+  (setq tab-width 2))
 
 (add-hook 'web-mode-hook  'web-mode-hook)
+
+;; コメント設定
+(add-to-list 'web-mode-comment-formats '("jsx" . "//" ))
