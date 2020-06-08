@@ -213,6 +213,9 @@
 ;; BackUpFileを作らない
 (setq make-backup-files nil)
 
+;; Lock fileを作らない
+(setq create-lockfiles nil)
+
 ;; 自動保存用ファイル (#*#) も作らない
 (setq auto-save-default nil)
 (setq auto-save-list-file-name "~/.emacs.d/var/auto-save-list")
