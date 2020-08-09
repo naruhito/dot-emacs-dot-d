@@ -9,12 +9,13 @@
         '("\\.html$" . web-mode)
         '("Dockerfile$" . conf-mode)
         '("file$" . ruby-mode)
-        '("\\.json$" . js-mode)
+        '("\\.json$" . web-mode)
         '("\\.md$" . markdown-mode)
         '("CMakeLists.txt$" . cmake-mode)
         '("\\.txt$" . markdown-mode)
         '("\\.qml$" . qml-mode)
         '("\\.jsx$" . web-mode)
+        '("\\.js$" . web-mode)
         ) auto-mode-alist))
 
 ;; キーバインディングの設定
