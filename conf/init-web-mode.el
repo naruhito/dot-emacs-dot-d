@@ -20,5 +20,14 @@
 ;; コメント設定
 (add-to-list 'web-mode-comment-formats '("jsx" . "//" ))
 
+;; モード設定
+(setq web-mode-content-types
+      '(("css"        . "\\.\\(s?css\\|css\\.erb\\)\\'")
+        ("typescript" . "\\.\\(ts\\|ts\\.erb\\)\\'")
+        ("json"       . "\\.\\(api\\|json\\|jsonld\\)\\'")
+        ("jsx"        . "\\.\\(js\\|[jt]sx\\)\\'")
+        ("xml"        . "\\.xml\\'")
+        ("html"       . ".")))
+
 ;; '=' の後に "" を自動追加しない。
 (setq web-mode-enable-auto-quoting nil)
