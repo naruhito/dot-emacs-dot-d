@@ -58,7 +58,6 @@
 (load "init-scss-mode")
 (load "init-ruby-mode")
 (load "init-web-mode")
-(load "init-js-mode")
 (load "init-markdown-mode")
 (load "init-cmake-mode")
 (load "init-git-gutter")
