@@ -383,9 +383,9 @@ over overlays with lower priority.  *Don't* use a negative number."
     (((class grayscale)
       (background dark))  (:background "LightGray"))
     (((class color)
-      (background light)) (:foreground "#FFFFBB" :background "#AAAA1D" :weight bold))
+      (background light)) (:foreground "#ffffcc" :background "#3333FF" :weight bold))
     (((class color)
-      (background dark))  (:foreground "#FFFFBB" :background "#AAAA1D" :weight bold)))
+      (background dark))  (:foreground "#ffffcc" :background "#3333FF" :weight bold)))
   "Face used to highlight current line."
   :group 'bm)
 
@@ -396,9 +396,9 @@ over overlays with lower priority.  *Don't* use a negative number."
     (((class grayscale)
       (background dark))  (:background "LightGray"))
     (((class color)
-      (background light)) (:foreground "#FFFFBB" :background "#AAAA1D" :weight bold))
+      (background light)) (:foreground "#ffffcc" :background "#3333FF" :weight bold))
     (((class color)
-      (background dark))  (:foreground "#FFFFBB" :background "#AAAA1D" :weight bold)))
+      (background dark))  (:foreground "#ffffcc" :background "#3333FF" :weight bold)))
   "Face used to highlight current line if bookmark is persistent."
   :group 'bm)
 
@@ -419,9 +419,9 @@ over overlays with lower priority.  *Don't* use a negative number."
     (((class grayscale)
       (background dark))  (:background "LightGray"))
     (((class color)
-      (background light)) (:foreground "#FFFFBB" :background "#AAAA1D" :weight bold))
+      (background light)) (:foreground "#ffffcc" :background "#3333FF" :weight bold))
     (((class color)
-      (background dark))  (:foreground "#FFFFBB" :background "#AAAA1D" :weight bold)))
+      (background dark))  (:foreground "#ffffcc" :background "#3333FF" :weight bold)))
   "Face used to highlight bookmarks in the fringe."
   :group 'bm)
 
@@ -431,9 +431,9 @@ over overlays with lower priority.  *Don't* use a negative number."
     (((class grayscale)
       (background dark))  (:background "LightGray"))
     (((class color)
-      (background light)) (:foreground "#FFFFBB" :background "#AAAA1D" :weight bold))
+      (background light)) (:foreground "#ffffcc" :background "#3333FF" :weight bold))
     (((class color)
-      (background dark))  (:foreground "#FFFFBB" :background "#AAAA1D" :weight bold)))
+      (background dark))  (:foreground "#ffffcc" :background "#3333FF" :weight bold)))
   "Face used to highlight bookmarks in the fringe if bookmark is persistent."
   :group 'bm)
 
