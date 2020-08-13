@@ -87,6 +87,10 @@
 (gdefkey "<C-tab>" 'tabbar-forward-tab)
 (gdefkey "<C-S-tab>" 'tabbar-backward-tab)
 (gdefkey "<C-iso-lefttab>" 'tabbar-backward-tab)
+(gdefkey "<C-return>" 'highlight-symbol)
+(gdefkey "<C-S-return>" 'highlight-symbol-query-replace)
+(gdefkey "C-," 'highlight-symbol-prev)
+(gdefkey "C-." 'highlight-symbol-next)
 
 (add-hook 'eshell-mode-hook
           '(lambda ()

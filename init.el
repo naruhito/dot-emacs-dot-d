@@ -71,6 +71,7 @@
 (load "init-anzu")
 (load "init-qml-mode")
 (load "init-tabbar")
+(load "init-highlight-symbol")
 (load "init-emacs")
 
 ;;; init.el ends here.
