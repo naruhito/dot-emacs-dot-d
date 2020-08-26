@@ -79,6 +79,8 @@
 (gdefkey "C-x C-c" 'kill-other-file-buffers)
 (gdefkey "C-t" nil)
 (gdefkey "C-t C-t" 'switch-to-previous-buffer)
+(gdefkey "C-t C-p" 'tabbar-move-current-tab-one-place-left)
+(gdefkey "C-t C-n" 'tabbar-move-current-tab-one-place-right)
 (gdefkey "C-t ," 'rename-buffer)
 (gdefkey "C-t k" 'kill-this-buffer)
 (gdefkey "C-t c" '(lambda () (interactive) (eshell (format-time-string "%s" (current-time)))))
