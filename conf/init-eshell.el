@@ -17,34 +17,6 @@
 ;; PAGERをcatに変更
 (setenv "PAGER" "cat")
 
-;; 環境変数PATHを追加
-(let (separator additional-paths)
-  (cond
-   ((eq system-type 'windows-nt)
-    (setq separator ";")
-    (setq additional-paths (list))
-    )
-   ((eq system-type 'darwin)
-    (setq separator ":")
-    (setq additional-paths (list "/usr/local/bin"))
-    )
-   ((eq system-type 'gnu/linux)
-    (setq separator ":")
-    (setq additional-paths (list))
-    )
-   (t
-    (error "Unknown system type: %s" system-type)
-    ))
-  (setq additional-paths
-        (mapcar 'expand-file-name additional-paths))
-  (setenv "PATH" (concat
-                  (getenv "PATH") separator
-                  (mapconcat 'identity additional-paths separator)
-                  ))
-  (setq eshell-path-env (getenv "PATH"))
-  (setq exec-path (append exec-path additional-paths))
-  )
-
 ;; git ブランチ名を取得する関数
 (defun git-prompt-branch-name ()
     "Get current git branch name"

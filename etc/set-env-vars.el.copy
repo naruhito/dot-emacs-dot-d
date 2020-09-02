@@ -9,4 +9,32 @@
 (defvar java-indent-tab nil)
 (defvar java-indent-width 4)
 
+;; Configure PATH
+(let (separator additional-paths)
+  (cond
+   ((eq system-type 'windows-nt)
+    (setq separator ";")
+    (setq additional-paths (list))
+    )
+   ((eq system-type 'darwin)
+    (setq separator ":")
+    (setq additional-paths (list "/usr/local/bin"))
+    )
+   ((eq system-type 'gnu/linux)
+    (setq separator ":")
+    (setq additional-paths (list "/usr/local/go/bin"))
+    )
+   (t
+    (error "Unknown system type: %s" system-type)
+    ))
+  (setq additional-paths
+        (mapcar 'expand-file-name additional-paths))
+  (setenv "PATH" (concat
+                  (getenv "PATH") separator
+                  (mapconcat 'identity additional-paths separator)
+                  ))
+  )
+(setq eshell-path-env (getenv "PATH"))
+(setq exec-path (parse-colon-path (getenv "PATH")))
+
 (provide 'set-env-vars)
