@@ -16,6 +16,7 @@
         '("\\.qml$" . qml-mode)
         '("\\.jsx$" . web-mode)
         '("\\.js$" . web-mode)
+        '("\\.go$" . go-mode)
         ) auto-mode-alist))
 
 ;; キーバインディングの設定

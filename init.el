@@ -70,6 +70,7 @@
 (load "init-yaml-mode")
 (load "init-anzu")
 (load "init-qml-mode")
+(load "init-go-mode")
 (load "init-tabbar")
 (load "init-highlight-symbol")
 (load "init-emacs")
