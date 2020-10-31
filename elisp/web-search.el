@@ -33,7 +33,7 @@
 
 (defvar ws/search-engines
   '(("twitter" . "https://twitter.com/search?q=%s")
-    ("real" . "http://realtime.search.yahoo.co.jp/search?p=%s")
+    ("real" . "https://search.yahoo.co.jp/realtime/search?p=%s")
     ("AOJ" . "http://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=%s")
     ("find" . "https://www.google.com/bookmarks/find?hl=ja&q=%s")
     ("alc" . "http://eow.alc.co.jp/%s/UTF-8/")
