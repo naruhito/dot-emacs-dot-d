@@ -41,7 +41,6 @@
 (load "init-paredit")
 (load "init-lispxmp")
 (load "init-open-junk-file")
-(load "init-popwin")
 (load "init-one-key")
 (load "init-key-chord")
 (load "init-browse-kill-ring")

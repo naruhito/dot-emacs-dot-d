@@ -1,14 +1,14 @@
 # dot-emacs-dot-d
 
-Compatibility: GNU Emacs 24-25
+Compatibility: GNU Emacs 27
 
 ## Linux
 
 Install with package managers, or build from [source](https://www.gnu.org/software/emacs/download.html):
 
 ```
-tar zxvf emacs-25.3.tar.gz
-cd emacs-25.3/
+tar zxvf emacs-27.1.tar.gz
+cd emacs-27.1/
 ./configure --prefix=$HOME/local
 make
 make install
