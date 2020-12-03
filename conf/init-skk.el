@@ -1,7 +1,4 @@
 ;;;; skk.el --- Daredevil SKK (Simple Kana to Kanji conversion program) *詳しくは skk/doc/skk-15.2.pdf を参照
-(require 'utilities "~/.emacs.d/utilities")
-(add-to-load-path "~/.emacs.d/elisp/skk")
-(require 'skk-autoloads)
 
 ;; SKK設定ファイルの置き場所
 (defvar skk-user-directory "~/.emacs.d/skk")

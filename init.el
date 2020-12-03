@@ -3,7 +3,7 @@
 ;; Author: naruhito <naruhito78@gmail.com>
 ;; URL: https://github.com/naruhito/dot-emacs-dot-d
 
-;; Compatibility: GNU Emacs 24-25
+;; Compatibility: GNU Emacs 27
 
 ;;; License
 
@@ -32,10 +32,10 @@
 
 ;; Add "elisp/" and "conf/" to load-path.
 (add-to-load-path "~/.emacs.d/elisp"
-                  "~/.emacs.d/elisp/emacs"
                   "~/.emacs.d/conf")
 
 ;; Load init files.
+(load "init-packages")
 (load "init-eshell")
 (load "init-real-auto-save")
 (load "init-paredit")
@@ -62,16 +62,13 @@
 (load "init-git-gutter")
 (load "init-helm")
 (load "init-company-mode")
-(load "init-ensime")
 (load "init-flycheck")
-(load "init-eclim")
 (load "init-groovy-mode")
 (load "init-yaml-mode")
 (load "init-anzu")
 (load "init-qml-mode")
 (load "init-go-mode")
 (load "init-tabbar")
-(load "init-highlight-symbol")
 (load "init-emacs")
 
 ;;; init.el ends here.
