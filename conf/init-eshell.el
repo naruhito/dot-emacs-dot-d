@@ -57,7 +57,15 @@
    (t
     (setcar default-process-coding-system 'utf-8)
     )))
-(add-hook 'eshell-mode-hook '(lambda () (setcar default-process-coding-system 'utf-8))) ;default
+
+(defun eshell/completion-at-point ()
+  (interactive)
+  (completion-at-point)
+  (delete-backward-char 1))
+
+(add-hook 'eshell-mode-hook '(lambda ()
+                               (defkey eshell-mode-map "TAB" 'eshell/completion-at-point)
+                               (setcar default-process-coding-system 'utf-8)))
 
 ;; Mac OS Xのopenコマンド
 (if (not (eq system-type 'darwin))

@@ -36,6 +36,7 @@
 
 ;; Load init files.
 (load "init-packages")
+(load "init-lsp")
 (load "init-eshell")
 (load "init-real-auto-save")
 (load "init-paredit")
