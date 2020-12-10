@@ -53,7 +53,7 @@
 (defkey flycheck-mode-map "C-c C-n" 'flycheck-next-error)
 (defkey helm-map "C-h" 'delete-backward-char)
 (defkey helm-find-files-map "TAB" 'helm-execute-persistent-action)
-(defkey yas-minor-mode-map "I" 'yas-expand-from-trigger-key)
+(defkey yas-minor-mode-map "<C-S-i>" 'yas-expand-from-trigger-key)
 (defkey emacs-lisp-mode-map "C-c C-d" 'lispxmp)
 (gdefkey "M-SPC" 'bm-toggle)
 (gdefkey "M-[" 'bm-previous)
