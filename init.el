@@ -70,6 +70,7 @@
 (load "init-qml-mode")
 (load "init-go-mode")
 (load "init-tabbar")
+(load "init-plantuml-mode")
 (load "init-emacs")
 
 ;;; init.el ends here.

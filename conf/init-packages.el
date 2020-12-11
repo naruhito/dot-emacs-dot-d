@@ -35,6 +35,7 @@
     markdown-mode+
     open-junk-file
     paredit
+    plantuml-mode
     popup
     popwin
     qml-mode

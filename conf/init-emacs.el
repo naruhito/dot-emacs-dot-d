@@ -17,6 +17,7 @@
         '("\\.jsx$" . web-mode)
         '("\\.js$" . web-mode)
         '("\\.go$" . go-mode)
+        '("\\.pu$" . plantuml-mode)
         ) auto-mode-alist))
 
 ;; キーバインディングの設定
