@@ -20,15 +20,14 @@ Download and copy [the binary](https://emacsformacosx.com) into `/Applications`.
 
 ## Windows
 
-Download and copy [the binary](https://ftp.gnu.org/gnu/emacs/windows) into `$HOME/emacs`.
+Download `installer.exe` from [here](https://ftp.gnu.org/gnu/emacs/windows).
 
-Install linux commands using [Cygwin](https://www.cygwin.com).
+Install linux commands using [git for windows](https://gitforwindows.org/).
 
 Set the following environment variables via windows control panel.
 
 - HOME: `C:\Users\YOUR_USERNAME`
-- PATH: `C:\cygwin\bin`
-- CYGWIN: `nodosfilewarning`
+- PATH: `C:\Program Files\Git\usr\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\cmd`
 
 ## Settings
 

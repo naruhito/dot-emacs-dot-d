@@ -19,5 +19,7 @@
 [core]
 	pager = less
 	excludesfile = ~/.gitignore
+#	autocrlf = false
+#	filemode = false
 [push]
 	default = simple

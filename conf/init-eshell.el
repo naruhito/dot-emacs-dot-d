@@ -42,11 +42,11 @@
 (defun eshell/e (arg)
   (eval (read (format "%s" arg))))
 
-;; Cygwin コマンドを優先して使用するようにエイリアスを作成する関数
-(defun eshell/use-cygwin (command)
+;; Git for windows の linux コマンドを優先して使用するようにエイリアスを作成する関数
+(defun eshell/use-gitbash (command)
   (if (eq system-type 'windows-nt)
-      (eshell/alias command (concat "c:/cygwin/bin/" command ".exe $*"))
-    (message "%s" "use-cygwin is not supported.")))
+      (eshell/alias command (concat "c:/Program\\ Files/Git/usr/bin/" command ".exe $*"))
+    (message "%s" "use-gitbash is not supported.")))
 
 ;; Windows 向けの shift_jis でしか出力しないコマンドのためのデコーディング切替関数
 (defun eshell/toggle-process-output-coding-system ()
@@ -98,10 +98,11 @@
 (eshell/alias "ff" "find-file $1 > /dev/null")
 (cond
  ((eq system-type 'windows-nt)
-  (mapcar 'eshell/use-cygwin
-          (list "find" "tree" "grep" "egrep" "whois" "openssl" "diff" "convert"))
+  (mapcar 'eshell/use-gitbash
+          (list "find" "tree" "grep" "egrep" "whois" "openssl" "convert"))
   (eshell/alias "c" "toggle-process-output-coding-system")
-  (eshell/alias "ll" "c:/cygwin/bin/ls.exe -l $*")  ;"eshell/ls"はパーミッションの表示がおかしい
+  (eshell/alias "ll" "c:/Program\\ Files/Git/usr/bin/ls.exe -l $*")  ;"eshell/ls"はパーミッションの表示がおかしい
+  (eshell/alias "diff" "c:/Program\\ Files/Git/usr/bin/diff.exe --color=always $*")
   )
  ((eq system-type 'darwin)
   (eshell/alias "diff" "/usr/bin/diff $*")

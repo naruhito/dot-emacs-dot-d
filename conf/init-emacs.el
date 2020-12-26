@@ -356,8 +356,7 @@
 
   ;; デフォルトのフォント設定など (フォントセット)
   (set-face-attribute 'default nil
-                      :family "ＭＳ ゴシック"
-                      :height 140)
+                      :height 130)
 
   ;; フォントセットのうち、日本語のフォントだけメイリオに変更
   (set-fontset-font (frame-parameter nil 'font)
