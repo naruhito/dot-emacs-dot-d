@@ -11,3 +11,6 @@
 /.lsp-session-v1
 /elpa
 /.dap-breakpoints
+/.cache
+/eclipse.jdt.ls
+/workspace
