@@ -1,10 +1,9 @@
 ;;; flycheck.el --- On-the-fly syntax checking
-(require 'utilities "~/.emacs.d/utilities")
-(add-to-load-path "~/.emacs.d/elisp/emacs/seq")
 
 ;; elisp 関連ファイルでは無効化
 (defvar flycheck-disabled-checkers '(emacs-lisp emacs-lisp-checkdoc))
 (require 'flycheck)
+(require 'flycheck-popup-tip)
 
 ;; 全バッファで有効化
 (add-hook 'after-init-hook #'global-flycheck-mode)

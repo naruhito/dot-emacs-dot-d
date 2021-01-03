@@ -20,6 +20,7 @@
     company-lsp
     ddskk
     flycheck
+    flycheck-popup-tip
     git-gutter
     go-mode
     groovy-mode
