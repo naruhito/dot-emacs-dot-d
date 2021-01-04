@@ -103,6 +103,7 @@
   (eshell/alias "c" "toggle-process-output-coding-system")
   (eshell/alias "ll" "c:/Program\\ Files/Git/usr/bin/ls.exe -l $*")  ;"eshell/ls"はパーミッションの表示がおかしい
   (eshell/alias "diff" "c:/Program\\ Files/Git/usr/bin/diff.exe --color=always $*")
+  (eshell/alias "cmake" "cmake -G 'MSYS Makefiles' $*")
   )
  ((eq system-type 'darwin)
   (eshell/alias "diff" "/usr/bin/diff $*")
