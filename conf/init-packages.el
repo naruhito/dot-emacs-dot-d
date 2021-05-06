@@ -46,6 +46,7 @@
     scss-mode
     session
     tabbar
+    terraform-mode
     use-package
     viewer
     web-mode
