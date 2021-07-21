@@ -35,7 +35,6 @@
   '(("twitter" . "https://twitter.com/search?q=%s")
     ("real" . "https://search.yahoo.co.jp/realtime/search?p=%s")
     ("AOJ" . "http://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=%s")
-    ("find" . "https://www.google.com/bookmarks/find?hl=ja&q=%s")
     ("alc" . "http://eow.alc.co.jp/%s/UTF-8/")
     ("amazon" . "http://www.amazon.com/s/url=search-alias%%3Daps&field-keywords=%s")
     ("amazon jp" . "http://www.amazon.co.jp/gp/search?index=blended&field-keywords=%s")
