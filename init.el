@@ -72,6 +72,7 @@
 (load "init-tabbar")
 (load "init-plantuml-mode")
 (load "init-terraform-mode")
+(load "init-emojify-mode")
 (load "init-emacs")
 
 ;;; init.el ends here.

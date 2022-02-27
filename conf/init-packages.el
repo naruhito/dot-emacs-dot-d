@@ -19,6 +19,7 @@
     company
     company-lsp
     ddskk
+    emojify
     flycheck
     flycheck-popup-tip
     git-gutter
