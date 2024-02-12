@@ -1,7 +1,7 @@
 ;;; helm.el --- Emacs incremental and narrowing framework -*- lexical-binding: t -*-
 
 ;; 基本設定
-(require 'helm-config)
+(require 'helm)
 
 ;; bm を helm から利用する
 (require 'helm-bm)
