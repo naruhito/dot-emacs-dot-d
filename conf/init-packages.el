@@ -17,7 +17,6 @@
     cmake-mode
     color-moccur
     company
-    company-lsp
     ddskk
     emojify
     flycheck
@@ -34,7 +33,6 @@
     lsp-java
     lsp-pyright
     lsp-ui
-    markdown-mode+
     open-junk-file
     paredit
     plantuml-mode
