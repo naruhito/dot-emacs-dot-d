@@ -7,8 +7,8 @@ Compatibility: GNU Emacs 29
 Install with package managers, or build from [source](https://www.gnu.org/software/emacs/download.html):
 
 ```
-tar zxvf emacs-27.1.tar.gz
-cd emacs-27.1/
+tar zxvf emacs-29.2.tar.gz
+cd emacs-29.2/
 ./configure --prefix=$HOME/local
 make
 make install
