@@ -1,6 +1,6 @@
 # dot-emacs-dot-d
 
-Compatibility: GNU Emacs 27
+Compatibility: GNU Emacs 29
 
 ## Linux
 
