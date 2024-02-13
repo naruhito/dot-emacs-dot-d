@@ -60,11 +60,11 @@
 
 (defun eshell/completion-at-point ()
   (interactive)
-  (completion-at-point)
-  (delete-backward-char 1))
+  (when (not (yas-expand))
+    (completion-at-point)))
 
 (add-hook 'eshell-mode-hook '(lambda ()
-                               (defkey eshell-mode-map "TAB" 'eshell/completion-at-point)
+                               (defkey eshell-cmpl-mode-map "TAB" 'eshell/completion-at-point)
                                (setcar default-process-coding-system 'utf-8)))
 
 ;; Mac OS Xのopenコマンド
