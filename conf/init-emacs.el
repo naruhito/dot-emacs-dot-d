@@ -147,10 +147,13 @@
                     (setq default-process-coding-system '(utf-8 . japanese-shift-jis-unix))
                     ;; ファイル名の encode/decode で使用する符号化方式
                     (setq default-file-name-coding-system 'japanese-shift-jis)
+                    ;; Fix for Emacs 29.2
+                    (setq locale-coding-system 'japanese-shift-jis)
                     )
                    (t                   ;Windows以外の環境はすべて utf-8 で統一
                     (setq default-process-coding-system '(utf-8 . utf-8))
                     (setq default-file-name-coding-system 'utf-8)
+                    (setq locale-coding-system 'utf-8)
                     ))))
 (set-language-environment "Japanese")
 

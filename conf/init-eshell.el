@@ -53,9 +53,11 @@
   (cond
    ((eq (car default-process-coding-system) 'utf-8)
     (setcar default-process-coding-system 'japanese-shift-jis-dos)
+    (setq locale-coding-system 'japanese-shift-jis)
     )
    (t
     (setcar default-process-coding-system 'utf-8)
+    (setq locale-coding-system 'utf-8)
     )))
 
 (defun eshell/completion-at-point ()
@@ -101,7 +103,6 @@
   (mapcar 'eshell/use-gitbash
           (list "find" "tree" "grep" "egrep" "whois" "openssl" "convert"))
   (eshell/alias "c" "toggle-process-output-coding-system")
-  (eshell/alias "ll" "c:/Program\\ Files/Git/usr/bin/ls.exe -l $*")  ;"eshell/ls"はパーミッションの表示がおかしい
   (eshell/alias "diff" "c:/Program\\ Files/Git/usr/bin/diff.exe --color=always $*")
   (eshell/alias "cmake" "cmake -G 'MSYS Makefiles' $*")
   )
