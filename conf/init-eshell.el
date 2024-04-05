@@ -101,7 +101,7 @@
 (cond
  ((eq system-type 'windows-nt)
   (mapcar 'eshell/use-gitbash
-          (list "find" "tree" "grep" "egrep" "whois" "openssl" "convert"))
+          (list "find" "tree" "grep" "egrep" "whois" "openssl" "convert" "bash"))
   (eshell/alias "c" "toggle-process-output-coding-system")
   (eshell/alias "diff" "c:/Program\\ Files/Git/usr/bin/diff.exe --color=always $*")
   (eshell/alias "cmake" "cmake -G 'MSYS Makefiles' $*")
