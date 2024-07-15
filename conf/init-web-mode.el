@@ -37,3 +37,6 @@
           (lambda ()
             (make-local-variable 'js-indent-level)
             (setq js-indent-level 2)))
+
+;; lsp-mode-fix https://github.com/emacs-lsp/lsp-mode/issues/2915
+(setf (alist-get 'web-mode lsp--formatting-indent-alist) 'web-mode-code-indent-offset)

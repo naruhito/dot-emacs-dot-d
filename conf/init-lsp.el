@@ -17,17 +17,10 @@
   (setq company-idle-delay 0)
   (setq company-minimum-prefix-length 1))
 
-
 (use-package yasnippet
   :ensure t
   :commands yas-minor-mode
   :hook (go-mode . yas-minor-mode))
-
-;; Go
-(defun lsp-go-install-save-hooks ()
-  (add-hook 'before-save-hook #'lsp-format-buffer t t)
-  (add-hook 'before-save-hook #'lsp-organize-imports t t))
-(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 
 ;; Python
 (use-package lsp-pyright
@@ -35,6 +28,11 @@
   :hook (python-mode . (lambda ()
                           (require 'lsp-pyright)
                           (lsp))))
+;; Go
+(defun lsp-go-install-save-hooks ()
+  (add-hook 'before-save-hook #'lsp-format-buffer t t)
+  (add-hook 'before-save-hook #'lsp-organize-imports t t))
+(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 
 ;; Java
 (use-package lsp-java
