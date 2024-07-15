@@ -29,10 +29,11 @@ Set the following environment variables via windows control panel.
 - HOME: `C:\Users\YOUR_USERNAME`
 - PATH: `C:\Program Files\Git\usr\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\cmd`
 
-For aspell, install [MSYS2](https://www.msys2.org/), and run the following.
+For aspell/gcc, install [MSYS2](https://www.msys2.org/), and run the following.
 
 	pacman -S aspell
 	pacman -S aspell-en
+	pacman -S mingw-w64-ucrt-x86_64-gcc
 
 ## Settings
 

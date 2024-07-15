@@ -46,6 +46,7 @@
     session
     tabbar
     terraform-mode
+    treesit-auto
     use-package
     viewer
     web-mode
