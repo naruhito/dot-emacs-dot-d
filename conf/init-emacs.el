@@ -15,7 +15,7 @@
         '("\\.txt$" . markdown-mode)
         '("\\.qml$" . qml-mode)
         '("\\.jsx$" . web-mode)
-        '("\\.js$" . web-mode)
+        '("\\.js$" . js-mode)
         '("\\.tsx$" . web-mode)
         '("\\.ts$" . web-mode)
         '("\\.go$" . go-mode)

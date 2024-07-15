@@ -31,3 +31,9 @@
 
 ;; '=' の後に "" を自動追加しない。
 (setq web-mode-enable-auto-quoting nil)
+
+;; js-mode
+(add-hook 'js-mode-hook
+          (lambda ()
+            (make-local-variable 'js-indent-level)
+            (setq js-indent-level 2)))
