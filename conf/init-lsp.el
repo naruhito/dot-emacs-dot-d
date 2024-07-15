@@ -3,7 +3,9 @@
 (use-package lsp-mode
   :ensure t
   :commands (lsp lsp-deferred)
-  :hook (go-mode . lsp-deferred))
+  :hook
+  (go-mode . lsp-deferred)
+  (web-mode . lsp-deferred))  ; note: select "ts-ls" for typescript.
 
 (use-package lsp-ui
   :ensure t
