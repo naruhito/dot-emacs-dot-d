@@ -26,7 +26,6 @@
     groovy-mode
     helm
     helm-bm
-    helm-etags-plus
     key-chord
     lispxmp
     lsp-mode
