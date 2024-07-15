@@ -7,7 +7,7 @@
         '("\\.gradle$" . groovy-mode)
         '("\\.erb$" . web-mode)
         '("\\.html$" . web-mode)
-        '("Dockerfile$" . conf-mode)
+        '("Dockerfile$" . dockerfile-ts-mode)
         '("file$" . ruby-mode)
         '("\\.json$" . web-mode)
         '("\\.md$" . markdown-mode)
