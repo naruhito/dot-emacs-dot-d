@@ -16,6 +16,7 @@
         '("\\.qml$" . qml-mode)
         '("\\.jsx$" . web-mode)
         '("\\.js$" . js-mode)
+        '("\\.mjs$" . js-mode)
         '("\\.tsx$" . web-mode)
         '("\\.ts$" . web-mode)
         '("\\.go$" . go-mode)
