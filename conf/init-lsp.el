@@ -28,6 +28,14 @@
   :hook (python-mode . (lambda ()
                           (require 'lsp-pyright)
                           (lsp))))
+
+;; https://github.com/emacs-lsp/lsp-pyright?tab=readme-ov-file#choosing-the-correct-version-of-python
+;; https://docs.python.org/ja/3/library/venv.html#creating-virtual-environments
+(when (eq system-type 'windows-nt)
+  (defun lsp-pyright--locate-python-venv ()
+    "Find a python executable based on the current virtual environment."
+    (executable-find (f-expand "Scripts/python.exe" (lsp-pyright--locate-venv)))))
+
 ;; Go
 (defun lsp-go-install-save-hooks ()
   (add-hook 'before-save-hook #'lsp-format-buffer t t)
