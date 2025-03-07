@@ -72,6 +72,7 @@
 (load "init-terraform-mode")
 (load "init-emojify-mode")
 (load "init-copilot")
+(load "init-copilot-chat")
 (load "init-emacs")
 
 ;;; init.el ends here.

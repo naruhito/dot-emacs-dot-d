@@ -17,3 +17,5 @@
 /etc/docker/.vagrant
 /emojis
 /network-security.data
+/request
+/transient
