@@ -17,6 +17,7 @@
     cmake-mode
     color-moccur
     company
+    copilot
     ddskk
     emojify
     flycheck

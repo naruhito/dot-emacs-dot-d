@@ -59,6 +59,8 @@
 (defkey helm-find-files-map "TAB" 'helm-execute-persistent-action)
 (defkey yas-minor-mode-map "<C-S-i>" 'yas-expand-from-trigger-key)
 (defkey emacs-lisp-mode-map "C-c C-d" 'lispxmp)
+(defkey copilot-completion-map "<tab>" 'copilot-accept-completion)
+(defkey copilot-completion-map "TAB" 'copilot-accept-completion)
 (gdefkey "M-SPC" 'bm-toggle)
 (gdefkey "M-[" 'bm-previous)
 (gdefkey "M-]" 'bm-next)
