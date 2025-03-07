@@ -3,7 +3,7 @@
 ;; Author: naruhito <naruhito78@gmail.com>
 ;; URL: https://github.com/naruhito/dot-emacs-dot-d
 
-;; Compatibility: GNU Emacs 29
+;; Compatibility: GNU Emacs 30
 
 ;;; License
 
@@ -54,7 +54,6 @@
 (load "init-web-search")
 (load "init-viewer")
 (load "init-calendar")
-(load "init-scss-mode")
 (load "init-ruby-mode")
 (load "init-web-mode")
 (load "init-markdown-mode")

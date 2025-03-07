@@ -1,14 +1,14 @@
 # dot-emacs-dot-d
 
-Compatibility: GNU Emacs 29
+Compatibility: GNU Emacs 30
 
 ## Linux
 
 Install with package managers, or build from [source](https://www.gnu.org/software/emacs/download.html):
 
 ```
-tar zxvf emacs-29.2.tar.gz
-cd emacs-29.2/
+tar zxvf emacs-30.1.tar.gz
+cd emacs-30.1/
 ./configure --prefix=$HOME/local
 make
 make install

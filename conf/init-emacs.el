@@ -87,7 +87,7 @@
 (gdefkey "C-t C-p" 'tabbar-move-current-tab-one-place-left)
 (gdefkey "C-t C-n" 'tabbar-move-current-tab-one-place-right)
 (gdefkey "C-t ," 'rename-buffer)
-(gdefkey "C-t k" 'kill-this-buffer)
+(gdefkey "C-t k" 'kill-current-buffer)
 (gdefkey "C-t c" '(lambda () (interactive) (eshell (format-time-string "%s" (current-time)))))
 (gdefkey "C-t n" 'tabbar-forward-tab)
 (gdefkey "C-t p" 'tabbar-backward-tab)
