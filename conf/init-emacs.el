@@ -221,6 +221,9 @@
 ;; 起動時にウィンンドウ分割して表示される通知を隠す
 (delete-other-windows)
 
+;; 画面分割時に長い行を改行して表示する
+(add-hook 'text-mode-hook #'visual-line-mode)
+
 ;; recentfの保存場所を変更
 (setq recentf-save-file (convert-standard-filename "~/.emacs.d/var/recentf"))
 
