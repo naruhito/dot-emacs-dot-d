@@ -6,7 +6,6 @@
 
 ;; パッケージ情報の初期化
 (package-initialize)
-(package-refresh-contents)
 
 ;; インストール対象のパッケージ一覧
 (defvar my/target-packages
@@ -56,6 +55,10 @@
     ))
 
 ;; インストールの実行
-(dolist (package my/target-packages)
-  (unless (package-installed-p package)
-    (package-install package)))
+(let ((refreshed nil))
+  (dolist (package my/target-packages)
+    (unless (package-installed-p package)
+      (unless refreshed
+        (package-refresh-contents)
+        (setq refreshed t))
+      (package-install package))))
