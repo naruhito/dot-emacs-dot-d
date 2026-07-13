@@ -1,6 +1,10 @@
 ;;; package.el --- Simple package system for Emacs  -*- lexical-binding:t -*-
 (require 'package)
 
+;; disable native-comp
+(setq native-comp-enable-subr-trampolines nil)
+(setq native-comp-async-report-warnings-errors nil)
+
 ;; レポジトリの追加
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 
