@@ -105,6 +105,7 @@
   (eshell/alias "c" "toggle-process-output-coding-system")
   (eshell/alias "diff" "c:/Program\\ Files/Git/usr/bin/diff.exe --color=always $*")
   (eshell/alias "cmake" "cmake -G 'MSYS Makefiles' $*")
+  (eshell/alias "docker" "wslc $*")
   )
  ((eq system-type 'darwin)
   (eshell/alias "diff" "/usr/bin/diff $*")
