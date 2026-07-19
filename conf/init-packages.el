@@ -21,7 +21,6 @@
     color-moccur
     company
     copilot
-    copilot-chat
     ddskk
     emojify
     flycheck

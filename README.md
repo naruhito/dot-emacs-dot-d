@@ -7,8 +7,8 @@ Compatibility: GNU Emacs 30
 Install with package managers, or build from [source](https://www.gnu.org/software/emacs/download.html):
 
 ```
-tar zxvf emacs-30.1.tar.gz
-cd emacs-30.1/
+tar zxvf emacs-30.2.tar.gz
+cd emacs-30.2/
 ./configure --prefix=$HOME/local
 make
 make install
