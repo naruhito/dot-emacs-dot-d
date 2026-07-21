@@ -21,6 +21,8 @@
         '("\\.ts$" . web-mode)
         '("\\.go$" . go-mode)
         '("\\.pu$" . plantuml-mode)
+        '("\\.ps1$" . powershell-mode)
+        '("\\.psm1$" . powershell-mode)
         ) auto-mode-alist))
 
 ;; キーバインディングの設定

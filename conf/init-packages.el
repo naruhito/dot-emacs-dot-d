@@ -37,6 +37,7 @@
     lsp-pyright
     lsp-ui
     open-junk-file
+    powershell
     paredit
     plantuml-mode
     popup
