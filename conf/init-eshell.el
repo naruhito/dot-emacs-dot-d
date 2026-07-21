@@ -88,6 +88,20 @@
         (error "Unknown system type: %s" system-type)
         )) ()))
 
+;; 現在のディレクトリでOSネイティブの外部ターミナルを開く
+(defun open-native-terminal ()
+  (interactive)
+  (cond
+   ((eq system-type 'windows-nt)
+    (call-process "cmd.exe" nil 0 nil "/c" "start" "powershell.exe"))
+   ((eq system-type 'darwin)
+    (call-process "open" nil 0 nil "-a" "Terminal" "."))
+   ((eq system-type 'gnu/linux)
+    (call-process "gnome-terminal" nil 0 nil))
+   (t
+    (error "Unknown system type: %s" system-type)
+    )))
+
 ;; Eshellエイリアス定義
 (require 'em-alias)
 (eshell/alias "la" "ls -a $*")

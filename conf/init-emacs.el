@@ -145,6 +145,7 @@
              (defkey eshell-mode-map "C-a" 'eshell-bol)
              (defkey eshell-mode-map "C-M-p" 'eshell-previous-matching-input-from-input)
              (defkey eshell-mode-map "C-M-n" 'eshell-next-matching-input-from-input)
+             (defkey eshell-mode-map "C-c t" 'open-native-terminal)
              ))
 
 (key-chord-mode 1)
