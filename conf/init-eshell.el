@@ -91,16 +91,21 @@
 ;; 現在のディレクトリでOSネイティブの外部ターミナルを開く
 (defun open-native-terminal ()
   (interactive)
-  (cond
-   ((eq system-type 'windows-nt)
-    (call-process "cmd.exe" nil 0 nil "/c" "start" "powershell.exe"))
-   ((eq system-type 'darwin)
-    (call-process "open" nil 0 nil "-a" "Terminal" "."))
-   ((eq system-type 'gnu/linux)
-    (call-process "gnome-terminal" nil 0 nil))
-   (t
-    (error "Unknown system type: %s" system-type)
-    )))
+  ;; 現在の環境変数のコピーを作成し、このletブロック内だけで環境変数を変更する
+  (let ((process-environment (copy-sequence process-environment)))
+    ;; CLIツールがカラー出力を無効化しないようにダミー環境変数を解除・上書き
+    (setenv "TERM" "xterm-256color")
+    (setenv "INSIDE_EMACS" nil)
+    (setenv "NO_COLOR" nil)
+    (cond
+     ((eq system-type 'windows-nt)
+      (call-process "cmd.exe" nil 0 nil "/c" "start" "powershell.exe"))
+     ((eq system-type 'darwin)
+      (call-process "open" nil 0 nil "-a" "Terminal" "."))
+     ((eq system-type 'gnu/linux)
+      (call-process "gnome-terminal" nil 0 nil))
+     (t
+      (error "Unknown system type: %s" system-type)))))
 
 ;; Eshellエイリアス定義
 (require 'em-alias)
