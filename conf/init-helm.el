@@ -17,8 +17,7 @@
 
 ;; helm-find-files 実行時に *scratch*, *eshell* 等、ファイルと関連付けられていないバッファを候補から除外 (必要な場合、switch-to-buffer)
 (setq helm-boring-buffer-regexp-list
-      (list (rx (or (group "*" (+ not-newline) "*")
-                    (group (+ not-newline) ".erb-template-indent-buffer")))))
+      '("\\`\\*.*\\*\\'" ".erb-template-indent-buffer"))
 
 ;; `helm-buffers-list` で表示可能なファイル名の長さを設定
 (setq helm-buffer-max-length 50)

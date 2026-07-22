@@ -45,8 +45,8 @@
 (defkey view-mode-map "0" 'move-beginning-of-line)
 (defkey view-mode-map "$" 'move-end-of-line)
 (defkey view-mode-map "i" 'view-mode)
-(defkey view-mode-map "q" '(lambda () (interactive)
-                             (kill-buffer (current-buffer))))
+(defkey view-mode-map "q" (lambda () (interactive)
+                            (kill-buffer (current-buffer))))
 (defkey view-mode-map "SPC" 'bm-toggle)
 (defkey view-mode-map "[" 'bm-previous)
 (defkey view-mode-map "]" 'bm-next)
@@ -96,18 +96,18 @@
 (gdefkey "C-t C-n" 'tabbar-move-current-tab-one-place-right)
 (gdefkey "C-t ," 'rename-buffer)
 (gdefkey "C-t k" 'kill-current-buffer)
-(gdefkey "C-t c" '(lambda () (interactive) (eshell (format-time-string "%s" (current-time)))))
+(gdefkey "C-t c" (lambda () (interactive) (eshell (format-time-string "%s" (current-time)))))
 (gdefkey "C-t n" 'tabbar-forward-tab)
 (gdefkey "C-t p" 'tabbar-backward-tab)
 (gdefkey "C-z" nil)
 (gdefkey "C-z C-b" 'helm-imenu)
 (gdefkey "C-z C-d" 'yas-new-snippet)
-(gdefkey "C-z C-f" '(lambda () (interactive (set-frame-parameter nil 'fullscreen 'maximized))))
+(gdefkey "C-z C-f" (lambda () (interactive) (set-frame-parameter nil 'fullscreen 'maximized)))
 (gdefkey "C-z C-i" 'eshell)
-(gdefkey "C-z C-j" '(lambda (arg) (interactive (list (thing-at-point 'symbol))) (helm-apropos arg)))
+(gdefkey "C-z C-j" (lambda () (interactive) (helm-apropos (thing-at-point 'symbol))))
 (gdefkey "C-z C-k" 'web-search-query-default)
 (gdefkey "C-z C-l" 'web-search-query)
-(gdefkey "C-z C-o" '(lambda () (interactive) (helm-buffers-list)))
+(gdefkey "C-z C-o" 'helm-buffers-list)
 (gdefkey "C-z C-p" 'helm-recentf)
 (gdefkey "C-z C-s" 'kmacro-save)
 (gdefkey "C-z C-t" 'describe-mode)
@@ -115,7 +115,7 @@
 (gdefkey "C-z C-w" 'describe-key)
 (gdefkey "C-z C-x" 'revert-buffer-with-coding-system-utf-8-unix)
 (gdefkey "C-z C-z" 'suspend-frame)
-(gdefkey "C-z C-[" '(lambda () (interactive) (helm-bm)))
+(gdefkey "C-z C-[" 'helm-bm)
 (gdefkey "C-z c" 'list-faces-display)
 (gdefkey "C-z f" 'describe-face-at-point)
 (gdefkey "C-z i" 'ispell)
@@ -141,12 +141,11 @@
 (gdefkey "C-." 'highlight-symbol-next)
 
 (add-hook 'eshell-mode-hook
-          '(lambda ()
-             (defkey eshell-mode-map "C-a" 'eshell-bol)
-             (defkey eshell-mode-map "C-M-p" 'eshell-previous-matching-input-from-input)
-             (defkey eshell-mode-map "C-M-n" 'eshell-next-matching-input-from-input)
-             (defkey eshell-mode-map "C-c t" 'open-native-terminal)
-             ))
+          (lambda ()
+            (defkey eshell-mode-map "C-a" 'eshell-bol)
+            (defkey eshell-mode-map "C-M-p" 'eshell-previous-matching-input-from-input)
+            (defkey eshell-mode-map "C-M-n" 'eshell-next-matching-input-from-input)
+            (defkey eshell-mode-map "C-c t" 'open-native-terminal)))
 
 (key-chord-mode 1)
 (key-chord-define-global "jk" 'view-mode)
@@ -154,20 +153,15 @@
 
 ;; 言語を日本語に設定
 (add-hook 'set-language-environment-hook
-          '(lambda ()
-             (cond ((eq system-type 'windows-nt)
-                    ;; プロセス出力の decoding と入力の encoding
-                    (setq default-process-coding-system '(utf-8 . japanese-shift-jis-unix))
-                    ;; ファイル名の encode/decode で使用する符号化方式
-                    (setq default-file-name-coding-system 'japanese-shift-jis)
-                    ;; Fix for Emacs 29.2
-                    (setq locale-coding-system 'japanese-shift-jis)
-                    )
-                   (t                   ;Windows以外の環境はすべて utf-8 で統一
-                    (setq default-process-coding-system '(utf-8 . utf-8))
-                    (setq default-file-name-coding-system 'utf-8)
-                    (setq locale-coding-system 'utf-8)
-                    ))))
+          (lambda ()
+            (if (eq system-type 'windows-nt)
+                (progn
+                  (setq default-process-coding-system '(utf-8 . japanese-shift-jis-unix))
+                  (setq default-file-name-coding-system 'japanese-shift-jis)
+                  (setq locale-coding-system 'japanese-shift-jis))
+              (setq default-process-coding-system '(utf-8 . utf-8))
+              (setq default-file-name-coding-system 'utf-8)
+              (setq locale-coding-system 'utf-8))))
 (set-language-environment "Japanese")
 
 ;; kill-wordと異なり削除したwordをキルリングに保存しない
@@ -206,11 +200,9 @@
 ;; 現在開いているバッファー以外を閉じる
 (defun kill-other-file-buffers ()
   (interactive)
-  (mapc
-   (lambda (x)
-     (if (not (string-match (rx "*" (+ anything) "*") (buffer-name x)))
-         (kill-buffer x)))
-   (delq (current-buffer) (buffer-list))))
+  (dolist (buf (delq (current-buffer) (buffer-list)))
+    (unless (string-match-p "\\`\\*.*\\*\\'" (buffer-name buf))
+      (kill-buffer buf))))
 
 ;; 起動時のカレントディレクトリをホームディレクトリに設定
 (cd "~")

@@ -11,23 +11,19 @@
   :ensure t
   :commands lsp-ui-mode)
 
-(use-package company
-  :ensure t
-  :config
-  (setq company-idle-delay 0)
-  (setq company-minimum-prefix-length 1))
-
 (use-package yasnippet
   :ensure t
   :commands yas-minor-mode
   :hook (go-mode . yas-minor-mode))
 
 ;; Python
+(defun setup-lsp-pyright ()
+  (require 'lsp-pyright)
+  (lsp))
+
 (use-package lsp-pyright
   :ensure t
-  :hook (python-mode . (lambda ()
-                          (require 'lsp-pyright)
-                          (lsp))))
+  :hook (python-mode . setup-lsp-pyright))
 
 ;; https://github.com/emacs-lsp/lsp-pyright?tab=readme-ov-file#choosing-the-correct-version-of-python
 ;; https://docs.python.org/ja/3/library/venv.html#creating-virtual-environments

@@ -52,20 +52,17 @@
 
 ;; 表示するバッファの設定
 (defun my-tabbar-buffer-list ()
-  (delq nil
-        (mapcar #'(lambda (b)
-                    (cond
-                     ;; カレントバッファはファイルでなくても含める
-                     ((eq (current-buffer) b) b)
-                     ;; バッファ内のファイルを含める
-                     ((buffer-file-name b) b)
-                     ((char-equal ?\  (aref (buffer-name b) 0)) nil)
-                     ;; "*eshell" で始まるバッファを含める
-                     ((string-match (rx "*eshell" (* anything) "*") (buffer-name b)) b)
-                     ;; それ以外の * で始まるバッファを含めない
-                     ((char-equal ?* (aref (buffer-name b) 0)) nil)
-                     ((buffer-live-p b) b)))
-                (buffer-list))))
+  (seq-filter
+   (lambda (b)
+     (let ((name (buffer-name b)))
+       (cond
+        ((eq (current-buffer) b) t)
+        ((buffer-file-name b) t)
+        ((char-equal ?\  (aref name 0)) nil)
+        ((string-match "\\`\\*eshell" name) t)
+        ((char-equal ?* (aref name 0)) nil)
+        (t (buffer-live-p b)))))
+   (buffer-list)))
 (setq tabbar-buffer-list-function 'my-tabbar-buffer-list)
 
 ;; 一つ前のバッファに移動する関数

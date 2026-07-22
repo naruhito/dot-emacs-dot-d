@@ -50,24 +50,22 @@
 
 ;; Windows 向けの shift_jis でしか出力しないコマンドのためのデコーディング切替関数
 (defun eshell/toggle-process-output-coding-system ()
-  (cond
-   ((eq (car default-process-coding-system) 'utf-8)
-    (setcar default-process-coding-system 'japanese-shift-jis-dos)
-    (setq locale-coding-system 'japanese-shift-jis)
-    )
-   (t
+  (if (eq (car default-process-coding-system) 'utf-8)
+      (progn
+        (setcar default-process-coding-system 'japanese-shift-jis-dos)
+        (setq locale-coding-system 'japanese-shift-jis))
     (setcar default-process-coding-system 'utf-8)
-    (setq locale-coding-system 'utf-8)
-    )))
+    (setq locale-coding-system 'utf-8)))
 
 (defun eshell/completion-at-point ()
   (interactive)
   (when (not (yas-expand))
     (completion-at-point)))
 
-(add-hook 'eshell-mode-hook '(lambda ()
-                               (defkey eshell-cmpl-mode-map "TAB" 'eshell/completion-at-point)
-                               (setcar default-process-coding-system 'utf-8)))
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            (define-key eshell-cmpl-mode-map (kbd "TAB") 'eshell/completion-at-point)
+            (setcar default-process-coding-system 'utf-8)))
 
 ;; Mac OS Xのopenコマンド
 (if (not (eq system-type 'darwin))
@@ -109,34 +107,41 @@
 
 ;; Eshellエイリアス定義
 (require 'em-alias)
-(eshell/alias "la" "ls -a $*")
-(eshell/alias "ll" "ls -l $*")
-(eshell/alias "q" "exit")
-(eshell/alias "g" "git -c color.ui=always -c core.pager=cat $*")
-(eshell/alias "v" "vagrant $*")
-(eshell/alias "d" "docker $*")
-(eshell/alias "cd" "cd $*; ls")
-(eshell/alias "ff" "find-file $1 > /dev/null")
-(cond
- ((eq system-type 'windows-nt)
-  (mapcar 'eshell/use-gitbash
-          (list "find" "tree" "grep" "egrep" "whois" "openssl" "convert" "bash"))
-  (eshell/alias "c" "toggle-process-output-coding-system")
-  (eshell/alias "diff" "c:/Program\\ Files/Git/usr/bin/diff.exe --color=always $*")
-  (eshell/alias "cmake" "cmake -G 'MSYS Makefiles' $*")
-  (eshell/alias "docker" "wslc $*")
-  )
- ((eq system-type 'darwin)
-  (eshell/alias "diff" "/usr/bin/diff $*")
-  (eshell/alias "grep" "/usr/bin/grep --colour=always $*")
-  (eshell/alias "egrep" "/usr/bin/egrep --colour=always $*")
-  (eshell/alias "date" "/bin/date $*")
-  (eshell/alias "man" "/usr/bin/man -P cat $*")
-  (eshell/alias "locate" "glocate $*")
-  )
- ((eq system-type 'gnu/linux)
-  (eshell/alias "diff" "/usr/bin/diff $*")
-  (eshell/alias "grep" "/bin/grep --colour=always $*")
-  (eshell/alias "grep" "/bin/egrep --colour=always $*")
-  (eshell/alias "man" "/usr/bin/man -P cat $*")
-  ))
+
+;; 共通エイリアス
+(dolist (alias '(("la" "ls -a $*")
+                 ("ll" "ls -l $*")
+                 ("q" "exit")
+                 ("g" "git -c color.ui=always -c core.pager=cat $*")
+                 ("v" "vagrant $*")
+                 ("d" "docker $*")
+                 ("cd" "cd $*; ls")
+                 ("ff" "find-file $1 > /dev/null")))
+  (eshell/alias (car alias) (cadr alias)))
+
+;; プラットフォーム別エイリアス
+(pcase system-type
+  ('windows-nt
+   (mapc 'eshell/use-gitbash
+         '("find" "tree" "grep" "egrep" "whois" "openssl" "convert" "bash"))
+   (dolist (alias '(("c" "toggle-process-output-coding-system")
+                    ("diff" "c:/Program\\ Files/Git/usr/bin/diff.exe --color=always $*")
+                    ("cmake" "cmake -G 'MSYS Makefiles' $*")
+                    ("docker" "wslc $*")))
+     (eshell/alias (car alias) (cadr alias))))
+
+  ('darwin
+   (dolist (alias '(("diff" "/usr/bin/diff $*")
+                    ("grep" "/usr/bin/grep --colour=always $*")
+                    ("egrep" "/usr/bin/egrep --colour=always $*")
+                    ("date" "/bin/date $*")
+                    ("man" "/usr/bin/man -P cat $*")
+                    ("locate" "glocate $*")))
+     (eshell/alias (car alias) (cadr alias))))
+
+  ('gnu/linux
+   (dolist (alias '(("diff" "/usr/bin/diff $*")
+                    ("grep" "/bin/grep --colour=always $*")
+                    ("egrep" "/bin/egrep --colour=always $*")
+                    ("man" "/usr/bin/man -P cat $*")))
+     (eshell/alias (car alias) (cadr alias)))))
