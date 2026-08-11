@@ -53,6 +53,7 @@ Eglot (LSP server) setup
 	mkdir -p ~/.emacs.d/.cache/eglot
 	cd ~/.emacs.d/.cache/eglot
 	npm install pyright
+	npm install typescript
 
 ## Tutorials
 
