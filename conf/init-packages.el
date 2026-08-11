@@ -32,10 +32,7 @@
     helm-bm
     key-chord
     lispxmp
-    lsp-mode
-    lsp-java
-    lsp-pyright
-    lsp-ui
+    markdown-mode
     open-junk-file
     powershell
     paredit

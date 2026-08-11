@@ -43,6 +43,17 @@ Copy and configure the following files:
 - `$HOME/.emacs.d/etc/web-bookmarks.el.copy`
 - `$HOME/.emacs.d/etc/set-env-vars.el.copy`
 
+GitHub Copilot setup
+
+	M-x copilot-install-server
+	M-x copilot-login
+
+Eglot (LSP server) setup
+
+	mkdir -p ~/.emacs.d/.cache/eglot
+	cd ~/.emacs.d/.cache/eglot
+	npm install pyright
+
 ## Tutorials
 
 - Emacs: `M-x help-with-tutorial`
