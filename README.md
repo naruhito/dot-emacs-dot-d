@@ -48,12 +48,17 @@ GitHub Copilot setup
 	M-x copilot-install-server
 	M-x copilot-login
 
-Eglot (LSP server) setup
+Eglot (LSP server) setup-1
 
 	mkdir -p ~/.emacs.d/.cache/eglot
 	cd ~/.emacs.d/.cache/eglot
 	npm install pyright
 	npm install typescript
+
+Eglot (LSP server) setup-2
+
+	pacman -S mingw-w64-ucrt-x86_64-toolchain
+	pacman -S mingw-w64-ucrt-x86_64-clang-tools-extra
 
 ## Tutorials
 

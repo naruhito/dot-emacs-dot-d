@@ -14,6 +14,7 @@
                     "--lsp" "--stdio"))))
 
 ;; 特定のモード（言語）を開いたときに自動で Eglot を起動する
-(add-hook 'python-mode-hook 'eglot-ensure)  ;Python(pyright-langserver)
-(add-hook 'web-mode-hook 'eglot-ensure)  ;TypeScript(tsc)
-(add-hook 'c-mode-hook 'eglot-ensure)  ;C/C++
+(add-hook 'python-mode-hook 'eglot-ensure)
+(add-hook 'web-mode-hook 'eglot-ensure)
+(add-hook 'c-mode-hook 'eglot-ensure)
+(add-hook 'c++-mode-hook 'eglot-ensure)
