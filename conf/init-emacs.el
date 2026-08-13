@@ -139,6 +139,7 @@
 (gdefkey "<C-S-return>" 'highlight-symbol-query-replace)
 (gdefkey "C-," 'highlight-symbol-prev)
 (gdefkey "C-." 'highlight-symbol-next)
+(gdefkey "C-c a" 'org-agenda)
 
 (add-hook 'eshell-mode-hook
           (lambda ()
