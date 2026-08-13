@@ -275,6 +275,10 @@
 ;; ビープ音、画面フラッシュなし
 (setq ring-bell-function 'ignore)
 
+;; *Warnings* バッファがポップアップするのを抑止
+;; (:error 以上のレベルのときだけポップアップし、:warning 等はログに残るのみ)
+(setq warning-minimum-level :error)
+
 ;; フェイスの設定値を一時的に書き出すファイルを指定 (list-faces-display)
 (setq custom-file "~/.emacs.d/var/customize-face-tmp.el")
 
