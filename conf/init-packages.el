@@ -34,6 +34,7 @@
     lispxmp
     markdown-mode
     open-junk-file
+    org-download
     powershell
     paredit
     plantuml-mode

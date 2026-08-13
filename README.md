@@ -60,6 +60,10 @@ Eglot (LSP server) setup-2
 	pacman -S mingw-w64-ucrt-x86_64-toolchain
 	pacman -S mingw-w64-ucrt-x86_64-clang-tools-extra
 
+org-download setup (imagemagick and IrfanView installation, see `conf/init-org-mode.el`)
+
+	pacman -S mingw-w64-x86_64-imagemagick
+
 ## Tutorials
 
 - Emacs: `M-x help-with-tutorial`

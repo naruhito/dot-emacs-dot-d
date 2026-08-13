@@ -66,6 +66,8 @@
 (defkey copilot-completion-map "M-f" 'copilot-accept-completion-by-word)
 (defkey copilot-completion-map "M-n" 'copilot-next-completion)
 (defkey copilot-completion-map "M-p" 'copilot-previous-completion)
+(defkey org-mode-map "C-c i" 'org-download-clipboard)
+(gdefkey "C-c a" 'org-agenda)
 (gdefkey "M-k" 'copilot-complete)
 (gdefkey "M-SPC" 'bm-toggle)
 (gdefkey "M-[" 'bm-previous)
@@ -139,7 +141,6 @@
 (gdefkey "<C-S-return>" 'highlight-symbol-query-replace)
 (gdefkey "C-," 'highlight-symbol-prev)
 (gdefkey "C-." 'highlight-symbol-next)
-(gdefkey "C-c a" 'org-agenda)
 
 (add-hook 'eshell-mode-hook
           (lambda ()
