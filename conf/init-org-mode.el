@@ -1,7 +1,9 @@
 ;;; org.el --- Outline-based notes management and organizer -*- lexical-binding: t; -*-
 
-;; アジェンダで読み込むOrgファイルのパスを指定（複数指定可能）
-(setq org-agenda-files '("~/.emacs.d/var/notes/"))
+;; アジェンダで読み込むOrgファイルのパスを指定
+;; ~/.emacs.d/var/notes/ 以下のすべての .org ファイルを再帰的に取得する
+(setq org-agenda-files
+      (directory-files-recursively "~/.emacs.d/var/notes/" "\\.org$"))
 
 ;; org-downloadの設定
 (require 'org-download)
