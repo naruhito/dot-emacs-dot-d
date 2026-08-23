@@ -23,8 +23,6 @@
     copilot
     ddskk
     emojify
-    flycheck
-    flycheck-popup-tip
     git-gutter
     go-mode
     groovy-mode

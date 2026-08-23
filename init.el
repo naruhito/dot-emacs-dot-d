@@ -61,7 +61,6 @@
 (load "init-git-gutter")
 (load "init-helm")
 (load "init-company-mode")
-(load "init-flycheck")
 (load "init-groovy-mode")
 (load "init-yaml-mode")
 (load "init-anzu")
