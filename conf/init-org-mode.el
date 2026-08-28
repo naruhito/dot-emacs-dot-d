@@ -18,6 +18,9 @@
 ;; org-modeで画像をインライン表示する
 (setq org-startup-with-inline-images t)
 
+;; 画像の幅を window にする
+(setq org-image-max-width 'window)
+
 ;; クリップボードからの取得ツールを指定
 ;; windowsで IrfanView の i_view64.exe を使う場合 https://www.irfanview.com/
 (if (eq system-type 'windows-nt)
