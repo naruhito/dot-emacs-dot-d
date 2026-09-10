@@ -68,6 +68,7 @@
 (defkey copilot-completion-map "M-n" 'copilot-next-completion)
 (defkey copilot-completion-map "M-p" 'copilot-previous-completion)
 (defkey org-mode-map "C-c i" 'org-download-clipboard)
+(defkey org-mode-map "C-c x" 'org-toggle-inline-images)
 (defkey org-mode-map "M-h" 'backward-delete-word)
 (gdefkey "C-c a" 'org-agenda)
 (gdefkey "M-k" 'copilot-complete)
