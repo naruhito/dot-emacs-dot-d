@@ -4,7 +4,7 @@ Compatibility: GNU Emacs 30
 
 ## Linux
 
-Install with package managers, or build from [source](https://www.gnu.org/software/emacs/download.html):
+Install with package managers, or build from [source](https://www.gnu.org/software/emacs/download.html).
 
 ```
 tar zxvf emacs-30.2.tar.gz
