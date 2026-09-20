@@ -14,7 +14,8 @@
   (cond
    ((eq system-type 'windows-nt)
     (setq separator ";")
-    (setq additional-paths (list))
+    ;; Windows の PATH 環境変数はバックスラッシュのまま扱う
+    (setq additional-paths (list "C:\\msys64\\ucrt64\\bin"))
     )
    ((eq system-type 'darwin)
     (setq separator ":")
@@ -27,14 +28,20 @@
    (t
     (error "Unknown system type: %s" system-type)
     ))
-  (setq additional-paths
-        (mapcar 'expand-file-name additional-paths))
+
+  ;; 1. 追加したいパスを環境変数 PATH の **先頭** に結合する (既存の古いパスより優先させる)
   (setenv "PATH" (concat
-                  (getenv "PATH") separator
                   (mapconcat 'identity additional-paths separator)
+                  separator
+                  (getenv "PATH")
                   ))
+
+  ;; 2. exec-path にも追加する (全上書きせず、先頭から追加していく)
+  (dolist (path (reverse additional-paths))
+    (add-to-list 'exec-path (expand-file-name path)))
   )
+
+;; eshell 用の PATH 設定
 (setq eshell-path-env (getenv "PATH"))
-(setq exec-path (parse-colon-path (getenv "PATH")))
 
 (provide 'set-env-vars)
