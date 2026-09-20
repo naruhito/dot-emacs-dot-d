@@ -5,17 +5,6 @@
   (global-treesit-fold-mode 1))
 
 ;; treesit-fold 用の org-mode 風折りたたみ設定
-(defun my/treesit-fold-or-indent ()
-  "インデントを実行し、カーソル移動やバッファ変更がなければ折りたたみをトグルします。"
-  (interactive)
-  (let ((old-point (point))
-        (old-tick (buffer-modified-tick)))
-    (indent-for-tab-command)
-    (when (and (= old-point (point))
-               (= old-tick (buffer-modified-tick))
-               (fboundp 'treesit-fold-toggle))
-      (ignore-errors (treesit-fold-toggle)))))
-
 (defvar-local my/treesit-fold-all-state nil)
 (defun my/treesit-fold-toggle-all ()
   "バッファ全体の折りたたみをトグルします。"
