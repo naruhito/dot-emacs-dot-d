@@ -66,6 +66,7 @@
 (defkey org-mode-map "M-h" 'backward-delete-word)
 (defkey treesit-fold-mode-map "<backtab>" 'my/treesit-fold-toggle-all)
 (defkey treesit-fold-mode-map "C-S-SPC" 'treesit-fold-toggle)
+(defkey treesit-fold-mode-map "C-S-o" 'treesit-fold-open-recursively)
 (gdefkey "C-c a" 'org-agenda)
 (gdefkey "M-k" 'copilot-complete)
 (gdefkey "M-SPC" 'bm-toggle)
