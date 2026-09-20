@@ -25,7 +25,6 @@
     emojify
     git-gutter
     go-mode
-    groovy-mode
     helm
     helm-bm
     key-chord
@@ -35,10 +34,8 @@
     org-download
     powershell
     paredit
-    plantuml-mode
     popup
     popwin
-    qml-mode
     real-auto-save
     sbt-mode
     scala-mode
