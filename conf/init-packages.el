@@ -47,6 +47,7 @@
     tabbar
     terraform-mode
     treesit-auto
+    treesit-fold
     use-package
     viewer
     web-mode

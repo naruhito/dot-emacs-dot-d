@@ -72,6 +72,8 @@
 (load "init-emojify-mode")
 (load "init-copilot")
 (load "init-org-mode")
+(load "init-treesit-auto")
+(load "init-treesit-fold")
 (load "init-emacs")
 
 ;;; init.el ends here.
