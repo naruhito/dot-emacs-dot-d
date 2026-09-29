@@ -4,8 +4,8 @@
 (setq auto-mode-alist
       (append
        (list
-        '("\\.tsx$" . typescript-ts-mode)
-        '("\\.ts$" . typescript-ts-mode)
+        '("\\.tsx$" . web-mode)
+        '("\\.ts$" . web-mode)
         '("\\.js$" . js-mode)
         '("\\.mjs$" . js-mode)
         '("\\.jsx$" . web-mode)
